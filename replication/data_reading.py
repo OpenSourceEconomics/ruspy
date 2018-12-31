@@ -1,16 +1,17 @@
 # This module creates pickle files from the raw data.
 
 import pandas as pd
+import os
 
 # The following dictionaries contain details on the raw data described by Rust in his documentation.
 # This Information is used to create 8 dataframes, each containing one of the Busgroups used in the paper.
 # Also the first 11 columns contain bus specific information on purchase,engine replacement etc.
 # For further information, see the documnetation.
 
-dict_data = {'g870': [36, 15, 'Group 1'], 'rt50': [60, 4, 'Group 2'],
-             't8h203': [81, 48, 'Group 3'], 'a452372': [137, 18, 'Group 8'],
-             'a452374': [137, 10, 'Group 6'], 'a530872': [137, 18, 'Group 7'],
-             'a530874': [137, 12, 'Group 5'], 'a530875': [128, 37, 'Group 4']}
+dict_data = {'g870': [36, 15, 'Group1'], 'rt50': [60, 4, 'Group2'],
+             't8h203': [81, 48, 'Group3'], 'a452372': [137, 18, 'Group8'],
+             'a452374': [137, 10, 'Group6'], 'a530872': [137, 18, 'Group7'],
+             'a530874': [137, 12, 'Group5'], 'a530875': [128, 37, 'Group4']}
 re_col = {1: 'Bus_ID', 2: "Month_pur", 3: "Year_pur", 4: "Month_1st", 5: "Year_1st", 6: "Odo_1st",
           7: "Month_2nd", 8: "Year_2nd", 9: "Odo_2nd", 10: "Month_begin", 11: "Year_begin"}
 
@@ -35,6 +36,7 @@ for keys in dict_data:
     df = df.reset_index()
     df = df.drop(df.columns[[0]], axis=1)
     dict_df[dict_data[keys][2]] = df
+    os.makedirs('../pkl/group_data', exist_ok=True)
     df.to_pickle('../pkl/group_data/' + dict_data[keys][2] + '.pkl')
 
 '''
@@ -68,4 +70,5 @@ for l in sorted(dict_df):
         else:
             df3 = pd.concat([df3, df2])
     df3 = df3.reset_index(drop=True)
+    os.makedirs('../pkl/replication_data', exist_ok=True)
     df3.to_pickle('../pkl/replication_data/Rep' + l + '.pkl')

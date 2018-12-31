@@ -17,7 +17,7 @@ def estimate_5000():
     result              : A dictionary with the estimation results on the cost parameters.
     """
     beta = 0.9999
-    group = 'Group 4'
+    group = 'Group4'
     df = pd.read_pickle('../pkl/replication_data/Rep' + group + '.pkl')
     df[['state']] = (df[['state']]/(5000)).astype(int)  # Creating states.
     transition_results = estimate_transitions_5000(df)
