@@ -1,0 +1,12 @@
+name: ruspy
+
+dependencies:
+  - python=3.6
+  - numpy
+  - pandas
+  - statsmodels
+  - pytest
+  - pytest-xdist
+  - scipy
+  - matplotlib
+  - jupyter
