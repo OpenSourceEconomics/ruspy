@@ -31,3 +31,6 @@ def estimate_5000():
     result = opt.minimize(loglike_opt_rule, args=(num_states, trans_mat, state_mat, decision_mat, beta),
                       x0=[5, 5], bounds=[(1e-6, None), (1e-6, None)])
     return transition_results, result
+
+
+estimate_5000()

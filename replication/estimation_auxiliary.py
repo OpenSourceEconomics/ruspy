@@ -122,7 +122,8 @@ def lin_cost(s, params):
     :param params: The slope of the cost function.
     :return: The maintenance cost for state s.
     """
-    return s * 0.001 * params[0]
+    states = np.arange(s)
+    return states * 0.001 * params[0]
 
 
 def myopic_costs(s, maint_func, params):
@@ -134,8 +135,8 @@ def myopic_costs(s, maint_func, params):
     :return: A vector containing the costs of a non-forward looking agent.
     """
     rc = params[0]
-    maint_cost = [maint_func(state, params[1:]) for state in range(0, s)]
-    repl_cost = [(rc + maint_func(0, params[1:])) for state in range(0, s)]
+    maint_cost = maint_func(s, params[1:])
+    repl_cost = np.full(maint_cost.shape, rc + maint_cost[0])
     return np.vstack((maint_cost, repl_cost)).T
 
 
