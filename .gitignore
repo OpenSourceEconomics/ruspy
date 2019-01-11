@@ -1,1 +1,9 @@
 .idea/*
+__pycache__
+pkl
+*.aux
+*.log
+*.bbl
+*.out
+*.blg
+*.pdf

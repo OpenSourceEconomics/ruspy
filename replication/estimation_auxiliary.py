@@ -11,7 +11,7 @@ def estimate_transitions_5000(df):
     :return: A dictionary with the results of the observation.
     """
     transition_list = count_transitions_5000(df)
-    result_transitions = opt.minimize(loglike, args=transition_list, x0=[0.3, 0.5, 0.01],
+    result_transitions = opt.minimize(loglike, args=transition_list, x0=np.array([0.3, 0.5, 0.01]),
                                       bounds=[(1e-6, 1), (1e-6, 1), (1e-6, 1)],
                                       constraints=({'type': 'eq', "fun": apply_p_constraint}))
     return result_transitions
@@ -118,7 +118,7 @@ def loglike_opt_rule(params, num_states, trans_mat, state_mat, decision_mat, bet
 def lin_cost(s, params):
     """
     This function describes a linear cost function, which Rust concludes is the most realistic maintenance function.
-    :param s: The state s.
+    :param s: The number of states.
     :param params: The slope of the cost function.
     :return: The maintenance cost for state s.
     """
@@ -140,19 +140,18 @@ def myopic_costs(s, maint_func, params):
     return np.vstack((maint_cost, repl_cost)).T
 
 
-def choice_prob(cost_array, params, beta):
+def choice_prob(ev, params, beta):
     """
     This function calculates the choice probabilities to maintain or replace for each state.
-    :param cost_array: An array containing the expected future value of maintaining or replacing the bus engine.
+    :param ev: An array containing the expected future value of maintaining or replacing the bus engine.
     :param params: The cost parameters for replacing or maintaining the bus engine.
     :param beta: The discount factor.
     :return: A array containing the choice probabilities for each state.
     """
-    s = cost_array.shape[0]
+    s = ev.shape[0]
     costs = myopic_costs(s, lin_cost, params)
-    util_main = np.exp(beta * cost_array - costs[:, 0])  # Utility to maintain the bus
-    util_repl = [np.exp(beta * cost_array[0] - costs[0][0] - costs[0][1]) for state in
-                 range(0, s)]  # Utility to replace the bus
+    util_main = np.exp(beta * ev - costs[:, 0])  # Utility to maintain the bus
+    util_repl = np.full(util_main.shape, np.exp(beta * ev[0] - costs[0, 0] - costs[0, 1])) # Utility to replace the bus
     util = np.vstack((util_main, util_repl)).T
     pchoice = util / (np.sum(util, axis=1).reshape(s, -1))
     return pchoice
@@ -175,9 +174,9 @@ def calc_fixp(num_states, trans_mat, maint_func, params, beta, threshold=1e-6):
     ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(-costs), axis=1)))
     while abs(ev_new - ev).max() > threshold:
         ev = ev_new
-        main_cost = (beta * ev - costs[:, 0])
-        repl_cost = [(beta * ev[0] - costs[0][1] - costs[0][0]) for state in range(0, num_states)]
-        ev_ = np.vstack((main_cost, repl_cost)).T
+        maint_cost = (beta * ev - costs[:, 0])
+        repl_cost = np.full(maint_cost.shape, beta * ev[0] - costs[0, 1] - costs[0, 0])
+        ev_ = np.vstack((maint_cost, repl_cost)).T
         ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(ev_), axis=1)))
         k = k + 1
         if k == 1000:  # Maximum number of iterations.
