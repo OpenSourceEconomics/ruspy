@@ -1,0 +1,6 @@
+# This file contatins the default values for the estimation process. Runing estimation with these values
+# replicates Rust 1987 paper on optimal bus engine replacement.
+
+beta    : 0.9999
+group   : Group4
+states  : 90
