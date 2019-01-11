@@ -7,3 +7,4 @@ pkl
 *.out
 *.blg
 *.pdf
+.ipynb*
