@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import scipy.optimize as opt
 import yaml
+import json
 
 from estimation_auxiliary import estimate_transitions_5000
 from estimation_auxiliary import create_transition_matrix
@@ -34,4 +35,8 @@ trans_mat = create_transition_matrix(num_states, np.array(transition_results['x'
 state_mat = create_state_matrix(exog, num_states, num_obs)
 result = opt.minimize(loglike_opt_rule, args=(num_states, trans_mat, state_mat, decision_mat, beta),
                       x0=np.array([5, 5]), bounds=[(1e-6, None), (1e-6, None)])
+
+json.dump([transition_results['x'].tolist(), result['x'].tolist()],
+              open('result_5000.json', 'w'))
+
 print(transition_results, result)
