@@ -2,6 +2,7 @@
 
 import pandas as pd
 import os
+import numpy as np
 
 # The following dictionaries contain details on the raw data described by Rust in his documentation.
 # This Information is used to create 8 dataframes, each containing one of the Busgroups used in the paper.
@@ -69,6 +70,9 @@ for l in sorted(dict_df):
             df3 = df2
         else:
             df3 = pd.concat([df3, df2])
-    df3 = df3.reset_index(drop=True)
+    df3.reset_index(drop=True, inplace=True)
+    num_bus = len(df3['Bus_ID'].unique())
+    num_periods = df3.shape[0] / num_bus
+    df3['period'] = np.arange(num_periods).repeat(num_bus).astype(int)
     os.makedirs('../pkl/replication_data', exist_ok=True)
     df3.to_pickle('../pkl/replication_data/Rep' + l + '.pkl')

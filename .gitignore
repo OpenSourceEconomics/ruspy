@@ -8,3 +8,4 @@ pkl
 *.blg
 *.pdf
 .ipynb*
+.pytest_cache

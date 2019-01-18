@@ -1,6 +1,7 @@
 import numpy as np
 from math import log
 import scipy.optimize as opt
+import numba
 
 
 # The first part are functions for estimating the transition probabilities.
@@ -17,28 +18,26 @@ def estimate_transitions_5000(df):
     return result_transitions
 
 
-def count_transitions_5000(df):
-    """
-    A function to count the transitions.
-    :param df: A DataFrame with columns Bus_ID, state and decision containing the observations.
-    :return: A list with the count state increases by 0,1 or 2.
-    """
-    n = 0
-    e = 0
-    z = 0
-    for i in df.Bus_ID.unique():
-        df2 = df[df['Bus_ID'] == i].reset_index()
-        for j in df2.index.values[::-1]:
-            if j > 0:
-                if df2.iloc[j - 1]['decision'] == 0:
-                    if df2.iloc[j]['state'] - df2.iloc[j - 1]['state'] == 0:
-                        n = n + 1
-                    elif df2.iloc[j]['state'] - df2.iloc[j - 1]['state'] == 1:
-                        e = e + 1
-                    elif df2.iloc[j]['state'] - df2.iloc[j - 1]['state'] == 2:
-                        z = z + 1
-                elif df2.iloc[j - 1]['decision'] == 1:
-                    e = e + 1  # Weird convention, but gives the results of the paper.
+@numba.jit
+def count_transitions_5000(df2):
+    n, e, z = 0, 0, 0
+    num_bus = len(df2['Bus_ID'].unique())
+    num_periods = int(df2.shape[0] / num_bus)
+    df = df2.sort_values(['Bus_ID', 'period'])
+    df.reset_index(drop=True, inplace=True)
+    states = df['state'].values.reshape(num_bus, num_periods)
+    decisions = df['decision'].values.reshape(num_bus, num_periods)
+    for bus in range(num_bus):
+        for period in range(num_periods - 1):
+            if decisions[bus, period] == 0:
+                if states[bus, period + 1] - states[bus, period] == 0:
+                    n = n + 1
+                elif states[bus, period + 1] - states[bus, period] == 1:
+                    e = e + 1
+                elif states[bus, period + 1] - states[bus, period] == 2:
+                    z = z + 1
+            elif decisions[bus, period] == 1:
+                e = e + 1
     return [n, e, z]
 
 
