@@ -7,11 +7,11 @@ from estimation_auxiliary import myopic_costs
 from estimation_auxiliary import calc_fixp
 from estimation_auxiliary import create_transition_matrix
 
-np.random.seed(123)
+np.random.seed(234)
 num_buses = 1
 beta = 0.9999
 num_periods = 50000
-num_states = 600
+num_states = 300
 unobs = np.random.gumbel(loc = -mp.euler, scale=1, size=(num_periods, 2))
 zurcher_trans, estimation_results = json.load(open('result_5000.json', 'r'))
 zurcher_trans = np.array(zurcher_trans)

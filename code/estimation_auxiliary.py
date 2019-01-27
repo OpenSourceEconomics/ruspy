@@ -1,7 +1,6 @@
 import numpy as np
 from math import log
 import scipy.optimize as opt
-import numba
 
 
 # The first part are functions for estimating the transition probabilities.
@@ -18,13 +17,10 @@ def estimate_transitions_5000(df):
     return result_transitions
 
 
-@numba.jit
-def count_transitions_5000(df2):
+def count_transitions_5000(df):
     n, e, z = 0, 0, 0
-    num_bus = len(df2['Bus_ID'].unique())
-    num_periods = int(df2.shape[0] / num_bus)
-    df = df2.sort_values(['Bus_ID', 'period'])
-    df.reset_index(drop=True, inplace=True)
+    num_bus = len(df['Bus_ID'].unique())
+    num_periods = int(df.shape[0] / num_bus)
     states = df['state'].values.reshape(num_bus, num_periods)
     decisions = df['decision'].values.reshape(num_bus, num_periods)
     for bus in range(num_bus):
@@ -92,8 +88,9 @@ def create_state_matrix(exog, num_states, num_obs):
     :param num_obs: The total number of observations n.
     :return:  A nxs matrix containing TRUE in the row for each observation, if the bus was in that state.
     """
-    state_mat = np.array([[exog[i] == s for i in range(num_obs)]
-                          for s in range(num_states)])
+    state_mat = np.full((num_states, num_obs), False, dtype=bool)
+    for i, value in enumerate(exog):
+        state_mat[value, i] = True
     return state_mat
 
 
@@ -156,7 +153,7 @@ def choice_prob(ev, params, beta):
     return pchoice
 
 
-def calc_fixp(num_states, trans_mat, maint_func, params, beta, threshold=1e-6):
+def calc_fixp(num_states, trans_mat, maint_func, params, beta, threshold=1e-12):
     """
     The function to calculate the nested fix point.
     :param num_states: The size of the state space.

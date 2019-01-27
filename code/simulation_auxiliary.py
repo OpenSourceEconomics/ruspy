@@ -11,10 +11,10 @@ def decide(s, ev, costs, unobs, beta):
     """
     if (- costs[s, 0] + unobs[0] + beta * ev[s]) > (- costs[0, 0] - costs[0, 1]+ unobs[1] + beta * ev[0]):
         decision = 0
-        utility = - costs[s, 0] + unobs[0]
+        utility = - costs[s, 0]
     else:
         decision = 1
-        utility = - costs[0, 0] - costs[0, 1] + unobs[1]
+        utility = - costs[0, 0] - costs[0, 1]
     return decision, utility
 
 
