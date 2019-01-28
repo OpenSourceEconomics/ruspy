@@ -1,8 +1,8 @@
 import numpy as np
-from estimation_auxiliary import calc_fixp
-from estimation_auxiliary import create_transition_matrix
-from estimation_auxiliary import lin_cost
-from estimation_auxiliary import myopic_costs
+from estimation.estimation_auxiliary import calc_fixp
+from estimation.estimation_auxiliary import create_transition_matrix
+from estimation.estimation_auxiliary import lin_cost
+from estimation.estimation_auxiliary import myopic_costs
 
 
 def decide(s, ev, costs, unobs, beta):
@@ -16,7 +16,6 @@ def decide(s, ev, costs, unobs, beta):
         decision = 1
         utility = - costs[0, 0] - costs[0, 1]
     return decision, utility
-
 
 
 def transition(old_state, decision, trans_prob):
@@ -35,7 +34,6 @@ def simulate_strategy(known_trans, real_trans, num_buses, num_periods, num_state
     decisions = np.empty((num_buses, 0), dtype=int)
     utilities = np.empty((num_buses, 0), dtype=int)
     for i in range(0, num_periods):
-        print(i)
         if i > 0:
             states = np.append(states, new_states.reshape(num_buses, 1), axis=1)
         new_decisions = np.empty((0,0), dtype=int)

@@ -176,5 +176,7 @@ def calc_fixp(num_states, trans_mat, maint_func, params, beta, threshold=1e-12):
         ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(ev_), axis=1)))
         k = k + 1
         if k == 1000:  # Maximum number of iterations.
+            #print('Der EV wars')
             break
+    #print('Es hat geklappt')
     return ev_new
