@@ -14,6 +14,5 @@ if not os.path.isfile('data/pkl/group_data/Group1.pkl'):
 
 data = data_processing(init_dict)
 estimate(init_dict, data)
-simulate(init_dict)
 
 

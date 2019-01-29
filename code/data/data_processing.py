@@ -12,7 +12,7 @@ import numpy as np
 
 def data_processing(init_dict):
     repl = dict()
-    df = pd.read_pickle('pkl/group_data/' + init_dict['replication']['group'] + '.pkl')
+    df = pd.read_pickle('data/pkl/group_data/' + init_dict['replication']['group'] + '.pkl')
     for i in df.index:
         repl[i] = 0
     for j, i in enumerate(df.columns.values[11:]):
@@ -42,6 +42,6 @@ def data_processing(init_dict):
     df3[['state']] = (df3[['state']] / init_dict['replication']['binsize']).astype(int)
     df3.sort_values(['Bus_ID', 'period'], inplace=True)
     df3.reset_index(drop=True, inplace=True)
-    os.makedirs('pkl/replication_data', exist_ok=True)
-    df3.to_pickle('pkl/replication_data/Rep' + init_dict['replication']['group'] + '.pkl')
+    os.makedirs('data/pkl/replication_data', exist_ok=True)
+    df3.to_pickle('data/pkl/replication_data/Rep' + init_dict['replication']['group'] + '.pkl')
     return df3

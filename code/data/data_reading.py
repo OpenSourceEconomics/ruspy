@@ -38,5 +38,5 @@ def data_reading():
         df = df.reset_index()
         df = df.drop(df.columns[[0]], axis=1)
         dict_df[dict_data[keys][2]] = df
-        os.makedirs('pkl/group_data', exist_ok=True)
-        df.to_pickle('pkl/group_data/' + dict_data[keys][2] + '.pkl')
+        os.makedirs('data/pkl/group_data', exist_ok=True)
+        df.to_pickle('data/pkl/group_data/' + dict_data[keys][2] + '.pkl')
