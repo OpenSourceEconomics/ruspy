@@ -3,7 +3,6 @@ import os
 from data.data_reading import data_reading
 from data.data_processing import data_processing
 from estimation.estimation import estimate
-from simulation.simulation import simulate
 
 
 with open('init.yml') as y:
@@ -14,5 +13,3 @@ if not os.path.isfile('data/pkl/group_data/Group1.pkl'):
 
 data = data_processing(init_dict)
 estimate(init_dict, data)
-
-

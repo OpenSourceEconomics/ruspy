@@ -40,7 +40,7 @@ def simulate_strategy(known_trans, real_trans, num_buses, num_periods, num_state
         new_utilities = np.empty((0,0), dtype=int)
         new_states = np.empty((0, 0), dtype=int)
         for bus in range(num_buses):
-            decision, utility = decide(states[bus, -1], ev, costs, unobs[i , :], beta)
+            decision, utility = decide(states[bus, -1], ev, costs, unobs[bus, i, :], beta)
             new_decisions = np.append(new_decisions, decision)
             new_utilities = np.append(new_utilities, utility)
             new_states = np.append(new_states, transition(states[bus, -1], decision, real_trans))
