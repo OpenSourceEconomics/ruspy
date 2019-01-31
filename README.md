@@ -7,5 +7,5 @@ After running the data processing, the descriptives in Table IIa and IIb of the 
 
 At the Hackathon on 30.01. I presented some speed devolpment in my code. Here is the link to the old [notebook](https://github.com/OpenSourceEconomics/ruspy/blob/master/development_speed/timing_old_code.ipynb) and this leads to the new [code](https://github.com/OpenSourceEconomics/ruspy/blob/master/development_speed/timing_new_code.ipynb). Both notebooks replicate the paper for Group 4.
 
-All jupyter notebooks from above can be executed in an online envoirement provided by [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/OpenSourceEconomics/ruspy/master).
+All jupyter notebooks from above can be executed in an online envoirement provided by [![Binder](https://mybinder.org/badge_logo.svg)](https://hub.mybinder.org/user/opensourceeconomics-ruspy-cy5df725/tree).
 
