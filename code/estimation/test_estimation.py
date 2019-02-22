@@ -3,11 +3,11 @@ from numpy.testing import assert_array_equal, assert_array_almost_equal
 import pytest
 
 
-from estimation_auxiliary import myopic_costs
-from estimation_auxiliary import lin_cost
-from estimation_auxiliary import create_transition_matrix
-from estimation_auxiliary import calc_fixp
-from estimation_auxiliary import choice_prob
+from estimation.estimation_auxiliary import myopic_costs
+from estimation.estimation_auxiliary import lin_cost
+from estimation.estimation_auxiliary import create_transition_matrix
+from estimation.estimation_auxiliary import calc_fixp
+from estimation.estimation_auxiliary import choice_prob
 
 @pytest.fixture
 def inputs():

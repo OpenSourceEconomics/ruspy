@@ -9,12 +9,12 @@ def decide(s, ev, costs, unobs, beta):
     """
     Takes a state s and calculates the according decision probability
     """
-    if (- costs[s, 0] + unobs[0] + beta * ev[s]) > (- costs[0, 0] - costs[0, 1]+ unobs[1] + beta * ev[0]):
+    if (- costs[s, 0] + unobs[0] + beta * ev[s]) > (- costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]):
         decision = 0
-        utility = - costs[s, 0]
+        utility = - costs[s, 0] + unobs[0]
     else:
         decision = 1
-        utility = - costs[0, 0] - costs[0, 1]
+        utility = - costs[0, 0] - costs[0, 1] + unobs[1]
     return decision, utility
 
 
@@ -34,6 +34,7 @@ def simulate_strategy(known_trans, real_trans, num_buses, num_periods, num_state
     decisions = np.empty((num_buses, 0), dtype=int)
     utilities = np.empty((num_buses, 0), dtype=int)
     for i in range(0, num_periods):
+        print(i)
         if i > 0:
             states = np.append(states, new_states.reshape(num_buses, 1), axis=1)
         new_decisions = np.empty((0,0), dtype=int)

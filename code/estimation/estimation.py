@@ -15,6 +15,7 @@ from estimation.estimation_auxiliary import estimate_transitions_5000
 from estimation.estimation_auxiliary import create_transition_matrix
 from estimation.estimation_auxiliary import create_state_matrix
 from estimation.estimation_auxiliary import loglike_opt_rule
+from estimation.estimation_auxiliary import lin_cost
 
 
 def estimate(init_dict, df):
@@ -27,7 +28,7 @@ def estimate(init_dict, df):
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results['x']))
     state_mat = create_state_matrix(exog, num_states, num_obs)
-    result = opt.minimize(loglike_opt_rule, args=(num_states, trans_mat, state_mat, decision_mat, beta),
-                          x0=np.array([5, 5]), bounds=[(1e-6, None), (1e-6, None)])
+    result = opt.minimize(loglike_opt_rule, args=(lin_cost, num_states, trans_mat, state_mat, decision_mat, beta),
+                          x0=np.array([10, 2]), bounds=[(1e-6, None), (1e-6, None)], method='L-BFGS-B')
     print(transition_results, result)
     return transition_results, result

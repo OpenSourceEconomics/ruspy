@@ -1,6 +1,7 @@
 import numpy as np
 from math import log
 import scipy.optimize as opt
+import numba
 
 
 # The first part are functions for estimating the transition probabilities.
@@ -94,7 +95,7 @@ def create_state_matrix(exog, num_states, num_obs):
     return state_mat
 
 
-def loglike_opt_rule(params, num_states, trans_mat, state_mat, decision_mat, beta):
+def loglike_opt_rule(params, maint_func, num_states, trans_mat, state_mat, decision_mat, beta):
     """
     This is the logliklihood function for the estimation of the cost parameters.
     :param params: The cost parameters for replacing or maintaining the bus engine.
@@ -105,7 +106,8 @@ def loglike_opt_rule(params, num_states, trans_mat, state_mat, decision_mat, bet
     :param beta: The discount factor.
     :return: The negative loglikelihood function for minimizing
     """
-    ev = calc_fixp(num_states, trans_mat, lin_cost, params, beta)
+    costs = myopic_costs(num_states, maint_func, params)
+    ev = calc_fixp(num_states, trans_mat, costs, beta)
     p_choice = choice_prob(ev, params, beta)
     ll_prob = np.log(np.dot(p_choice.T, state_mat))
     return -np.sum(decision_mat * ll_prob)
@@ -146,14 +148,16 @@ def choice_prob(ev, params, beta):
     """
     s = ev.shape[0]
     costs = myopic_costs(s, lin_cost, params)
-    util_main = np.exp(beta * ev - costs[:, 0])  # Utility to maintain the bus
-    util_repl = np.full(util_main.shape, np.exp(beta * ev[0] - costs[0, 0] - costs[0, 1])) # Utility to replace the bus
+    util_main = beta * ev - costs[:, 0]  # Utility to maintain the bus
+    util_repl = np.full(util_main.shape, beta * ev[0] - costs[0, 0] - costs[0, 1]) # Utility to replace the bus
     util = np.vstack((util_main, util_repl)).T
-    pchoice = util / (np.sum(util, axis=1).reshape(s, -1))
+    util_min = ev[0]
+    util = util - util_min
+    pchoice = np.exp(util) / (np.sum(np.exp(util), axis=1).reshape(s, -1))
     return pchoice
 
 
-def calc_fixp(num_states, trans_mat, maint_func, params, beta, threshold=1e-12):
+def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-8, max_it=1000):
     """
     The function to calculate the nested fix point.
     :param num_states: The size of the state space.
@@ -162,21 +166,22 @@ def calc_fixp(num_states, trans_mat, maint_func, params, beta, threshold=1e-12):
     :param params: The cost parameters for replacing or maintaining the bus engine.
     :param beta: The discount factor.
     :param threshold: A threshold for the convergence.
+    :param max_it: Maximum number of iterations.
     :return: A vector with the fix point.
     """
     k = 0
     ev = np.zeros((num_states, 1))
-    costs = myopic_costs(num_states, maint_func, params)  # The myopic costs are the starting point.
     ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(-costs), axis=1)))
-    while abs(ev_new - ev).max() > threshold:
+    while np.abs(ev_new - ev).max() > threshold:
         ev = ev_new
         maint_cost = (beta * ev - costs[:, 0])
         repl_cost = np.full(maint_cost.shape, beta * ev[0] - costs[0, 1] - costs[0, 0])
         ev_ = np.vstack((maint_cost, repl_cost)).T
-        ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(ev_), axis=1)))
+        ev_min = maint_cost[0]
+        log_sum = ev_min + np.log(np.sum(np.exp(ev_ - ev_min), axis=1))
+        ev_new = np.dot(trans_mat.T, log_sum)
         k = k + 1
-        if k == 1000:  # Maximum number of iterations.
-            #print('Der EV wars')
+        if k == max_it:  # Maximum number of iterations.
             break
-    #print('Es hat geklappt')
+    print(k, ev[0])
     return ev_new
