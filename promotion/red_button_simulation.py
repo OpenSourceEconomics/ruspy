@@ -1,6 +1,6 @@
 import yaml
 import pickle
-from simulation.simulation import simulate
+from ruspy.simulation.simulation import simulate
 
 
 with open('init.yml') as y:

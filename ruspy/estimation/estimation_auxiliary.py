@@ -1,6 +1,7 @@
 import numpy as np
 from math import log
 import scipy.optimize as opt
+import numba
 
 
 # The first part are functions for estimating the transition probabilities.
@@ -156,31 +157,26 @@ def choice_prob(ev, params, beta):
     return pchoice
 
 
-def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-8, max_it=1000):
+@numba.jit(nopython=True)
+def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-8, max_it=100000):
     """
     The function to calculate the nested fix point.
     :param num_states: The size of the state space.
     :param trans_mat: The Markov transition matrix.
-    :param maint_func: The name of the maintenance function.
-    :param params: The cost parameters for replacing or maintaining the bus engine.
+    :params costs: The cost parameters for replacing or maintaining the bus engine.
     :param beta: The discount factor.
     :param threshold: A threshold for the convergence.
     :param max_it: Maximum number of iterations.
     :return: A vector with the fix point.
     """
-    k = 0
-    ev = np.zeros((num_states, 1))
+    ev = np.zeros(num_states)
     ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(-costs), axis=1)))
-    while np.abs(ev_new - ev).max() > threshold:
+    while (np.max(np.abs(ev_new - ev)) > threshold) & (max_it != 0):
         ev = ev_new
-        maint_cost = (beta * ev - costs[:, 0])
-        repl_cost = np.full(maint_cost.shape, beta * ev[0] - costs[0, 1] - costs[0, 0])
-        ev_ = np.vstack((maint_cost, repl_cost)).T
+        maint_cost = beta * ev - costs[:, 0]
+        repl_cost = beta * ev[0] - costs[0, 1] - costs[0, 0]
         ev_min = maint_cost[0]
-        log_sum = ev_min + np.log(np.sum(np.exp(ev_ - ev_min), axis=1))
+        log_sum = ev_min + np.log(np.exp(maint_cost - ev_min) + np.exp(repl_cost - ev_min))
         ev_new = np.dot(trans_mat.T, log_sum)
-        k = k + 1
-        if k == max_it:  # Maximum number of iterations.
-            break
-    print(k, ev[0])
+        max_it += -1
     return ev_new

@@ -1,0 +1,10 @@
+# This file modifies the replication of John Rust's 1987 optimal replacement of bus engines.
+
+replication:
+
+  group   : group_4
+  binsize : 5000
+  beta    : 0.9999
+  states  : 90
+
+

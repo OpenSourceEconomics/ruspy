@@ -19,12 +19,12 @@ from ruspy.estimation.estimation_auxiliary import lin_cost
 
 
 def estimate(init_dict, df):
-    beta = init_dict['estimation']['beta']
+    beta = init_dict['beta']
     transition_results = estimate_transitions_5000(df)
     endog = df.loc[:, 'decision']
     exog = df.loc[:, 'state']
     num_obs = df.shape[0]
-    num_states = init_dict['estimation']['states']
+    num_states = init_dict['states']
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results['x']))
     state_mat = create_state_matrix(exog, num_states, num_obs)

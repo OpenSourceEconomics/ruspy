@@ -1,7 +1,6 @@
 import numpy as np
 from ruspy.estimation.estimation_auxiliary import calc_fixp
 from ruspy.estimation.estimation_auxiliary import create_transition_matrix
-from ruspy.estimation.estimation_auxiliary import lin_cost
 from ruspy.estimation.estimation_auxiliary import myopic_costs
 
 
@@ -28,8 +27,8 @@ def transition(old_state, decision, trans_prob):
 
 def simulate_strategy(known_trans, real_trans, num_buses, num_periods, num_states, params, beta, unobs, maint_func):
     known_trans_mat = create_transition_matrix(num_states, known_trans)
-    ev = calc_fixp(num_states, known_trans_mat, lin_cost, params, beta)
     costs = myopic_costs(num_states, maint_func, params)
+    ev = calc_fixp(num_states, known_trans_mat, costs, params, beta)
     states = np.zeros((num_buses, 1), dtype=int)
     decisions = np.empty((num_buses, 0), dtype=int)
     utilities = np.empty((num_buses, 0), dtype=int)
