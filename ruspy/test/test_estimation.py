@@ -1,10 +1,9 @@
 import numpy as np
-from numpy.testing import assert_array_equal, assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal
 import pytest
 
 
 from ruspy.estimation.estimation_auxiliary import myopic_costs
-from ruspy.estimation.estimation_auxiliary import lin_cost
 from ruspy.estimation.estimation_auxiliary import create_transition_matrix
 from ruspy.estimation.estimation_auxiliary import calc_fixp
 from ruspy.estimation.estimation_auxiliary import choice_prob

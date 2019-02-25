@@ -7,7 +7,6 @@ import oyaml as yaml
 
 def random_init(constr=None):
     """The module provides a random dictionary generating process for test purposes."""
-
     # Check for pre specified constraints
     if constr is not None:
         pass
@@ -33,6 +32,8 @@ def random_init(constr=None):
     else:
         seed = np.random.randint(1000, 9999)
 
+    maint_func = constr['MAINT_FUNC']
+
     init_dict = dict()
 
     for key_ in [
@@ -41,11 +42,12 @@ def random_init(constr=None):
     ]:
         init_dict[key_] = {}
 
-    init_dict["simulation"]["states"] = np.random.randint(100,150)
+    init_dict["simulation"]["states"] = np.random.randint(200, 300)
     init_dict["simulation"]["periods"] = periods
     init_dict["simulation"]["buses"] = agents
     init_dict["simulation"]["beta"] = beta
     init_dict["simulation"]["seed"] = seed
+    init_dict['simulation']['maint_func'] = maint_func
 
     init_dict["estimation"]["states"] = np.random.randint(100,150)
     init_dict["estimation"]["beta"] = beta
@@ -53,8 +55,8 @@ def random_init(constr=None):
     # Generate random parameterization
 
     # Draw probabilities:
-    p1 = np.random.uniform(0.33, 0.49)
-    p2 = np.random.uniform(0.33, 0.49)
+    p1 = np.random.uniform(0.37, 0.42)
+    p2 = np.random.uniform(0.55, 0.58)
     p3 = 1 - p1 - p2
     init_dict['simulation']['probs'] = [p1, p2, p3]
 

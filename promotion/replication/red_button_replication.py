@@ -19,4 +19,5 @@ if not os.path.isfile('data/pkl/replication_data/rep_' + group + '.pkl'):
 else:
     data = pd.read_pickle('data/pkl/replication_data/rep_group_4.pkl')
 
-estimate(init_dict['replication'], data)
+result_transitions, result_fixp = estimate(init_dict['replication'], data)
+print(result_transitions, result_fixp)

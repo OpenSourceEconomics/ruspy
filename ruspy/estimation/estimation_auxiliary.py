@@ -163,7 +163,7 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-8, max_it=100000)
     The function to calculate the nested fix point.
     :param num_states: The size of the state space.
     :param trans_mat: The Markov transition matrix.
-    :params costs: The cost parameters for replacing or maintaining the bus engine.
+    :param costs: The cost parameters for replacing or maintaining the bus engine.
     :param beta: The discount factor.
     :param threshold: A threshold for the convergence.
     :param max_it: Maximum number of iterations.
