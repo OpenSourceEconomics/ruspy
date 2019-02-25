@@ -1,6 +1,7 @@
 .idea/*
 __pycache__
 pkl
+sim_file.pkl
 *.aux
 *.log
 *.bbl
@@ -10,3 +11,4 @@ pkl
 .ipynb*
 .pytest_cache
 ruspy.egg-info
+*.png

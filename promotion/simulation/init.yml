@@ -7,6 +7,10 @@ simulation:
   states  : 500
   periods : 100000
   seed    : 123
-  buses   : 1
+  maint_func : linear
+  buses   : 50
   probs   : [0.39189182, 0.59529371, 0.01281447] # Using the transition probabilities of the paper
   params  : [10.0517387 ,  2.27400464] # Also using the paramter estimated in the paper.
+
+plot:
+  gridsize: 1000

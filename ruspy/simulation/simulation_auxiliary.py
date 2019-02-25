@@ -5,8 +5,19 @@ from ruspy.estimation.estimation_auxiliary import create_transition_matrix
 from ruspy.estimation.estimation_auxiliary import myopic_costs
 
 
-
 def simulate_strategy(known_trans, increments, num_buses, num_periods, params, beta, unobs, maint_func):
+    """
+
+    :param known_trans:
+    :param increments:
+    :param num_buses:
+    :param num_periods:
+    :param params:
+    :param beta:
+    :param unobs:
+    :param maint_func:
+    :return:
+    """
     num_states = 500
     known_trans_mat = create_transition_matrix(num_states, known_trans)
     costs = myopic_costs(num_states, maint_func, params)
@@ -20,6 +31,20 @@ def simulate_strategy(known_trans, increments, num_buses, num_periods, params, b
 
 @numba.jit(nopython=True)
 def simulate_strategy_loop(num_buses, states, decisions, utilities, costs, ev, increments, num_periods, beta, unobs):
+    """
+
+    :param num_buses:
+    :param states:
+    :param decisions:
+    :param utilities:
+    :param costs:
+    :param ev:
+    :param increments:
+    :param num_periods:
+    :param beta:
+    :param unobs:
+    :return:
+    """
     for bus in range(num_buses):
         for i in range(0, num_periods):
             old_state = states[bus, i]
@@ -38,4 +63,25 @@ def simulate_strategy_loop(num_buses, states, decisions, utilities, costs, ev, i
             if i < num_periods - 1:
                 states[bus, i + 1] = new_state
     return states, decisions, utilities
+
+
+@numba.jit(nopython=True)
+def discount_utility(v_disc, num_buses, steps, num_points, utilities, beta):
+    """
+    
+    :param v_disc:
+    :param num_buses:
+    :param steps:
+    :param num_points:
+    :param utilities:
+    :param beta:
+    :return:
+    """
+    for point in range(num_points):
+        v = 0
+        for i in range(point * steps):
+            v += (beta ** i) * np.sum(utilities[:, i])
+        v_disc[point] = v / num_buses
+    return v_disc
+
 

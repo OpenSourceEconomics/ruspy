@@ -6,29 +6,31 @@ import oyaml as yaml
 
 
 def random_init(constr=None):
-    """The module provides a random dictionary generating process for test purposes."""
+    """
+    The module provides a random dictionary generating process for test purposes.
+    """
     # Check for pre specified constraints
     if constr is not None:
         pass
     else:
         constr = {}
 
-    if "AGENTS" in constr.keys():
-        agents = constr["AGENTS"]
+    if 'AGENTS' in constr.keys():
+        agents = constr['AGENTS']
     else:
         agents = np.random.randint(1, 5)
-    if "BETA" in constr.keys():
-        beta = constr["BETA"]
+    if 'BETA' in constr.keys():
+        beta = constr['BETA']
     else:
         beta = np.random.uniform(0.9, 0.999)
 
-    if "PERIODS" in constr.keys():
-        periods = constr["PERIODS"]
+    if 'PERIODS' in constr.keys():
+        periods = constr['PERIODS']
     else:
         periods = np.random.randint(1000, 10000)
 
-    if "SEED" in constr.keys():
-        seed = constr["SEED"]
+    if 'SEED' in constr.keys():
+        seed = constr['SEED']
     else:
         seed = np.random.randint(1000, 9999)
 
@@ -42,15 +44,15 @@ def random_init(constr=None):
     ]:
         init_dict[key_] = {}
 
-    init_dict["simulation"]["states"] = np.random.randint(200, 300)
-    init_dict["simulation"]["periods"] = periods
-    init_dict["simulation"]["buses"] = agents
-    init_dict["simulation"]["beta"] = beta
-    init_dict["simulation"]["seed"] = seed
+    init_dict['simulation']['states'] = np.random.randint(200, 300)
+    init_dict['simulation']['periods'] = periods
+    init_dict['simulation']['buses'] = agents
+    init_dict['simulation']['beta'] = beta
+    init_dict['simulation']['seed'] = seed
     init_dict['simulation']['maint_func'] = maint_func
 
-    init_dict["estimation"]["states"] = np.random.randint(100,150)
-    init_dict["estimation"]["beta"] = beta
+    init_dict['estimation']['states'] = np.random.randint(100, 150)
+    init_dict['estimation']['beta'] = beta
 
     # Generate random parameterization
 
@@ -70,15 +72,17 @@ def random_init(constr=None):
     return init_dict
 
 
-def print_dict(init_dict, file_name="test"):
-    """This function prints the initialization dict to a *.yml file."""
+def print_dict(init_dict, file_name='test'):
+    """
+    This function prints the initialization dict to a *.yml file.
+    """
     ordered_dict = collections.OrderedDict()
     order = [
-        "simulation",
-        "estimation"
+        'simulation',
+        'estimation'
     ]
     for key_ in order:
         ordered_dict[key_] = init_dict[key_]
 
-    with open("{}.ruspy.yml".format(file_name), "w") as outfile:
+    with open('{}.ruspy.yml'.format(file_name), 'w') as outfile:
         yaml.dump(ordered_dict, outfile, explicit_start=True, indent=4)
