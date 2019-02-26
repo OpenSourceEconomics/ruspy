@@ -68,7 +68,7 @@ def simulate_strategy_loop(num_buses, states, decisions, utilities, costs, ev, i
 @numba.jit(nopython=True)
 def discount_utility(v_disc, num_buses, steps, num_points, utilities, beta):
     """
-    
+
     :param v_disc:
     :param num_buses:
     :param steps:
