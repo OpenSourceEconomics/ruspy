@@ -15,26 +15,31 @@ def random_init(constr=None):
     else:
         constr = {}
 
-    if 'AGENTS' in constr.keys():
-        agents = constr['AGENTS']
+    keys = constr.keys()
+    if 'BUSES' in keys:
+        agents = constr['BUSES']
     else:
-        agents = np.random.randint(1, 5)
-    if 'BETA' in constr.keys():
+        agents = np.random.randint(20, 100)
+
+    if 'BETA' in keys:
         beta = constr['BETA']
     else:
         beta = np.random.uniform(0.9, 0.999)
 
-    if 'PERIODS' in constr.keys():
+    if 'PERIODS' in keys:
         periods = constr['PERIODS']
     else:
         periods = np.random.randint(1000, 10000)
 
-    if 'SEED' in constr.keys():
+    if 'SEED' in keys:
         seed = constr['SEED']
     else:
         seed = np.random.randint(1000, 9999)
 
-    maint_func = constr['MAINT_FUNC']
+    if 'MAINT_FUNC' in keys:
+        maint_func = constr['MAINT_FUNC']
+    else:
+        maint_func = 'linear'
 
     init_dict = dict()
 
@@ -44,7 +49,7 @@ def random_init(constr=None):
     ]:
         init_dict[key_] = {}
 
-    init_dict['simulation']['states'] = np.random.randint(200, 300)
+
     init_dict['simulation']['periods'] = periods
     init_dict['simulation']['buses'] = agents
     init_dict['simulation']['beta'] = beta
@@ -53,6 +58,7 @@ def random_init(constr=None):
 
     init_dict['estimation']['states'] = np.random.randint(100, 150)
     init_dict['estimation']['beta'] = beta
+    init_dict['estimation']['maint_func'] = maint_func
 
     # Generate random parameterization
 

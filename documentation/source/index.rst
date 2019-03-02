@@ -13,7 +13,6 @@ Welcome to ruspy's documentation!
    ruspy.estimation
    ruspy.simulation
    ruspy.test
-   ruspy.test.resources
 
 
 * :ref:`genindex`

@@ -17,3 +17,4 @@ sim_file.pkl
 ruspy.egg-info
 *.png
 build
+test.ruspy.yml

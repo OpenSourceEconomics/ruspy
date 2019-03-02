@@ -6,11 +6,16 @@ import numba
 
 # The first part are functions for estimating the transition probabilities.
 def estimate_transitions_5000(df):
+    """ The sub function for estimating the transition probabilities.
+
+    Args:
+        df (PandasDataFrame): A DataFrame with columns Bus_ID, state and decision containing the observations.
+
+    Returns:
+        A dictionary with the results of the observation.
+
     """
-    A function to estimate the transition probabilities.
-    :param df: A DataFrame with columns Bus_ID, state and decision containing the observations.
-    :return: A dictionary with the results of the observation.
-    """
+
     transition_list = count_transitions_5000(df)
     result_transitions = opt.minimize(loglike, args=transition_list, x0=np.array([0.3, 0.5, 0.01]),
                                       bounds=[(1e-6, 1), (1e-6, 1), (1e-6, 1)],
@@ -19,6 +24,14 @@ def estimate_transitions_5000(df):
 
 
 def count_transitions_5000(df):
+    """
+    This function counts
+    Args:
+        df:
+
+    Returns:
+
+    """
     n, e, z = 0, 0, 0
     num_bus = len(df['Bus_ID'].unique())
     num_periods = int(df.shape[0] / num_bus)

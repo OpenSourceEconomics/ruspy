@@ -6,13 +6,13 @@ from ruspy.simulation.simulation import simulate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
 
-case_1 = pickle.load(open(TEST_RESOURCES_DIR + 'linear_5_agents.pkl', 'rb'))
+case_1 = pickle.load(open(TEST_RESOURCES_DIR + 'simulation_test/linear_5_agents.pkl', 'rb'))
 
 @pytest.fixture
 def inputs():
     out = {}
     init_dict = case_1[0]
-    out['df'], out['unobs'], out['utilities'] = simulate(init_dict['simulation'])
+    out['df'], out['unobs'], out['utilities'], num_states = simulate(init_dict['simulation'])
     return out
 
 @pytest.fixture

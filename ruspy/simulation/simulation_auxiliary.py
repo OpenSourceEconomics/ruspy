@@ -28,11 +28,10 @@ def simulate_strategy(known_trans, increments, num_buses, num_periods, params, b
         known_trans_mat = create_transition_matrix(num_states, known_trans)
         costs = myopic_costs(num_states, maint_func, params)
         ev = calc_fixp(num_states, known_trans_mat, costs, beta)
-        states, decisions, utilities, start_period = simulate_strategy_loop(num_buses, states,
-                                                                            decisions, utilities, costs, ev,
-                                                                            increments, num_states, start_period,
-                                                                            num_periods, beta, unobs)
-    return states, decisions, utilities
+        states, decisions, utilities, start_period = \
+            simulate_strategy_loop(num_buses, states, decisions, utilities, costs, ev, increments,
+                                   num_states, start_period, num_periods, beta, unobs)
+    return states, decisions, utilities, num_states
 
 
 
@@ -40,28 +39,28 @@ def simulate_strategy(known_trans, increments, num_buses, num_periods, params, b
 def simulate_strategy_loop(num_buses, states, decisions, utilities, costs,
                            ev, increments, num_states, start_period, num_periods, beta, unobs):
     need_size = False
-    for i in range(start_period, num_periods):
+    for period in range(start_period, num_periods):
         for bus in range(num_buses):
-            old_state = states[bus, i]
-            if (- costs[old_state, 0] + unobs[bus, i, 0] + beta * ev[old_state]) >\
-                    (- costs[0, 0] - costs[0, 1] + unobs[bus, i, 1] + beta * ev[0]):
+            old_state = states[bus, period]
+            if (- costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) >\
+                    (- costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]):
                 decision = 0
-                utility = - costs[old_state, 0] + unobs[bus, i, 0]
-                new_state = old_state + increments[i, bus]
+                utility = - costs[old_state, 0] + unobs[bus, period, 0]
+                new_state = old_state + increments[period, bus]
             else:
                 decision = 1
-                utility = - costs[0, 0] - costs[0, 1] + unobs[bus, i, 1]
-                new_state = increments[i, bus]
+                utility = - costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
+                new_state = increments[period, bus]
 
-            decisions[bus, i] = decision
-            utilities[bus, i] = utility
-            if i < num_periods - 1:
+            decisions[bus, period] = decision
+            utilities[bus, period] = utility
+            if period < num_periods - 1:
                 if new_state > (num_states / 2):
                     need_size = True
-                states[bus, i + 1] = new_state
+                states[bus, period + 1] = new_state
         if need_size:
-            return states, decisions, utilities, i
-    return states, decisions, utilities, i
+            return states, decisions, utilities, period
+    return states, decisions, utilities, period
 
 
 @numba.jit(nopython=True)

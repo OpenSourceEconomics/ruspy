@@ -24,10 +24,10 @@ def inputs():
 @pytest.fixture
 def outputs():
     out = dict()
-    out['myop_costs'] = np.loadtxt(TEST_RESOURCES_DIR + 'myop_costs_90_10_2.txt')
-    out['trans_mat'] = np.loadtxt(TEST_RESOURCES_DIR + 'trans_mat_90_2_3_15_35.txt')
-    out['fixp'] = np.loadtxt(TEST_RESOURCES_DIR + 'fixp_90_2_3_15_35_lin_10_2_9999.txt')
-    out['choice_probs'] = np.loadtxt(TEST_RESOURCES_DIR + 'choice_probs_90_10_2_9999.txt')
+    out['myop_costs'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/myop_costs_90_10_2.txt')
+    out['trans_mat'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/trans_mat_90_2_3_15_35.txt')
+    out['fixp'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/fixp_90_2_3_15_35_lin_10_2_9999.txt')
+    out['choice_probs'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/choice_probs_90_10_2_9999.txt')
     return out
 
 
