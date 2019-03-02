@@ -1,0 +1,260 @@
+\documentclass[a4paper,12pt,bold]{scrartcl}
+
+\renewcommand{\baselinestretch}{1.3}\normalsize
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\thin}{\thinspace}
+\newcommand{\thick}{\thickspace}
+\newcommand{\N}{\mathcal{N}}	%Normal Distribution
+\newcommand{\U}{\mathrm{U}}	%Uniform Distribution
+\newcommand{\D}{\mathrm{D}}	%Dirichlet Distribution
+\newcommand{\W}{\mathrm{W}}	%Wishart Distribution
+\newcommand{\E}{\mathrm{E}}		%Expectation
+\newcommand{\Iden}{\mathbb{I}}	%Identity Matrix
+\newcommand{\Ind}{\mathrm{I}}	%Indicator Function
+
+\newcommand{\bs}{\boldsymbol}
+\newcommand{\var}{\mathrm{var}\thin}
+\newcommand{\plim}{\mathrm{plim}\thin}
+\newcommand{\cov}{\mathrm{cov}\thin}
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern5mu{#1#2}}}
+\usepackage{bbm}
+%\usepackage{endfloat}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+
+
+\parindent0pt
+\usepackage{algpseudocode,tabularx,ragged2e}
+\newcolumntype{C}{>{\centering\arraybackslash}X} % centered "X" column
+\newcolumntype{L}{>{\arraybackslash}X} % centered "X" column
+
+\usepackage{algorithmicx}
+\usepackage{graphicx}
+\usepackage{afterpage}
+
+\usepackage{algorithm}
+\graphicspath{{../code/}}
+
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{apacite}
+\usepackage{booktabs}
+\usepackage{epigraph}
+\usepackage[sans]{dsfont}
+\usepackage[round,longnamesfirst]{natbib}
+\usepackage{bm}																									%matrix symbol
+\usepackage{setspace}																						%Fu�noten (allgm.
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}%Zeilenabst�nde)
+\usepackage{threeparttable}
+\usepackage{lscape}																							%Querformat
+\usepackage[latin1]{inputenc}
+													%Umlaute
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancybox}																						%Boxen und Rahmen
+\usepackage{appendix}
+\usepackage{listings}
+\usepackage{xr}
+\usepackage{pdflscape}
+
+\usepackage{enumerate}
+\usepackage[labelfont=bf]{caption}
+																		%EURO Symbol
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{subfig,float}																				%Mehrseitige Tabellen
+\usepackage{color,colortbl}																			%Farbige Tabellen
+\usepackage[left=3cm, right=2cm, top=2cm, bottom=2.5cm]{geometry} %Seitenr�nder
+%\usepackage[normal]{caption2}[2002/08/03]												%Titel ohne float - Umgebung
+\definecolor{lightgrey}{gray}{0.95}	%Farben mischen
+\definecolor{grey}{gray}{0.85}
+\definecolor{darkgrey}{gray}{0.80}
+
+\newcommand{\mc}{\multicolumn}
+\usepackage{rotating}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage[export]{adjustbox}
+
+\usepackage{caption}
+\captionsetup[figure]{labelfont=bf}
+
+\usepackage{url}  % Used for linebreaks in verbatim statements
+\usepackage{multirow}
+
+\newtheorem{Definition}{Definition}
+\newtheorem{Remark}{Remark}
+\newtheorem{Lemma}{Lemma}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Assumption}{Assumption}
+\newtheorem{Excercise}{Excercise}
+\newtheorem{Result}{Result}
+\newtheorem{Proposition}{Proposition}
+\newtheorem{Prediction}{Prediction}
+\newtheorem{Solution}{Solution}
+\newtheorem{Problem}{Problem}
+
+\setlength{\skip\footins}{1.0cm}
+\deffootnote[1em]{1.1em}{0em}{\textsuperscript{\thefootnotemark}}
+\renewcommand{\arraystretch}{1.05}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+
+
+\newenvironment{boenumerate}
+{\begin{enumerate}\renewcommand\labelenumi{\textbf{(\theenumi)}}}
+{\end{enumerate}}
+\makeatletter
+\newenvironment{manquotation}[2][2em]
+  {\setlength{\@tempdima}{#1}%
+   \def\chapquote@author{#2}%
+   \parshape 1 \@tempdima \dimexpr\textwidth-2\@tempdima\relax%
+   \itshape}
+  {\par\normalfont\hfill--\ \chapquote@author\hspace*{\@tempdima}\par\bigskip}
+
+
+
+\setkomafont{author}{\scshape}
+\usepackage{blindtext}
+
+\title{Project description of my thesis on a robust approach to John Rust's 1987 optimal replacement of bus engines}
+\author{Maximilian Blesch}
+\date{\today}
+
+
+
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{Introduction}
+This handout summarizes the progress of my thesis and will give a outlook to the aim of the project.
+My thesis takes a second look at \cite{Rust.1987} to check if alternative robust decision rules can outperform the decision rule deviated from Bellman's equation.
+As Rust was the first to implement a Nested Fixed Point Algorithm and therefore solve Bellman's decision problem computationally, his paper is adequate representative
+to show the power a robust implementation in this class of models.
+The mathematical tools of the alternatives decision rule are mainly inspired by Chapter 13 of \cite{Ben-Tal.2009}, but general idea was also explored in other
+like in \cite{Kaufman.2017}. In the first chapter
+
+\section{Original data by John Rust}
+The first part of my thesis was the pyhton implementation of the Nested Fixed Point Algorithm(NFXP). To test the my algorithm I replicated the paper of John Rust. The data in the paper is provided by the agent, whose decision rule Rust estimated, himself. The maintenance manager of the Madison (Wisconsin,US) Metropolitan Bus Company, Harold Zurcher. He provides Rust with a sample of 162 buses from December 1974 to May 1985. The data consists of monthly observations on the odometer readings for each bus, plus data on the date and odometer readings at which a bus engine was replaced. John Rust kindly provides this data on his homepage. To verify my data reading process I replicated some descriptives Tables of \cite{Rust.1987}:\\
+\begin{table}
+\begin{center}
+  \input{../promotion/replication/repl_file_1.txt}
+  \caption{Table 2a of \cite{Rust.1987}: \\ Buses with at least 1 engine replacement}
+\end{center}
+\end{table} \\
+The table above deviates from the orignial one in the maximal and minimal value in the full sample row. As it hast to be the maimal numer, from the ones above it is safe to say that this is due to a typo by John Rust. \\
+\begin{table}
+\begin{center}
+  \input{../promotion/replication/repl_file_2.txt}
+  \caption{Table 2b of \cite{Rust.1987}: \\ Buses with no replacement}
+\end{center}
+\end{table}
+Rust divides his sample of buses by make, model and year of purchase into 8 groups. To find out which group corresponds to which model please refer to Table 1 of \cite{Rust.1987}. As these details are not important for the further analysis, I will just refer to the groups.
+\newpage
+\section{Model of optimal replacement}
+Rust chooses the following theoretical framework: He assumes that there is complete independence of the decisions made for each bus and thus refrains from using superscripts indicating the buses. In every month (from now on called period) the agent, Harold Zurcher, has the choice to either replace (\(i_t = 1 \)) or to maintain (\(i_t = 0\)) a bus. The agent chooses his action maximizing his objective function, i.e. the current value of the bus (Bellman equation):
+  \begin{equation}
+    V_{\theta}(x_t, \epsilon_t) = \max_{i_t \in \{0, 1\}} [ u(x_t, i_t, \theta) + \epsilon_t (i_t) + \beta EV_{ \theta }( x_t, \epsilon_t, i_t) ]
+  \end{equation}
+with
+\begin{equation}
+  u(x_t,i_t, \theta)=
+  \begin{cases}
+  -c(x_t, \theta_1)\qquad \qquad  \textbf{if} \quad i_t=0 \\
+  -[RC + c(0, \theta_1)]\quad \textbf{if} \quad i_t=1
+  \end{cases}
+\end{equation}
+and
+\begin{equation}
+  EV_{\theta}(x_t, \epsilon_t, i_t) = \int_{\gamma}\int_{\eta} V_{\theta}(\gamma, \eta)p(d\gamma, d\eta | x_t, \epsilon_t, i_t, \theta_2, \theta_3),
+\end{equation}
+
+  \bigskip
+where \\
+\begin{table}[htbp]
+    \centering % to have the caption near the table
+    \begin{tabular}{l c p{10cm} }
+        $x_t$ & : & Mileage on the odometer of the bus in period $t$\\
+        $\varepsilon_t$ & : & Unobserved information for each decision in period $t$\\
+        $\mathbf{EV}_{\theta}$ & : & Future expected value of each decision\\
+    \end{tabular}
+\end{table}
+
+and $\theta = \left(\theta_1, \theta_2, \theta_3, \mathbf{RC}, \beta \right)$ is the vector of the unknown variables to be estimated.
+
+
+
+\begin{table}[htbp]
+    \centering % to have the caption near the table
+    \begin{tabular}{l c p{10cm} }
+        $\theta_1$ & : & Cost parameter\\
+        $\theta_2$ \& $\theta_3$ & : & Factors that determines the transition probabilities\\
+        $\mathbf{RC}$ & : & Replacement costs of a bus engine\\
+        $\beta$ & : & Discount factor\\
+    \end{tabular}
+\end{table}
+
+Further, he assumes conditional independence of the transition probabilities of the error term and the development of mileage (A6 of \cite{Rust.1988}):
+
+\begin{Assumption}
+Conditional Independence Assumption(CI):\\
+The transition density of the controlled process \(\{x_t, \epsilon_t\}\) factors as
+\begin{equation}
+  p(x_{t+1}, \epsilon_{t+1} | x_t, \epsilon_t, i_t, \theta_2) = q(\epsilon_{t+1} | x_{t+1}, \theta_2) p(x_{t+1} | x_t, i_t, \theta_3)
+\end{equation}
+\end{Assumption}
+This theorem involves two restrictions. First, \(x_{t+1}\) is a sufficient statistic for \(\epsilon_{t+1}\), which implies that any statistical dependence between \(\epsilon_t\) and \(\epsilon_{t+1}\) is transmitted entirely through the vector \(x_{t+1}\). Second, the probability density of \(x_{t+1}\) depends only on \(x_t\) and not on \(\epsilon_t\).\\ The payoff of (CI) is twofold. First, (CI) implies that \(EV_{\theta}\) is not a function of \(\epsilon_t\), so that the required choice probabilities will not require integration over the unknown function \(EV_{\theta}\). Second, together with the discreization of the state space, (CI) implies that \(EV_{\theta}\) is a fixed point of a separate contraction mapping on the reduced state space \(\{(x, i)| x \in \mathbb{R}^{K} , i \in C(x)\} \), where K is the size of the state space and $C(x)=\{0, 1\}$ is the choice set.\medskip \\
+Therefore $x_t$ is the state of the bus in each period t. Furthermore, as the monthly mileage increase in the data is never larger than 15,000, the transition probabilities reduce in the case of a 5000 miles statesize discreization to a multinominal distribution on \{0, 1, 2\}. Rust claims a extreme value distribution  with mean $(0,0)$ and variance $(\pi^2/6, \pi^2/6)$ for $\epsilon_t$, i.e.
+\begin{equation}
+  q(\epsilon_t|x_t, \theta_2) = \prod_{i \in \{0,1\}} exp\{-\epsilon_t(i) + \theta_2\}exp\{-exp\{-\epsilon_t(i)+\theta_2\}\}
+\end{equation}
+$\theta_2 = \gamma = 0.577216$.\\
+With the assumptions above and the notation \(EV_{ \theta }( x_t, 1) = EV_{ \theta }( 0, 0) =: EV(0)\) and \(EV_{ \theta }( x_t, 0) =: EV(x_t)\) for all \(x_t\), Rust deviates:
+\begin{equation}
+  EV_{\theta}(x_t) = \sum_{j \in \{0 ,1, 2\}} p_j * \ln\{ \sum_{i_t \in \{0, 1\}} \exp[u(x_t, i_t, \theta_1, RC) + \beta EV_{\theta}(i_t * (x_t + j))]\}
+\end{equation}
+with \(p_j\) the transition probabilities to \(j \in \{0,1,2\}\) and for the choice probabilities:
+\begin{equation}
+P(i_t | x_t, \theta) = \frac{\exp[u(x_t, i_t, \theta_1, RC) + \beta EV_{\theta} (i_t * x_t)]}{ \sum_{i_t \in \{0, 1\}}\exp[u(x_t, i_t, \theta_1, RC) + \beta EV_{\theta} (i_t * x_t)]}
+\end{equation}
+Furthermore in \cite{Rust.1988} the author shows that under (CI) the likelihood function for the estimation of \(\theta\) can be split up into two separate functions:
+\begin{equation}
+  l^1(x_1, .....,  x_T, i_1, ...., i_T | x_0, i_0, \theta) = \prod_{t = 1}^T p(x_t | x_{t-1}, i_{t-1}, \theta_3)
+\end{equation}
+for the transition probabilities and
+\begin{equation}
+  l^2(x_1, .....,  x_T, i_1, ...., i_T | \theta) = \prod_{t = 1}^T P(i_t | x_t, \theta_1, RC, \theta_3, \beta)
+\end{equation}
+for the cost parameters $RC$ and \(\theta_1\). For a detailed proof of the above please, refer to \cite{Rust.1987} and \cite{Rust.1988}.
+\newpage
+\section{Replication of \cite{Rust.1987}}
+The second step in my thesis is to replicate the paper by Rust and therefore to test my Nested Fixed Point Algorithm. Rust applies his NFXP to three different samples. First he pools groups 1, 2 and 3, then he applies it just on group 4 and in the last step on pooled groups 1, 2, 3 and 4. As in each of these groups the year of purchase is different, the number of observed periods is different for each bus. As for the performance evaluation of different decision strategies such a feature is unnecessary, I didn't implement yet this possibility. Therefore I replicated only the results for bus group 4 so far:
+
+
+
+In the above tables $\beta$ is set fixed and not estimated. Rust argues that the parameter $RC$ and the discount factor $\beta$ both enforce a earlier replacement and therefore are highly co-linear. Thus treating $\beta$ as a free parameter would result in difficulties for the maximization algorithm. He starts a short discussion, if Zurcher wants to minimize long-run average costs and therefore beta gets driven to one. It will be a interesting aspect, of how beta influences the performance of different decision strategies.
+
+\section{Performance measure}
+The discussion above on the influence of beta on the performance measure, leads me now to the introduction of such a measure. The intuitive step is to evaluate a decision strategy by the expected discounted in utility in period 0. This is of course the value function at time 0. By section 2 the value of the function can be calculated in two ways. On one side with the fixed point of $EV(0)$ and on the other side with expected discounted utility. That these two possibilities converge is shown in the following figure, where I simulated a $100$ buses over a $100,000$ periods with discount factor $0.9999$.
+
+
+\section{Outlook}
+After introducing a performance measure the next step of my thesis will be to evaluate the performance of the classical decision rule if the transition probabilities are deviating from the values estimated.
+
+\newpage
+\bibliographystyle{apacite}
+\bibliography{bibliography/literature.bib}
+
+\end{document}

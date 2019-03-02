@@ -1,3 +1,6 @@
 [submodule "doc/bibliography"]
 	path = doc/bibliography
 	url = https://github.com/eisenhauerIO/bibliography.git
+[submodule "project_description/bibliography"]
+	path = project_description/bibliography
+	url = https://github.com/eisenhauerIO/bibliography.git

@@ -8,7 +8,12 @@ sim_file.pkl
 *.out
 *.blg
 *.pdf
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
 .ipynb*
 .pytest_cache
 ruspy.egg-info
 *.png
+build

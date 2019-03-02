@@ -9,7 +9,7 @@ from ruspy.estimation.estimation import estimate
 with open('init_replication.yml') as y:
     init_dict = yaml.load(y)
 
-group = init_dict['replication']['group']
+group = init_dict['replication']['groups']
 
 if not os.path.isfile('data/pkl/group_data/' + group + '.pkl'):
     data_reading()

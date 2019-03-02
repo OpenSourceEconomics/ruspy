@@ -2,7 +2,7 @@
 
 replication:
 
-  group   : group_4
+  groups  : group_1,group_2
   binsize : 5000
   beta    : 0.9999
   states  : 90

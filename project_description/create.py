@@ -6,4 +6,4 @@
 import os
 
 for type_ in ['pdflatex', 'bibtex', 'pdflatex', 'pdflatex']:
-    os.system(type_ + ' handout_rust')
+    os.system(type_ + ' project_description')

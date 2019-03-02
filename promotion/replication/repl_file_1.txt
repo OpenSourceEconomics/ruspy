@@ -1,0 +1,15 @@
+Milage at Replacement \\\begin{tabular}{lrrrrr}
+\toprule
+{} &     Max &     Min &    Mean &  Std. Dev. &  NumObs \\
+\midrule
+Group 1     &       0 &       0 &       0 &          0 &       0 \\
+Group 2     &       0 &       0 &       0 &          0 &       0 \\
+Group 3     &  273400 &  124800 &  199733 &      37459 &      27 \\
+Group 4     &  387300 &  121300 &  257336 &      65477 &      33 \\
+Group 5     &  322500 &  118000 &  245290 &      60257 &      11 \\
+Group 6     &  237200 &   82400 &  150785 &      61006 &       7 \\
+Group 7     &  331800 &  121000 &  208962 &      48980 &      27 \\
+Group 8     &  297500 &  132000 &  186700 &      43956 &      19 \\
+Full sample &  387300 &   82400 &  216354 &      60475 &     124 \\
+\bottomrule
+\end{tabular}
