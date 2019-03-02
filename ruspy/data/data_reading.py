@@ -21,12 +21,12 @@ def data_reading():
     re_col = {1: 'Bus_ID', 2: "Month_pur", 3: "Year_pur", 4: "Month_1st", 5: "Year_1st", 6: "Odo_1st",
               7: "Month_2nd", 8: "Year_2nd", 9: "Odo_2nd", 10: "Month_begin", 11: "Year_begin"}
 
-
+    dirname = os.path.dirname(__file__)
     dict_df = dict()
     for keys in dict_data:
         r = dict_data[keys][0]
         c = dict_data[keys][1]
-        f_raw = open('data/original_data/' + keys + '.asc').read()
+        f_raw = open(dirname + '/original_data/' + keys + '.asc').read()
         f_col = f_raw.split('\n')
         df = pd.DataFrame()
         for j in range(0, c):
@@ -38,5 +38,5 @@ def data_reading():
         df = df.reset_index()
         df = df.drop(df.columns[[0]], axis=1)
         dict_df[dict_data[keys][2]] = df
-        os.makedirs('data/pkl/group_data', exist_ok=True)
-        df.to_pickle('data/pkl/group_data/' + dict_data[keys][2] + '.pkl')
+        os.makedirs(dirname + '/pkl/group_data', exist_ok=True)
+        df.to_pickle(dirname + '/pkl/group_data/' + dict_data[keys][2] + '.pkl')

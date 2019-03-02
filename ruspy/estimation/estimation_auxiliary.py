@@ -17,8 +17,10 @@ def estimate_transitions_5000(df):
     """
 
     transition_list = count_transitions_5000(df)
-    result_transitions = opt.minimize(loglike, args=transition_list, x0=np.array([0.3, 0.5, 0.01]),
-                                      bounds=[(1e-6, 1), (1e-6, 1), (1e-6, 1)],
+    dim = len(transition_list)
+    x_0 = np.full(dim, 0.1)
+    result_transitions = opt.minimize(loglike, args=transition_list, x0=x_0,
+                                      bounds=[(1e-6, 1)] * dim,
                                       constraints=({'type': 'eq', "fun": apply_p_constraint}))
     return result_transitions
 
@@ -32,7 +34,7 @@ def count_transitions_5000(df):
     Returns:
 
     """
-    n, e, z = 0, 0, 0
+    transition_count = [0]
     num_bus = len(df['Bus_ID'].unique())
     num_periods = int(df.shape[0] / num_bus)
     states = df['state'].values.reshape(num_bus, num_periods)
@@ -40,15 +42,16 @@ def count_transitions_5000(df):
     for bus in range(num_bus):
         for period in range(num_periods - 1):
             if decisions[bus, period] == 0:
-                if states[bus, period + 1] - states[bus, period] == 0:
-                    n = n + 1
-                elif states[bus, period + 1] - states[bus, period] == 1:
-                    e = e + 1
-                elif states[bus, period + 1] - states[bus, period] == 2:
-                    z = z + 1
-            elif decisions[bus, period] == 1:
-                e = e + 1
-    return [n, e, z]
+                increase = states[bus, period + 1] - states[bus, period]
+            else:
+                increase = 1
+            if increase >= len(transition_count):
+                transition_count_new = [0] * (increase + 1)
+                for i in range(len(transition_count)):
+                    transition_count_new[i] = transition_count[i]
+                transition_count = transition_count_new
+            transition_count[increase] += 1
+    return transition_count
 
 
 def apply_p_constraint(inputs):

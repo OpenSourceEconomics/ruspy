@@ -11,9 +11,10 @@ import numpy as np
 
 
 def data_processing(init_dict):
+    dirname = os.path.dirname(__file__)
     for k, group in enumerate(init_dict['groups'].split(',')):
         repl = dict()
-        df = pd.read_pickle('data/pkl/group_data/' + group + '.pkl')
+        df = pd.read_pickle(dirname + '/pkl/group_data/' + group + '.pkl')
         for i in df.index:
             repl[i] = 0
         for j, i in enumerate(df.columns.values[11:]):
@@ -38,7 +39,6 @@ def data_processing(init_dict):
                 df3 = pd.concat([df3, df2])
 
         num_bus = len(df3['Bus_ID'].unique())
-        print(num_bus)
         num_periods = df3.shape[0] / num_bus
         df3['period'] = np.arange(num_periods).repeat(num_bus).astype(int)
         df3[['state']] = (df3[['state']] / init_dict['binsize']).astype(int)
@@ -49,6 +49,6 @@ def data_processing(init_dict):
         else:
             df4 = pd.concat([df4, df3], axis=0)
     df4.reset_index(drop=True, inplace=True)
-    os.makedirs('data/pkl/replication_data', exist_ok=True)
-    df4.to_pickle('data/pkl/replication_data/rep_' + init_dict['groups'] + '.pkl')
+    os.makedirs(dirname + '/pkl/replication_data', exist_ok=True)
+    df4.to_pickle(dirname + '/pkl/replication_data/rep_' + init_dict['groups'] + '.pkl')
     return df4
