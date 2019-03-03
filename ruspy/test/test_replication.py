@@ -1,14 +1,16 @@
 import pytest
-import pickle
 import yaml
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 from ruspy.estimation.estimation import estimate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
+from ruspy.data.data_reading import data_reading
+from ruspy.data.data_processing import data_processing
 
-data = pickle.load(open(TEST_RESOURCES_DIR + 'replication_test/rep_group_4_5000.pkl', 'rb'))
 with open(TEST_RESOURCES_DIR + 'replication_test/init_replication_test.yml') as y:
     init_dict = yaml.load(y)
+data_reading()
+data = data_processing(init_dict['replication'])
 result_trans, result_fixp = estimate(init_dict['replication'], data)
 
 @pytest.fixture

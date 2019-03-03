@@ -50,5 +50,6 @@ def data_processing(init_dict):
             df4 = pd.concat([df4, df3], axis=0)
     df4.reset_index(drop=True, inplace=True)
     os.makedirs(dirname + '/pkl/replication_data', exist_ok=True)
-    df4.to_pickle(dirname + '/pkl/replication_data/rep_' + init_dict['groups'] + '.pkl')
+    df4.to_pickle(dirname + '/pkl/replication_data/rep_' + init_dict['groups'] + '_' + str(init_dict['binsize']) +
+                  '.pkl')
     return df4

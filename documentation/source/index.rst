@@ -7,12 +7,12 @@ Welcome to ruspy's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
-
+   :maxdepth: 4
 
    ruspy.estimation
    ruspy.simulation
    ruspy.test
+   ruspy.data
 
 
 * :ref:`genindex`

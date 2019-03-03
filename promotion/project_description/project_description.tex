@@ -148,16 +148,16 @@ like in \cite{Kaufman.2017}. In the first chapter
 
 \section{Original data by John Rust}
 The first part of my thesis was the pyhton implementation of the Nested Fixed Point Algorithm(NFXP). To test the my algorithm I replicated the paper of John Rust. The data in the paper is provided by the agent, whose decision rule Rust estimated, himself. The maintenance manager of the Madison (Wisconsin,US) Metropolitan Bus Company, Harold Zurcher. He provides Rust with a sample of 162 buses from December 1974 to May 1985. The data consists of monthly observations on the odometer readings for each bus, plus data on the date and odometer readings at which a bus engine was replaced. John Rust kindly provides this data on his homepage. To verify my data reading process I replicated some descriptives Tables of \cite{Rust.1987}:\\
-\begin{table}
+\begin{table}[h]
 \begin{center}
-  \input{figures/repl_file_1.txt}
+  \input{figures/descr_2a.txt}
   \caption{Table 2a of \cite{Rust.1987}: \\ Buses with at least 1 engine replacement}
 \end{center}
 \end{table} \\
 The table above deviates from the orignial one in the maximal and minimal value in the full sample row. As it hast to be the maimal numer, from the ones above it is safe to say that this is due to a typo by John Rust. \\
-\begin{table}
+\begin{table}[h]
 \begin{center}
-  \input{figures/repl_file_2.txt}
+  \input{figures/descr_2b.txt}
   \caption{Table 2b of \cite{Rust.1987}: \\ Buses with no replacement}
 \end{center}
 \end{table}
@@ -241,7 +241,11 @@ for the cost parameters $RC$ and \(\theta_1\). For a detailed proof of the above
 \newpage
 \section{Replication of \cite{Rust.1987}}
 The second step in my thesis is to replicate the paper by Rust and therefore to test my Nested Fixed Point Algorithm. Rust applies his NFXP to three different samples. First he pools groups 1, 2 and 3, then he applies it just on group 4 and in the last step on pooled groups 1, 2, 3 and 4. As in each of these groups the year of purchase is different, the number of observed periods is different for each bus. As for the performance evaluation of different decision strategies such a feature is unnecessary, I didn't implement yet this possibility. Therefore I replicated only the results for bus group 4 so far:
-
+\begin{table}[h]
+\begin{center}
+  \input{figures/replication.txt}
+\end{center}
+\end{table}
 
 
 In the above tables $\beta$ is set fixed and not estimated. Rust argues that the parameter $RC$ and the discount factor $\beta$ both enforce a earlier replacement and therefore are highly co-linear. Thus treating $\beta$ as a free parameter would result in difficulties for the maximization algorithm. He starts a short discussion, if Zurcher wants to minimize long-run average costs and therefore beta gets driven to one. It will be a interesting aspect, of how beta influences the performance of different decision strategies.

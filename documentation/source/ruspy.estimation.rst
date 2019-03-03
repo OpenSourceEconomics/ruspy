@@ -1,6 +1,8 @@
 ruspy.estimation package
 ========================
 
+Submodules
+----------
 
 ruspy.estimation.estimation module
 ----------------------------------
@@ -18,6 +20,9 @@ ruspy.estimation.estimation\_auxiliary module
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
 
 .. automodule:: ruspy.estimation
     :members:

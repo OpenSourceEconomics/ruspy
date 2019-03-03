@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 from ruspy.simulation.simulation import simulate
 from ruspy.simulation.simulation_auxiliary import discount_utility
 from ruspy.estimation.estimation_auxiliary import calc_fixp
@@ -28,7 +29,7 @@ def plot_convergence(init_dict):
     v_calc = v_calc / num_buses
     v_exp = list(np.full(num_points, v_calc))
 
-    v_start = np.zeros(100)
+    v_start = np.zeros(num_points)
     v_disc = list(discount_utility(v_start, num_buses, gridsize, num_points, utilities, beta))
 
     periods = list(np.arange(0, num_periods, gridsize))
@@ -45,7 +46,6 @@ def plot_convergence(init_dict):
     l1 = ax1.plot(periods, v_disc, color='blue')
     l2 = ax1.plot(periods, v_exp, color='orange')
 
-
     plt.tight_layout()
-
+    os.makedirs('figures', exist_ok=True)
     plt.savefig('figures/figure_1.png', dpi=300)

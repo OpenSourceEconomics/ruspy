@@ -6,14 +6,10 @@ import numba
 
 # The first part are functions for estimating the transition probabilities.
 def estimate_transitions_5000(df):
-    """ The sub function for estimating the transition probabilities.
+    """The sub function for estimating the transition probabilities.
 
-    Args:
-        df (PandasDataFrame): A DataFrame with columns Bus_ID, state and decision containing the observations.
-
-    Returns:
-        A dictionary with the results of the observation.
-
+    :param df:
+    :return:
     """
 
     transition_list = count_transitions_5000(df)
@@ -27,12 +23,9 @@ def estimate_transitions_5000(df):
 
 def count_transitions_5000(df):
     """
-    This function counts
-    Args:
-        df:
 
-    Returns:
-
+    :param df:
+    :return:
     """
     transition_count = [0]
     num_bus = len(df['Bus_ID'].unique())
@@ -55,8 +48,8 @@ def count_transitions_5000(df):
 
 
 def apply_p_constraint(inputs):
-    """
-    A constraint which checks the sum of the transition probabilities.
+    """A constraint which checks the sum of the transition probabilities.
+
     :param inputs: A array of transition probabilities.
     :return: Should return 0.
     """
@@ -65,8 +58,8 @@ def apply_p_constraint(inputs):
 
 
 def loglike(params, transition_list):
-    """
-    The loglikelihood function for estimating the transition probabilities.
+    """The loglikelihood function for estimating the transition probabilities.
+
     :param params: An array of choice probabilities.
     :param transition_list:
     :return: The negative loglikelihood function for minimizing.
@@ -79,8 +72,8 @@ def loglike(params, transition_list):
 
 # The second part contains functions to maximize the likelihood of the Zurcher's decision probabilities.
 def create_transition_matrix(num_states, trans_prob):
-    """
-    This function creates a transition matrix.
+    """This function creates a transition matrix.
+
     :param num_states: The size of the state space.
     :param trans_prob: The transition probabilities for an increase of the state.
     :return: A Markov transition matrix.
@@ -98,8 +91,8 @@ def create_transition_matrix(num_states, trans_prob):
 
 
 def create_state_matrix(exog, num_states, num_obs):
-    """
-    This function constructs a auxiliary matrix for the likelihood.
+    """This function constructs a auxiliary matrix for the likelihood.
+
     :param exog: The observation data on the states.
     :param num_states: The size of the state space s.
     :param num_obs: The total number of observations n.
@@ -112,8 +105,8 @@ def create_state_matrix(exog, num_states, num_obs):
 
 
 def loglike_opt_rule(params, maint_func, num_states, trans_mat, state_mat, decision_mat, beta):
-    """
-    This is the logliklihood function for the estimation of the cost parameters.
+    """This is the logliklihood function for the estimation of the cost parameters.
+
     :param params: The cost parameters for replacing or maintaining the bus engine.
     :param num_states: The size of the state space s.
     :param trans_mat: The Markov transition matrix.
@@ -130,8 +123,8 @@ def loglike_opt_rule(params, maint_func, num_states, trans_mat, state_mat, decis
 
 
 def lin_cost(s, params):
-    """
-    This function describes a linear cost function, which Rust concludes is the most realistic maintenance function.
+    """This function describes a linear cost function, which Rust concludes is the most realistic maintenance function.
+
     :param s: The number of states.
     :param params: The slope of the cost function.
     :return: The maintenance cost for state s.
@@ -141,8 +134,8 @@ def lin_cost(s, params):
 
 
 def myopic_costs(s, maint_func, params):
-    """
-    This function calculates a vector containing the costs for the two alternatives, without recognizing the future.
+    """This function calculates a vector containing the costs for the two alternatives, without recognizing the future.
+
     :param s: The size of the state space.
     :param maint_func: The name of the maintenance function.
     :param params: The cost parameters for replacing or maintaining the bus engine.
@@ -155,8 +148,8 @@ def myopic_costs(s, maint_func, params):
 
 
 def choice_prob(ev, params, beta):
-    """
-    This function calculates the choice probabilities to maintain or replace for each state.
+    """This function calculates the choice probabilities to maintain or replace for each state.
+
     :param ev: An array containing the expected future value of maintaining or replacing the bus engine.
     :param params: The cost parameters for replacing or maintaining the bus engine.
     :param beta: The discount factor.
@@ -175,8 +168,8 @@ def choice_prob(ev, params, beta):
 
 @numba.jit(nopython=True)
 def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-8, max_it=100000):
-    """
-    The function to calculate the nested fix point.
+    """The function to calculate the nested fix point.
+
     :param num_states: The size of the state space.
     :param trans_mat: The Markov transition matrix.
     :param costs: The cost parameters for replacing or maintaining the bus engine.

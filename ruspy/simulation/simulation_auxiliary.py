@@ -38,6 +38,23 @@ def simulate_strategy(known_trans, increments, num_buses, num_periods, params, b
 @numba.jit(nopython=True)
 def simulate_strategy_loop(num_buses, states, decisions, utilities, costs,
                            ev, increments, num_states, start_period, num_periods, beta, unobs):
+    """
+
+    :param num_buses:
+    :type num_buses: int
+    :param states:
+    :param decisions:
+    :param utilities:
+    :param costs:
+    :param ev:
+    :param increments:
+    :param num_states:
+    :param start_period:
+    :param num_periods:
+    :param beta:
+    :param unobs:
+    :return:
+    """
     need_size = False
     for period in range(start_period, num_periods):
         for bus in range(num_buses):

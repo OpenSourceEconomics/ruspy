@@ -39,7 +39,7 @@ def create_desc():
     df = df[['max', 'min', 'mean', 'std', 'count']].fillna(0).astype(int)
     df.rename(columns={'max': 'Max', 'min': 'Min', 'mean': 'Mean', 'std': 'Std. Dev.', 'count': 'NumObs'}, inplace=True)
     os.makedirs('figures', exist_ok=True)
-    f = open('figures/repl_file_1.txt', 'w+')
+    f = open('figures/descr_2a.txt', 'w+')
     f.write('Milage at Replacement \\\\' + df.to_latex())
     f.close()
 
@@ -61,9 +61,10 @@ def create_desc():
     df = df.drop(df.columns[[4, 5, 6]], axis=1)
     df = df[['max', 'min', 'mean', 'std', 'count']].fillna(0).astype(int)
     df.rename(columns={'max': 'Max', 'min': 'Min', 'mean': 'Mean', 'std': 'Std. Dev.', 'count': 'NumObs'}, inplace=True)
-    f = open('figures/repl_file_2.txt', 'w+')
+    f = open('figures/descr_2b.txt', 'w+')
     f.write('Milage at May 1, 1985 \\\\' + df.to_latex())
     f.close()
+
 
 if __name__ == '__main__':
     create_desc()

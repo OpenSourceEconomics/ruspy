@@ -7,3 +7,6 @@
 [submodule "promotion/bibliography"]
 	path = promotion/bibliography
 	url = https://github.com/eisenhauerIO/bibliography.git
+[submodule "promotion/project_description/bibliography"]
+	path = promotion/project_description/bibliography
+	url = https://github.com/eisenhauerIO/bibliography.git

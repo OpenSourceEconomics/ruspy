@@ -49,7 +49,6 @@ def random_init(constr=None):
     ]:
         init_dict[key_] = {}
 
-
     init_dict['simulation']['periods'] = periods
     init_dict['simulation']['buses'] = agents
     init_dict['simulation']['beta'] = beta

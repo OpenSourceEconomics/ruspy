@@ -18,3 +18,7 @@ ruspy.egg-info
 *.png
 build
 test.ruspy.yml
+figures
+ruspy.rst
+modules.rst
+
