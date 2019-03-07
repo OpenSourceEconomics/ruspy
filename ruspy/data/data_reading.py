@@ -1,8 +1,7 @@
 """
 This module creates eight pickle files from the raw data files provided by John Rust.
-Each containing a DataFrame indexed the same as in the documentation. The files are named according to their group
-in the paper.
-
+Each file contains a DataFrame indexed the same as in the documentation. The files
+are named according to their group in the paper.
 """
 
 import pandas as pd
@@ -10,16 +9,22 @@ import os
 
 
 def data_reading():
-    # The following dictionaries contain details on the raw data described by Rust in his documentation.
-    # This Information is used to create 8 dataframes, each containing one of the Busgroups used in the paper.
-    # Also the first 11 columns contain bus specific information on purchase,engine replacement etc.
-    # For further information, see the documnetation.
+    """
+    This function reads the raw data files and saves each bus group in a separate
+    pickle file. The structure of the raw data is documented in the readme file in
+    the subfolder original_data. The relevant information is stored in the two
+    dictionaries below.
+
+    :return: Saves eight pickle files in pkl/group_data
+    """
+
     dict_data = {'g870': [36, 15, 'group_1'], 'rt50': [60, 4, 'group_2'],
                  't8h203': [81, 48, 'group_3'], 'a452372': [137, 18, 'group_8'],
                  'a452374': [137, 10, 'group_6'], 'a530872': [137, 18, 'group_7'],
                  'a530874': [137, 12, 'group_5'], 'a530875': [128, 37, 'group_4']}
-    re_col = {1: 'Bus_ID', 2: "Month_pur", 3: "Year_pur", 4: "Month_1st", 5: "Year_1st", 6: "Odo_1st",
-              7: "Month_2nd", 8: "Year_2nd", 9: "Odo_2nd", 10: "Month_begin", 11: "Year_begin"}
+    re_col = {1: 'Bus_ID', 2: "Month_pur", 3: "Year_pur", 4: "Month_1st",
+              5: "Year_1st", 6: "Odo_1st", 7: "Month_2nd", 8: "Year_2nd",
+              9: "Odo_2nd", 10: "Month_begin", 11: "Year_begin"}
 
     dirname = os.path.dirname(__file__)
     dict_df = dict()

@@ -12,9 +12,8 @@ with open('init.yml') as y:
     init_dict = yaml.load(y)
 
 beta = init_dict['simulation']['beta']
-num_states = 500
 
-df, unobs, utilities = simulate(init_dict['simulation'])
+df, unobs, utilities, num_states = simulate(init_dict['simulation'])
 
 costs = myopic_costs(num_states, lin_cost, init_dict['simulation']['params'])
 trans_probs = np.array(init_dict['simulation']['probs'])
@@ -31,7 +30,7 @@ for i in range(num_buses):
 v_calc = v_calc / num_buses
 v_exp = list(np.full(num_points, v_calc))
 
-v_start = np.zeros(100)
+v_start = np.zeros(num_points)
 v_disc = list(discount_utility(v_start, num_buses, gridsize, num_points, utilities, beta))
 
 periods = list(np.arange(0, num_periods, gridsize))
@@ -47,7 +46,6 @@ ax1.set_xlabel(r"Periods")
 
 l1 = ax1.plot(periods, v_disc, color='blue')
 l2 = ax1.plot(periods, v_exp, color='orange')
-
 
 plt.tight_layout()
 

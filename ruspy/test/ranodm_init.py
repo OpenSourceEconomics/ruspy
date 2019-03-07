@@ -72,8 +72,6 @@ def random_init(constr=None):
     param2 = np.random.normal(2.3, 0.5)
     init_dict['simulation']['params'] = [param1, param2]
 
-    print_dict(init_dict)
-
     return init_dict
 
 

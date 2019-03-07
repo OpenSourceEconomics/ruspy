@@ -63,11 +63,11 @@ def simulate_strategy_loop(num_buses, states, decisions, utilities, costs,
                     (- costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]):
                 decision = 0
                 utility = - costs[old_state, 0] + unobs[bus, period, 0]
-                new_state = old_state + increments[period, bus]
+                new_state = old_state + increments[bus, period]
             else:
                 decision = 1
                 utility = - costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
-                new_state = increments[period, bus]
+                new_state = increments[bus, period]
 
             decisions[bus, period] = decision
             utilities[bus, period] = utility
@@ -93,7 +93,7 @@ def discount_utility(v_disc, num_buses, steps, num_points, utilities, beta):
     :return:
     """
     for point in range(num_points):
-        v = 0
+        v = 0.
         for i in range(point * steps):
             v += (beta ** i) * np.sum(utilities[:, i])
         v_disc[point] = v / num_buses

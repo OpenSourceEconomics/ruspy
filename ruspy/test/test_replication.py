@@ -7,14 +7,14 @@ from ruspy.ruspy_config import TEST_RESOURCES_DIR
 from ruspy.data.data_reading import data_reading
 from ruspy.data.data_processing import data_processing
 
-with open(TEST_RESOURCES_DIR + 'replication_test/init_replication_test.yml') as y:
-    init_dict = yaml.load(y)
-data_reading()
-data = data_processing(init_dict['replication'])
-result_trans, result_fixp = estimate(init_dict['replication'], data)
 
 @pytest.fixture
 def inputs():
+    with open(TEST_RESOURCES_DIR + 'replication_test/init_replication_test.yml') as y:
+        init_dict = yaml.load(y)
+    data_reading()
+    data = data_processing(init_dict['replication'])
+    result_trans, result_fixp = estimate(init_dict['replication'], data)
     out = dict()
     out['trans_est'] = result_trans['x']
     out['params_est'] = result_fixp['x']

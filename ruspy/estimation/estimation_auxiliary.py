@@ -11,27 +11,28 @@ def estimate_transitions_5000(df):
     :param df:
     :return:
     """
-
-    transition_list = count_transitions_5000(df)
-    dim = len(transition_list)
-    x_0 = np.full(dim, 0.1)
-    result_transitions = opt.minimize(loglike, args=transition_list, x0=x_0,
-                                      bounds=[(1e-6, 1)] * dim,
-                                      constraints=({'type': 'eq', "fun": apply_p_constraint}))
-    return result_transitions
-
-
-def count_transitions_5000(df):
-    """
-
-    :param df:
-    :return:
-    """
     transition_count = [0]
     num_bus = len(df['Bus_ID'].unique())
     num_periods = int(df.shape[0] / num_bus)
     states = df['state'].values.reshape(num_bus, num_periods)
     decisions = df['decision'].values.reshape(num_bus, num_periods)
+    transition_count = count_transitions_5000(transition_count, num_bus, num_periods, states, decisions)
+    dim = len(transition_count)
+    x_0 = np.full(dim, 0.1)
+    result_transitions = opt.minimize(loglike, args=transition_count, x0=x_0,
+                                      bounds=[(1e-6, 1)] * dim,
+                                      constraints=({'type': 'eq', "fun": apply_p_constraint}))
+    return result_transitions
+
+
+@numba.jit(nopython=True)
+def count_transitions_5000(transition_count, num_bus, num_periods, states, decisions):
+    """
+
+    :param df:
+    :return:
+    """
+
     for bus in range(num_bus):
         for period in range(num_periods - 1):
             if decisions[bus, period] == 0:
@@ -167,7 +168,7 @@ def choice_prob(ev, params, beta):
 
 
 @numba.jit(nopython=True)
-def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-8, max_it=100000):
+def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-8, max_it=1000000):
     """The function to calculate the nested fix point.
 
     :param num_states: The size of the state space.

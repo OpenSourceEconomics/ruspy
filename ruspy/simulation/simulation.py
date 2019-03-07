@@ -1,3 +1,7 @@
+"""
+This module contains the main function to manage the simulation process. To simulate
+a decision process in the model of John Rust's 1987 paper, it is sufficen
+"""
 import numpy as np
 import mpmath as mp
 import pandas as pd
@@ -15,9 +19,9 @@ def simulate(init_dict):
     else:
         maint_func = lin_cost
     unobs = np.random.gumbel(loc=-mp.euler, size=[num_buses, num_periods, 2])
-    known_trans = np.array(init_dict['probs']) # right know no misbeliefs
+    known_trans = np.array(init_dict['probs'])  # right know no misbeliefs
     real_trans = np.array(init_dict['probs'])
-    increments = np.random.choice(len(real_trans), size=(num_periods, num_buses), p=real_trans)  # need to switch sizes
+    increments = np.random.choice(len(real_trans), size=(num_buses, num_periods), p=real_trans)
     params = np.array(init_dict['params'])
     states, decisions, utilities, num_states = \
         simulate_strategy(known_trans, increments, num_buses, num_periods, params, beta, unobs, maint_func)
