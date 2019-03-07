@@ -26,7 +26,7 @@ def create_transition_matrix(num_states, trans_prob):
             if i + j < num_states - 1:
                 trans_mat[i + j][i] = p
             elif i + j == num_states - 1:
-                trans_mat[num_states - 1][i] = trans_prob[j:].sum()  # The probability to reach the last state.
+                trans_mat[num_states - 1][i] = trans_prob[j:].sum()
             else:
                 pass
     return trans_mat
@@ -52,15 +52,15 @@ def create_state_matrix(states, num_states, num_obs):
     return state_mat
 
 
-def loglike_opt_rule(params, maint_func, num_states, trans_mat, state_mat, decision_mat, beta):
+def loglike_opt_rule(params, maint_func, num_states, trans_mat, state_mat,
+                     decision_mat, beta):
     """
     This is the logliklihood function for the estimation of the cost parameters.
 
     :param params:       A numpy array containing the parameters shaping the cost
                          function.
-    :param maint_func:   The type of cost function. Only linear implemented so
+    :param maint_func:   The maintenance cost function. Only linear implemented so
                          far.
-    :type maint_func:    string
     :param num_states:   The size of the state space s.
     :type num_states:    int
     :param trans_mat:    A two dimensional numpy array containing a s x s markov
@@ -106,9 +106,8 @@ def myopic_costs(num_states, maint_func, params):
 
     :param num_states:  The size of the state space.
     :type num_states:   int
-    :param maint_func:  The type of cost function. Only linear implemented so
+    :param maint_func:  The maintenance cost function. Only linear implemented so
                         far.
-    :type maint_func:   string
     :param params:      A numpy array containing the parameters shaping the cost
                         function.
 

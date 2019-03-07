@@ -8,7 +8,7 @@ import scipy.optimize as opt
 import numba
 
 
-def estimate_transitions_5000(df):
+def estimate_transitions(df):
     """
     The sub function for estimating the transition probabilities. This function
     manages the estimation process of the transition probaiblities and calls the
@@ -25,8 +25,8 @@ def estimate_transitions_5000(df):
     num_periods = int(df.shape[0] / num_bus)
     states = df['state'].values.reshape(num_bus, num_periods)
     decisions = df['decision'].values.reshape(num_bus, num_periods)
-    transition_count = count_transitions_5000(transition_count, num_bus, num_periods,
-                                              states, decisions)
+    transition_count = count_transitions(transition_count, num_bus, num_periods,
+                                         states, decisions)
     dim = len(transition_count)
     x_0 = np.full(dim, 0.1)
     result_transitions = opt.minimize(loglike, args=transition_count, x0=x_0,
@@ -36,7 +36,7 @@ def estimate_transitions_5000(df):
 
 
 @numba.jit(nopython=True)
-def count_transitions_5000(transition_count, num_bus, num_periods, states, decisions):
+def count_transitions(transition_count, num_bus, num_periods, states, decisions):
     """
     This function counts how often the buses increased their state by 0, by 1 etc.
 

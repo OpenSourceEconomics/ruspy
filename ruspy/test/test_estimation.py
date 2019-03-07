@@ -1,6 +1,6 @@
 """
-This module contains unit tests, for functions of
-ruspy.estimation.estimation_cost_parameters. The value to compare the results with
+This module contains unit tests, for the most important functions of
+ruspy.estimation.estimation_cost_parameters. The values to compare the results with
 are saved in resources/estimation_test. The setting of the test is documented in the
 inputs section in test module.
 """
@@ -40,23 +40,25 @@ def outputs():
 
 
 def test_myopic_costs(inputs, outputs):
-    assert_array_almost_equal(myopic_costs(inputs['nstates'], inputs['cost_fct'], inputs['params']),
-                       outputs['myop_costs'])
+    assert_array_almost_equal(myopic_costs(inputs['nstates'], inputs['cost_fct'],
+                                           inputs['params']), outputs['myop_costs'])
 
 
 def test_create_trans_mat(inputs, outputs):
-    assert_array_almost_equal(create_transition_matrix(inputs['nstates'], inputs['trans_prob']),
-                       outputs['trans_mat'])
+    assert_array_almost_equal(create_transition_matrix(inputs['nstates'],
+                                                       inputs['trans_prob']),
+                              outputs['trans_mat'])
 
 
 def test_calc_fixp(inputs, outputs):
-    assert_array_almost_equal(calc_fixp(inputs['nstates'], outputs['trans_mat'], outputs['myop_costs'], inputs['beta'], max_it=1000),
+    assert_array_almost_equal(calc_fixp(inputs['nstates'], outputs['trans_mat'],
+                                        outputs['myop_costs'], inputs['beta']),
                               outputs['fixp'])
 
 
 def test_choice_probs(inputs, outputs):
-    assert_array_almost_equal(choice_prob(outputs['fixp'], inputs['params'], inputs['beta']),
-                       outputs['choice_probs'])
+    assert_array_almost_equal(choice_prob(outputs['fixp'], inputs['params'],
+                                          inputs['beta']), outputs['choice_probs'])
 
 
 

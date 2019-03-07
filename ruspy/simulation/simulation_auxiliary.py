@@ -29,9 +29,8 @@ def simulate_strategy(known_trans, increments, num_buses, num_periods, params, b
     :param unobs:       A three dimensional numpy array containing for each bus,
                         for each period for the decision to maintain or replace the
                         bus engine a random drawn utility as float.
-    :param maint_func:  The type of cost function. Only linear implemented so
+    :param maint_func:  The maintenance cost function. Only linear implemented so
                         far.
-    :type maint_func:   string
 
     :return: The function returns the following objects:
 

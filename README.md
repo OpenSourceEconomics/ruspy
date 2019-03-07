@@ -12,7 +12,7 @@ After cloning the repository, you can install the ruspy package. This can easily
 
 Exploring
 ---------
-If you now first of all, want to get a little introduction and see some descriptives of the paper, please refer to this [notebook](https://github.com/OpenSourceEconomics/ruspy/blob/master/replication/replicate%20descriptives.ipynb).
+If you now first of all, want to get a little introduction and see some descriptives of the paper, please refer to this [notebook](https://github.com/OpenSourceEconomics/ruspy/blob/master/replicate%20descriptives.ipynb).
 
 For a longer introduction to my project please first run this [creation script](https://github.com/OpenSourceEconomics/ruspy/blob/master/create_project.py) and then you can find a more detailed description on my project in [here](https://github.com/OpenSourceEconomics/ruspy/tree/master/promotion/project_description).
 

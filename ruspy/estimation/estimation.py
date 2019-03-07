@@ -3,7 +3,7 @@ This module contains the main function for the estimation process.
 """
 import numpy as np
 import scipy.optimize as opt
-from ruspy.estimation.estimation_transitions import estimate_transitions_5000
+from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 from ruspy.estimation.estimation_cost_parameters import create_state_matrix
 from ruspy.estimation.estimation_cost_parameters import loglike_opt_rule
@@ -33,7 +33,7 @@ def estimate(init_dict, df):
              probabilities and of the cost parameters as separate dictionaries.
     """
     beta = init_dict['beta']
-    transition_results = estimate_transitions_5000(df)
+    transition_results = estimate_transitions(df)
     endog = df.loc[:, 'decision']
     states = df.loc[:, 'state']
     num_obs = df.shape[0]
