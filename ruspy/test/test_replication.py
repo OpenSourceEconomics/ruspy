@@ -1,3 +1,11 @@
+"""
+This module contains tests for the data and estimation code of the ruspy project. The
+settings for this tests is specified in resources/replication_test/init_replication.yml.
+The tests first read the original data, then process the data to a dataframe suitable
+to the estimation process. After estimating all the relevant parameters, they are
+compared to the results, from the paper.
+"""
+
 import pytest
 import yaml
 import numpy as np

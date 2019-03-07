@@ -1,5 +1,8 @@
 """
-This module contains unit tests, for some of
+This module contains unit tests, for functions of
+ruspy.estimation.estimation_cost_parameters. The value to compare the results with
+are saved in resources/estimation_test. The setting of the test is documented in the
+inputs section in test module.
 """
 
 import numpy as np
@@ -28,10 +31,11 @@ def inputs():
 @pytest.fixture
 def outputs():
     out = dict()
-    out['myop_costs'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/myop_costs_90_10_2.txt')
-    out['trans_mat'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/trans_mat_90_2_3_15_35.txt')
-    out['fixp'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/fixp_90_2_3_15_35_lin_10_2_9999.txt')
-    out['choice_probs'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/choice_probs_90_10_2_9999.txt')
+    out['myop_costs'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/myop_cost.txt')
+    out['trans_mat'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/trans_mat.txt')
+    out['fixp'] = np.loadtxt(TEST_RESOURCES_DIR + 'estimation_test/fixp.txt')
+    out['choice_probs'] = np.loadtxt(TEST_RESOURCES_DIR +
+                                     'estimation_test/choice_prob.txt')
     return out
 
 

@@ -10,7 +10,7 @@ def simulate_strategy(known_trans, increments, num_buses, num_periods, params, b
     """
     This function manages the simulation process. It initializes the auxiliary
     variables and calls therefore the subfuctions from estimation auxiliary. It then
-    calls the decision loop, written for numba. As he state size of the fixed point
+    calls the decision loop, written for numba. As the state size of the fixed point
     needs to be a lot larger than the actual state, the size is doubled, if the loop
     hasn't run yet through all the periods.
 

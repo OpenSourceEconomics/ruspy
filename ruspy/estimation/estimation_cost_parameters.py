@@ -15,8 +15,8 @@ def create_transition_matrix(num_states, trans_prob):
 
     :param num_states:  The size of the state space s.
     :type num_states:   int
-    :param trans_prob:  The transition probabilities for an increase of the state.
-    :type trans_prob:   numpy array
+    :param trans_prob:  A numpy array containing the transition probabilities for a
+                        state increase.
 
     :return: A two dimensional numpy array containing a s x s markov transition matrix.
     """
@@ -32,11 +32,11 @@ def create_transition_matrix(num_states, trans_prob):
     return trans_mat
 
 
-def create_state_matrix(exog, num_states, num_obs):
+def create_state_matrix(states, num_states, num_obs):
     """
     This function constructs a auxiliary matrix for the likelihood.
 
-    :param exog:        A numpy array containing observation data on the states.
+    :param states:      A numpy array containing the observed states.
     :param num_states:  The size of the state space s.
     :type num_states:   int
     :param num_obs:     The total number of observations n.
@@ -47,7 +47,7 @@ def create_state_matrix(exog, num_states, num_obs):
                         that observation.
     """
     state_mat = np.full((num_states, num_obs), False, dtype=bool)
-    for i, value in enumerate(exog):
+    for i, value in enumerate(states):
         state_mat[value, i] = True
     return state_mat
 
@@ -113,7 +113,7 @@ def myopic_costs(num_states, maint_func, params):
                         function.
 
     :return: A two dimensional numpy array containing in each row the cost for
-    maintenance in the first and for replacement in the second column.
+             maintenance in the first and for replacement in the second column.
     """
     rc = params[0]
     maint_cost = maint_func(num_states, params[1:])
@@ -122,7 +122,8 @@ def myopic_costs(num_states, maint_func, params):
 
 
 def choice_prob(ev, params, beta):
-    """This function calculates the choice probabilities to maintain or replace the
+    """
+    This function calculates the choice probabilities to maintain or replace the
     bus engine for each state.
 
     :param ev:      A numpy array containing for each state the expected value
@@ -134,7 +135,8 @@ def choice_prob(ev, params, beta):
     :type beta:     float
 
     :return: A two dimensional numpy array containing in each row the choice
-    probability for maintenance in the first and for replacement in second column.
+             probability for maintenance in the first and for replacement in second
+             column.
     """
     s = ev.shape[0]
     costs = myopic_costs(s, lin_cost, params)
@@ -149,7 +151,8 @@ def choice_prob(ev, params, beta):
 
 @numba.jit(nopython=True)
 def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=1000000):
-    """The function to calculate the expected value fix point.
+    """
+    The function to calculate the expected value fix point.
 
     :param num_states:  The size of the state space.
     :type num_states:   int
@@ -161,10 +164,11 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000
     :param beta:        The discount factor.
     :type beta:         float
     :param threshold:   A threshold for the convergence. By default set to 1e-12.
+    :type threshold:    float
     :param max_it:      Maximum number of iterations. By default set to 1000000.
+    :type max_it:       int
 
-    :return: A numpy array containing for each state the expected value
-    fixed point.
+    :return: A numpy array containing for each state the expected value fixed point.
     """
     ev = np.zeros(num_states)
     ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(-costs), axis=1)))

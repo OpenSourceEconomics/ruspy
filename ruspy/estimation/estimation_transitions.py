@@ -1,5 +1,5 @@
 """
-This module contains the function necessary for the estimation process of transition
+This module contains the functions necessary for the estimation process of transition
 probabilities.
 """
 import numpy as np
@@ -18,7 +18,7 @@ def estimate_transitions_5000(df):
     the current state of the bus, the current period and the decision made in this
     period.
     :return: The optimization result of the transition probabilities estimation as a
-    dictionary.
+             dictionary.
     """
     transition_count = [0]
     num_bus = len(df['Bus_ID'].unique())
@@ -40,7 +40,7 @@ def count_transitions_5000(transition_count, num_bus, num_periods, states, decis
     """
     This function counts how often the buses increased their state by 0, by 1 etc.
 
-    :param transition_count: A list with only one integer zero.
+    :param transition_count: A list containing only one integer zero.
     :param num_bus:          The number of buses in the samples.
     :type num_bus:           int
     :param num_periods:      The number of periods the buses drove.
@@ -51,7 +51,7 @@ def count_transitions_5000(transition_count, num_bus, num_periods, states, decis
                              each period the decision as an integer.
 
     :return: A list with the highest increase as maximal index and the increase
-    counts as entries.
+             counts as entries.
     """
 
     for bus in range(num_bus):
@@ -70,7 +70,8 @@ def count_transitions_5000(transition_count, num_bus, num_periods, states, decis
 
 
 def cond_sum_one(inputs):
-    """A constraint which checks the sum of the transition probabilities.
+    """
+    A constraint used to check that the transition probabilities sum to one.
 
     :param inputs: A numpy array of transition probabilities.
     :return: Should return 0.
@@ -79,18 +80,18 @@ def cond_sum_one(inputs):
     return total
 
 
-def loglike(params, transition_list):
+def loglike(trans_probs, transition_count):
     """
     The loglikelihood function for estimating the transition probabilities.
 
-    :param params:          An array of choice probabilities.
-    :param transition_list: A list with the highest increase as maximal index and the
-                            increase counts as entries.
+    :param trans_probs:      A numpy array containing transition probabilities.
+    :param transition_count: A list with the highest state increase as maximal index
+                             and the increase counts as entries.
 
     :return: The negative loglikelihood value for minimizing the second liklihood
-    function.
+             function.
     """
     ll = 0
-    for i in range(len(params)):
-        ll = ll + transition_list[i] * log(params[i])
+    for i in range(len(trans_probs)):
+        ll = ll + transition_count[i] * log(trans_probs[i])
     return -ll

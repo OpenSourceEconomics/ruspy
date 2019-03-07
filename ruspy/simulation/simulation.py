@@ -19,16 +19,18 @@ def simulate(init_dict):
     relevant parameters. So far, the feature of a agent's misbelief on the underlying
     transition probabilities is not implemented.
 
-    :param init_dict: A dictionary containing the following relevant variables as keys:
+    :param init_dict: A dictionary containing the following variables as keys:
 
-        :seed:       :  The seed for random draws.
-        :buses:      :  Number of buses to be simulated.
-        :beta:       :  Discount factor.
-        :periods:    :  Number of periods to be simulated.
-        :probs:      :  True underlying trans probabilities.
-        :params:     :  Cost parameters shaping the cost function.
-        :maint_func: :  The type of cost function, as string. Only linear implemented so
-                        far.
+        :seed: (Digits)      : The seed determines random draws.
+        :buses: (int)        : Number of buses to be simulated.
+        :beta: (float)       : Discount factor.
+        :periods: (int)      : Number of periods to be simulated.
+        :probs:              : A list or array of the true underlying transition
+                               probabilities.
+        :params:             : A list or array of the cost parameters shaping the cost
+                               function.
+        :maint_func: (string): The type of cost function, as string. Only linear
+                               implemented so far.
 
     :return: The function returns the following objects:
 
@@ -41,19 +43,20 @@ def simulate(init_dict):
                        period the utility as a float.
         :num_states: : A integer documenting the size of the state space.
     """
-    np.random.seed(init_dict['seed'])  #
-    num_buses = init_dict['buses']  #
-    beta = init_dict['beta']  #
-    num_periods = init_dict['periods'] #
-    real_trans = np.array(init_dict['probs']) #
+    np.random.seed(init_dict['seed'])
+    num_buses = init_dict['buses']
+    beta = init_dict['beta']
+    num_periods = init_dict['periods']
+    real_trans = np.array(init_dict['probs'])
     known_trans = np.array(init_dict['probs'])  # right know no misbeliefs
-    params = np.array(init_dict['params'])  #
+    params = np.array(init_dict['params'])
     if init_dict['maint_func'] == 'linear':
         maint_func = lin_cost
     else:
         maint_func = lin_cost
     unobs = np.random.gumbel(loc=-mp.euler, size=[num_buses, num_periods, 2])
-    increments = np.random.choice(len(real_trans), size=(num_buses, num_periods), p=real_trans)
+    increments = np.random.choice(len(real_trans), size=(num_buses, num_periods),
+                                  p=real_trans)
     states, decisions, utilities, num_states = \
         simulate_strategy(known_trans, increments, num_buses, num_periods, params,
                           beta, unobs, maint_func)

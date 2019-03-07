@@ -1,6 +1,9 @@
 """
 This module contains a regression test for the simulation, discounting and some
-estimation functions.
+estimation functions. The test first draws a random dictionary with some constraints
+to ensure enough observations. It then simulates a dataset and the compares the
+discounted utility average over all buses, with the theoretical expected value
+calculated by the NFXP.
 """
 
 import pytest
@@ -17,24 +20,11 @@ from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 @pytest.fixture
 def inputs():
-    """
-    The test will simulate a dataset. The constraints defined below, assure that
-    there are enough number of relevant ovservations to ensure convergence.
-    :return: A dictionary with the constraints.
-    """
     constraints = {'PERIODS': 70000, 'BUSES': 100, 'BETA': 0.9999}
     return constraints
 
 
 def test_regression_simulation(inputs):
-    """
-    This test first draws a random dictionary with the constraints defined in the
-    inputs. It then simulates a dataset and the compares the discounted utility
-    average over all buses, with the theoretical expected value calculated by the
-    NFXP.
-    :param inputs: A dictionary with constraints for the random dictionary.
-    :return: The True/False value of the test.
-    """
     init_dict = random_init(inputs)
     df, unobs, utilities, num_states = simulate(init_dict['simulation'])
     num_buses = init_dict['simulation']['buses']

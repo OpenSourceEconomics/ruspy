@@ -1,21 +1,16 @@
 ruspy.plotting package
 ==================
 
-Submodules
-----------
+Introduction
+-----------
+This package will contain tools to plot results and make the power of robust decision rules visible. So far there is only one function in the plotting package.
 
-ruspy.plotting.discoung
---------------------------------
+Modules
+-------
+
+-----------------------------
+ruspy.plotting.discounting
+-----------------------------
 
 .. automodule:: ruspy.plotting.discounting
     :members:
-    :undoc-members:
-    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: ruspy.data
-    :members:
-    :undoc-members:
-    :show-inheritance:
