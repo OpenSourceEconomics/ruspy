@@ -1,8 +1,7 @@
 """
-This module creates a pickle file which contain the total number of observations for
+This module creates a pickle file which contains the total number of observations for
 each group. Therefore every DataFrame row contains the bus identifier, the state
-variable and the according decision. Also the odometer gets set to zero after
-replacement.
+variable and the according decision.
 """
 
 
@@ -12,6 +11,16 @@ import numpy as np
 
 
 def data_processing(init_dict):
+    """
+    This function processes data from pickle files, which have the structure as
+    explained in the documentation of Rust, to a pandas DataFrame saved in a pickle
+    file, which contains in each row the Bus ID, the current period, the current
+    state of the bus and the decision in this period.
+
+    :param init_dict: A dictionary containing the name of the group and the size of
+    the milage bins, which is used to discretize the raw data.
+    :return: The processed data as pandas dataframe.
+    """
     dirname = os.path.dirname(__file__)
     for k, group in enumerate(init_dict['groups'].split(',')):
         repl = dict()

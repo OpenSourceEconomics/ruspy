@@ -1,7 +1,7 @@
 """
 This module creates eight pickle files from the raw data files provided by John Rust.
-Each file contains a DataFrame indexed the same as in the documentation. The files
-are named according to their group in the paper.
+Each file contains a pandas DataFrame indexed the same as in the documentation. The
+files are named according to their group in the paper.
 """
 
 import pandas as pd
@@ -12,8 +12,8 @@ def data_reading():
     """
     This function reads the raw data files and saves each bus group in a separate
     pickle file. The structure of the raw data is documented in the readme file in
-    the subfolder original_data. The relevant information is stored in the two
-    dictionaries below.
+    the subfolder original_data. The relevant information from this readme is stored in
+    the two dictionaries initialized in the function.
 
     :return: Saves eight pickle files in pkl/group_data
     """
