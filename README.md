@@ -3,11 +3,15 @@
 This repository contains code to replicate some descriptives and the major results of
 > Rust, J. (1987). [Optimal Replacement of GMC Bus Engines: An empirical model of Harold Zurcher.](https://doi.org/10.2307/1911259) *Econometrica*, Vol. 55, No.5, 999-1033.
 
+Setup
+-----
 To run the code you first need to setup a envoirement fulffiling these [dependencies](https://github.com/OpenSourceEconomics/ruspy/blob/master/environment.yml)
 After cloning the repository, you can install the ruspy package. This can easily be done by
 
   $ pip install -e ruspy
 
+Exploring
+---------
 If you now first of all, want to get a little introduction and see some descriptives of the paper, please refer to this [notebook](https://github.com/OpenSourceEconomics/ruspy/blob/master/replication/replicate%20descriptives.ipynb). \\
 For a longer introduction to my project please first run this [creation script](https://github.com/OpenSourceEconomics/ruspy/blob/master/create_project.py) and then you can find a more detailed description on my project in [here](https://github.com/OpenSourceEconomics/ruspy/tree/master/promotion/project_description). \\
 Also if you ran the creation script you can have a look at the detailed documentation of my code in documentaion/build.
