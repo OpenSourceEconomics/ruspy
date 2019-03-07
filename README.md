@@ -16,7 +16,7 @@ If you now first of all, want to get a little introduction and see some descript
 
 For a longer introduction to my project please first run this [creation script](https://github.com/OpenSourceEconomics/ruspy/blob/master/create_project.py) and then you can find a more detailed description on my project in [here](https://github.com/OpenSourceEconomics/ruspy/tree/master/promotion/project_description).
 
-Also if you ran the creation script you can have a look at the detailed documentation of my code in the build folder in the [documentation section](https://github.com/OpenSourceEconomics/ruspy/tree/master/documentation).
+Also if you ran the creation script you can have a look at the detailed documentation of my code in the build/latex folder in the [documentation section](https://github.com/OpenSourceEconomics/ruspy/tree/master/documentation).
 
 If you would like to replicate the paper yourself, then please either leave the settings in [here](https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/replication/init_replication.yml) or change them and then run this [red button](https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/replication/red_button_replication.py).
 
