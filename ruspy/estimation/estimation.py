@@ -1,33 +1,38 @@
 """
-This module contains the primary function for estimating the parameters describing the decision rule of a single
-agent in a dynamic discrete choice model. All functions needed for the estimation are contained in estimation_auxiliary.
+This module contains the primary function for estimating the parameters describing the
+decision rule of a single agent in a dynamic discrete choice model. Therefore this
+function calls subfunctions from estimation_transition to calculate the underlying
+transition probabilities and subfunctions from estimation_cost_parameters to estimate
+the parameters shaping the cost function.
 """
 
 import numpy as np
 import scipy.optimize as opt
-from ruspy.estimation.estimation_auxiliary import estimate_transitions_5000
-from ruspy.estimation.estimation_auxiliary import create_transition_matrix
-from ruspy.estimation.estimation_auxiliary import create_state_matrix
-from ruspy.estimation.estimation_auxiliary import loglike_opt_rule
-from ruspy.estimation.estimation_auxiliary import lin_cost
+from ruspy.estimation.estimation_transitions import estimate_transitions_5000
+from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
+from ruspy.estimation.estimation_cost_parameters import create_state_matrix
+from ruspy.estimation.estimation_cost_parameters import loglike_opt_rule
+from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 
 def estimate(init_dict, df):
-    """ This function calls the auxiliary functions to estimate the decision parameters.
-    Therefore it manages the estimation process. As mentioned in the model theory chapter of the paper,
-    the estimation of the transition probabilities and the estimation of the parameters shaping the cost function
+    """
+    This function calls the auxiliary functions to estimate the decision parameters.
+    Therefore it manages the estimation process. As mentioned in the model theory
+    chapter of the paper, the estimation of the transition probabilities and the
+    estimation of the parameters shaping the cost function
     are completely separate.
 
-    Args:
-        init_dict (dictionary): A dictionary containing the discount factor, the size of state space and the type of
-        the cost function.
-        df (PandasDataFrame) : A pandas dataframe, which contains for each observation the Bus ID, the current state of
-        the bus, the current period and the decision made in this period.
+    :param init_dict: A dictionary containing the discount factor, the size of state
+    space and the type of the cost function.
+    :param df: A pandas dataframe, which contains for each observation the Bus ID,
+    the current state of the bus, the current period and the decision made in this
+    period.
 
-    Returns: The function returns the optimization result of the transition probabilities and of the cost parameters
-    separate.
-
+    :return: The function returns the optimization result of the transition
+    probabilities and of the cost parameters as separate dictionaries.
     """
+
 
     beta = init_dict['beta']
     transition_results = estimate_transitions_5000(df)

@@ -12,15 +12,22 @@ ruspy.estimation.estimation module
     :undoc-members:
     :show-inheritance:
 
-ruspy.estimation.estimation\_auxiliary module
+ruspy.estimation.estimation\_cost\_parameters module
 ---------------------------------------------
 
-.. automodule:: ruspy.estimation.estimation_auxiliary
+.. automodule:: ruspy.estimation.estimation_cost_parameters
     :members:
     :undoc-members:
     :show-inheritance:
 
+ruspy.estimation.estimation\_transitions module
+---------------------------------------------
 
+.. automodule:: ruspy.estimation.estimation_transitions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    
 Module contents
 ---------------
 

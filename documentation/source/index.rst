@@ -13,3 +13,4 @@ Welcome to ruspy's documentation!
    ruspy.simulation
    ruspy.test
    ruspy.data
+   ruspy.plotting

@@ -1,13 +1,17 @@
+"""
+This module contains unit tests, for some of
+"""
+
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 import pytest
 
 
-from ruspy.estimation.estimation_auxiliary import myopic_costs
-from ruspy.estimation.estimation_auxiliary import create_transition_matrix
-from ruspy.estimation.estimation_auxiliary import calc_fixp
-from ruspy.estimation.estimation_auxiliary import choice_prob
-from ruspy.estimation.estimation_auxiliary import lin_cost
+from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
+from ruspy.estimation.estimation_cost_parameters import calc_fixp
+from ruspy.estimation.estimation_cost_parameters import choice_prob
+from ruspy.estimation.estimation_cost_parameters import lin_cost
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
 

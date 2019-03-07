@@ -1,30 +1,29 @@
 ruspy.test package
 ==================
-Introduction
-------------
 
-This part of the ruspy package contains all the test
-to secure a safe and smooth running of the estimation, simulation, and replication processes.
-
-----------
 Submodules
 ----------
 
+ruspy.test.conftest module
+--------------------------
+
+.. automodule:: ruspy.test.conftest
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 ruspy.test.ranodm\_init module
 ------------------------------
-
-The functions in this module can be used for future tests to create random dictionary to setup test batteries, for the different facets
-of the package.
 
 .. automodule:: ruspy.test.ranodm_init
     :members:
     :undoc-members:
     :show-inheritance:
 
-ruspy.test.simulation\_test module
+ruspy.test.regression\_test module
 ----------------------------------
 
-.. automodule:: ruspy.test.simulation_test
+.. automodule:: ruspy.test.regression_test
     :members:
     :undoc-members:
     :show-inheritance:
@@ -41,6 +40,14 @@ ruspy.test.test\_replication module
 -----------------------------------
 
 .. automodule:: ruspy.test.test_replication
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+ruspy.test.test\_simulation module
+----------------------------------
+
+.. automodule:: ruspy.test.test_simulation
     :members:
     :undoc-members:
     :show-inheritance:

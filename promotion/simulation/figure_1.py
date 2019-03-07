@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 import yaml
 import numpy as np
 from ruspy.simulation.simulation import simulate
-from ruspy.simulation.simulation_auxiliary import discount_utility
-from ruspy.estimation.estimation_auxiliary import calc_fixp
-from ruspy.estimation.estimation_auxiliary import lin_cost
-from ruspy.estimation.estimation_auxiliary import myopic_costs
-from ruspy.estimation.estimation_auxiliary import create_transition_matrix
+from ruspy.plotting.discounting import discount_utility
+from ruspy.estimation.estimation_cost_parameters import calc_fixp
+from ruspy.estimation.estimation_cost_parameters import lin_cost
+from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 
 with open('init.yml') as y:
     init_dict = yaml.load(y)
@@ -30,8 +30,9 @@ for i in range(num_buses):
 v_calc = v_calc / num_buses
 v_exp = list(np.full(num_points, v_calc))
 
-v_start = np.zeros(num_points)
-v_disc = list(discount_utility(v_start, num_buses, gridsize, num_points, utilities, beta))
+v_start = np.zeros(num_points + 1)
+v_disc = list(discount_utility(v_start, num_buses, gridsize, num_periods, utilities,
+                               beta))
 
 periods = list(np.arange(0, num_periods, gridsize))
 
