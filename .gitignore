@@ -15,7 +15,6 @@ sim_file.pkl
 .ipynb*
 .pytest_cache
 ruspy.egg-info
-*.png
 build
 test.ruspy.yml
 figures

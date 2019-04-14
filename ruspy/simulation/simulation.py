@@ -47,8 +47,8 @@ def simulate(init_dict):
     num_buses = init_dict['buses']
     beta = init_dict['beta']
     num_periods = init_dict['periods']
-    real_trans = np.array(init_dict['probs'])
-    known_trans = np.array(init_dict['probs'])  # right know no misbeliefs
+    real_trans = np.array(init_dict['real probs'])
+    known_trans = np.array(init_dict['known probs'])
     params = np.array(init_dict['params'])
     if init_dict['maint_func'] == 'linear':
         maint_func = lin_cost

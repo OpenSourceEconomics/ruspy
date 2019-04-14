@@ -14,13 +14,12 @@ EMAIL = "s6mables@uni-bonn.de"
 AUTHOR = "Maximilian Blesch"
 
 # What packages are required for this module to be executed?
-REQUIRED = ["numpy", "pytest", "pandas", "oyaml", 'scipy']
+REQUIRED = ["numpy", "pytest", "pandas", "oyaml", 'scipy', 'yaml', 'matplotlib']
 
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 about = {}
-
 
 
 class PublishCommand(Command):

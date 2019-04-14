@@ -30,8 +30,9 @@ def estimate_transitions(df):
     dim = len(transition_count)
     x_0 = np.full(dim, 0.1)
     result_transitions = opt.minimize(loglike, args=transition_count, x0=x_0,
-                                      bounds=[(1e-6, 1)] * dim,
-                                      constraints=({'type': 'eq', "fun": cond_sum_one}))
+                                      bounds=[(1e-6, 1)] * dim, method='SLSQP',
+                                      constraints=({'type': 'eq',
+                                                    "fun": lambda x: 1 - np.sum(x)}))
     return result_transitions
 
 
@@ -69,15 +70,6 @@ def count_transitions(transition_count, num_bus, num_periods, states, decisions)
     return transition_count
 
 
-def cond_sum_one(inputs):
-    """
-    A constraint used to check that the transition probabilities sum to one.
-
-    :param inputs: A numpy array of transition probabilities.
-    :return: Should return 0.
-    """
-    total = 1 - np.sum(inputs)
-    return total
 
 
 def loglike(trans_probs, transition_count):
