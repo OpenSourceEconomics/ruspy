@@ -54,6 +54,7 @@ v_start = np.zeros(num_points)
 v_disc = list(discount_utility(v_start, num_buses, gridsize, num_periods, utilities,
                                beta))
 np.savetxt('figure_2_1_prelim_long.txt', np.array(v_disc))
+np.savetxt('worst_case_figure_2_long.txt', worst_trans)
 
 periods = list(np.arange(0, num_periods, gridsize))
 
