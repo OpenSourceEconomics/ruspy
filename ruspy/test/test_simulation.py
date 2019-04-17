@@ -6,7 +6,7 @@ compared to the true saved results.
 """
 
 
-import pickle
+import pickle as pkl
 import pytest
 from pandas.testing import assert_frame_equal
 from numpy.testing import assert_array_equal
@@ -14,7 +14,7 @@ from ruspy.simulation.simulation import simulate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
 
-case_1 = pickle.load(open(TEST_RESOURCES_DIR + 'simulation_test/linear_5_agents.pkl',
+case_1 = pkl.load(open(TEST_RESOURCES_DIR + 'simulation_test/linear_5_agents.pkl',
                           'rb'))
 
 @pytest.fixture

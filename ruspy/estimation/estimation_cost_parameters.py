@@ -140,7 +140,7 @@ def choice_prob(ev, params, beta):
     s = ev.shape[0]
     costs = myopic_costs(s, lin_cost, params)
     util_main = beta * ev - costs[:, 0]  # Utility to maintain the bus
-    util_repl = np.full(util_main.shape, beta * ev[0] - costs[0, 0] - costs[0, 1]) # Utility to replace the bus
+    util_repl = np.full(util_main.shape, beta * ev[0] - costs[0, 0] - costs[0, 1])
     util = np.vstack((util_main, util_repl)).T
     util_min = ev[0]
     util = util - util_min
@@ -176,7 +176,8 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000
         maint_cost = beta * ev - costs[:, 0]
         repl_cost = beta * ev[0] - costs[0, 1] - costs[0, 0]
         ev_min = maint_cost[0]
-        log_sum = ev_min + np.log(np.exp(maint_cost - ev_min) + np.exp(repl_cost - ev_min))
+        log_sum = ev_min + np.log(np.exp(maint_cost - ev_min) +
+                                  np.exp(repl_cost - ev_min))
         ev_new = np.dot(trans_mat.T, log_sum)
         max_it += -1
     return ev_new
