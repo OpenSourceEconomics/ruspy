@@ -2,7 +2,7 @@
 import collections
 
 import numpy as np
-import oyaml as yaml
+import yaml
 
 
 def random_init(constr=None):
@@ -65,7 +65,7 @@ def random_init(constr=None):
     p1 = np.random.uniform(0.37, 0.42)
     p2 = np.random.uniform(0.55, 0.58)
     p3 = 1 - p1 - p2
-    init_dict['simulation']['probs'] = [p1, p2, p3]
+    init_dict['simulation']['known probs'] = [p1, p2, p3]
 
     # Draw parameter
     param1 = np.random.normal(10.0, 2)

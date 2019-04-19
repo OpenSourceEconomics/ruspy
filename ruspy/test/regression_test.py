@@ -31,7 +31,7 @@ def test_regression_simulation(inputs):
     num_periods = init_dict['simulation']['periods']
     beta = init_dict['simulation']['beta']
     params = np.array(init_dict['simulation']['params'])
-    probs = np.array(init_dict['simulation']['probs'])
+    probs = np.array(init_dict['simulation']['known probs'])
     v_disc_ = [0., 0.]
     v_disc = discount_utility(v_disc_, num_buses, num_periods, num_periods, utilities,
                               beta)

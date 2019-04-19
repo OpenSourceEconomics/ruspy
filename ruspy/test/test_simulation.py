@@ -5,7 +5,7 @@ This module first takes the settings and simulates a dataset. Then the results a
 compared to the true saved results.
 """
 
-
+import yaml
 import pickle as pkl
 import pytest
 from pandas.testing import assert_frame_equal
@@ -15,12 +15,14 @@ from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
 
 case_1 = pkl.load(open(TEST_RESOURCES_DIR + 'simulation_test/linear_5_agents.pkl',
-                          'rb'))
+                       'rb'))
+
+with open(TEST_RESOURCES_DIR + 'simulation_test/sim_test_init.yml') as y:
+    init_dict = yaml.load(y)
 
 @pytest.fixture
 def inputs():
     out = {}
-    init_dict = case_1[0]
     out['df'], out['unobs'], out['utilities'], num_states = \
         simulate(init_dict['simulation'])
     return out

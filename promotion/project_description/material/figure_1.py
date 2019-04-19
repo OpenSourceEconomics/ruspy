@@ -15,7 +15,7 @@ def plot_convergence(init_dict):
     df, unobs, utilities, num_states = simulate(init_dict['simulation'])
 
     costs = myopic_costs(num_states, lin_cost, init_dict['simulation']['params'])
-    trans_probs = np.array(init_dict['simulation']['probs'])
+    trans_probs = np.array(init_dict['simulation']['known probs'])
     trans_mat = create_transition_matrix(num_states, trans_probs)
     ev = calc_fixp(num_states, trans_mat, costs, beta)
     num_buses = init_dict['simulation']['buses']

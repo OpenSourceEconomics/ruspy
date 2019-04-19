@@ -11,6 +11,6 @@ dependencies:
   - matplotlib
   - jupyter
   - numba
-  - yaml
   - mpmath
-  - pickle
+  - pip:
+      - pyyaml
