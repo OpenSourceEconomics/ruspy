@@ -53,7 +53,7 @@ def create_state_matrix(states, num_states, num_obs):
 
 
 def loglike_opt_rule(params, maint_func, num_states, trans_mat, state_mat,
-                     decision_mat, beta):
+                     decision_mat, beta, max_it=1000000):
     """
     This is the logliklihood function for the estimation of the cost parameters.
 
@@ -77,7 +77,7 @@ def loglike_opt_rule(params, maint_func, num_states, trans_mat, state_mat,
     :return: The negative loglikelihood value for minimizing the objective function.
     """
     costs = myopic_costs(num_states, maint_func, params)
-    ev = calc_fixp(num_states, trans_mat, costs, beta)
+    ev = calc_fixp(num_states, trans_mat, costs, beta, max_it=max_it)
     p_choice = choice_prob(ev, params, beta)
     ll_prob = np.log(np.dot(p_choice.T, state_mat))
     return -np.sum(decision_mat * ll_prob)

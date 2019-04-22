@@ -19,17 +19,23 @@ def get_worst_trans(init_dict):
                    'fun': lambda x: roh - np.sum(np.multiply(x,
                                                              np.log(np.divide(x,
                                                                               x_0))))}
-    res = opt.minimize(select_fixp, args=(0, num_states, costs, beta), x0=x_0,
-                       bounds=[(1e-6, 1)] * dim, method='SLSQP',
-                       constraints=[eq_constr, ineq_constr])
-    worst_trans = np.array(res['x'])
+    if 'max_it' in init_dict.keys():
+        max_it = init_dict['max_it']
+        res = opt.minimize(select_fixp, args=(0, num_states, costs, beta, max_it),
+                           x0=x_0, bounds=[(1e-6, 1)] * dim, method='SLSQP',
+                           constraints=[eq_constr, ineq_constr])
+    else:
+        res = opt.minimize(select_fixp, args=(0, num_states, costs, beta),
+                           x0=x_0, bounds=[(1e-6, 1)] * dim, method='SLSQP',
+                           constraints=[eq_constr, ineq_constr])
 
+    worst_trans = np.array(res['x'])
     return worst_trans
 
 
-def select_fixp(trans_probs, state, num_states, costs, beta):
+def select_fixp(trans_probs, state, num_states, costs, beta, max_it=1000):
     trans_mat = create_transition_matrix(num_states, trans_probs)
-    fixp = calc_fixp(num_states, trans_mat, costs, beta)
+    fixp = calc_fixp(num_states, trans_mat, costs, beta, max_it)
     return fixp[state]
 
 

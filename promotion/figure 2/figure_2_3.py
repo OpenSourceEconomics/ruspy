@@ -6,7 +6,7 @@ from ruspy.estimation.estimation_cost_parameters import myopic_costs
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.simulation.simulation import simulate
-from ruspy.plotting.discounting import discount_utility
+from ruspy.plotting.value_zero import discount_utility
 
 
 with open('init.yml') as y:

@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from ruspy.simulation.simulation import simulate
-from ruspy.plotting.discounting import discount_utility
+from ruspy.plotting.value_zero import discount_utility
+from ruspy.plotting.value_zero import calc_ev_0
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 from ruspy.estimation.estimation_cost_parameters import myopic_costs
@@ -23,23 +24,19 @@ def plot_convergence(init_dict):
     gridsize = init_dict['plot']['gridsize']
     num_points = int(num_periods/gridsize)
 
-    v_calc = 0
-    for i in range(num_buses):
-        v_calc = v_calc + unobs[i, 0, 0] + ev[0]
-    v_calc = v_calc / num_buses
-    v_exp = list(np.full(num_points, v_calc))
+    v_exp = np.full(num_points, calc_ev_0(ev, unobs, num_buses))
 
     v_start = np.zeros(num_points)
-    v_disc = list(discount_utility(v_start, num_buses, gridsize, num_periods,
-                                   utilities, beta))
+    v_disc = discount_utility(v_start, num_buses, gridsize, num_periods, utilities,
+                              beta)
 
-    periods = list(np.arange(0, num_periods, gridsize))
+    periods = np.arange(0, num_periods, gridsize)
 
     ax = plt.figure(figsize=(14, 6))
 
     ax1 = ax.add_subplot(111)
 
-    ax1.set_ylim([0, -1500])
+    ax1.set_ylim([0, 1.3 * v_disc[-1]])
 
     ax1.set_ylabel(r"Value at time 0")
     ax1.set_xlabel(r"Periods")
