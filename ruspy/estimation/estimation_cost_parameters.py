@@ -149,7 +149,7 @@ def choice_prob(ev, params, beta):
 
 
 @numba.jit(nopython=True)
-def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=1000000):
+def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=1000000000):
     """
     The function to calculate the expected value fix point.
 
