@@ -9,6 +9,8 @@ import mpmath as mp
 import pandas as pd
 from ruspy.simulation.simulation_auxiliary import simulate_strategy
 from ruspy.estimation.estimation_cost_parameters import lin_cost
+from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.simulation.simulation_auxiliary import simulate_strategy_loop_known
 
 
 def simulate(init_dict):
@@ -60,9 +62,25 @@ def simulate(init_dict):
     unobs = np.random.gumbel(loc=-mp.euler, size=[num_buses, num_periods, 2])
     increments = np.random.choice(len(real_trans), size=(num_buses, num_periods),
                                   p=real_trans)
-    states, decisions, utilities, num_states = \
-        simulate_strategy(known_trans, increments, num_buses, num_periods, params,
-                          beta, unobs, maint_func)
+    if 'ev_known' in init_dict.keys():
+        # If there is already ev given, the auxiliary function is skipped and the
+        # simulation is executed with no further increases of the state space. This
+        # option is perfect if only one parameter in the setting is varied and
+        # therefore the highest achievable state can be guessed.
+        ev_known = np.array(init_dict['ev_known'])
+        num_states = int(len(ev_known))
+        costs = myopic_costs(num_states, lin_cost, params)
+        states = np.zeros((num_buses, num_periods), dtype=int)
+        decisions = np.zeros((num_buses, num_periods), dtype=int)
+        utilities = np.zeros((num_buses, num_periods), dtype=float)
+        states, decisions, utilities = simulate_strategy_loop_known(
+            num_buses, states, decisions, utilities, costs, ev_known, increments,
+            num_periods, beta, unobs)
+    else:
+        states, decisions, utilities, num_states = simulate_strategy(
+            known_trans, increments, num_buses, num_periods, params, beta, unobs,
+            maint_func)
+
     df = pd.DataFrame({'state': states.flatten(), 'decision': decisions.flatten()})
     df['period'] = np.arange(num_periods).repeat(num_buses).astype(int)
     bus_id = np.array([])

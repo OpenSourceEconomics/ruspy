@@ -40,6 +40,7 @@ def discount_utility(v_disc, num_buses, gridsize, num_periods, utilities, beta):
     return v_disc
 
 
+@numba.jit(nopython=True)
 def calc_ev_0(ev, unobs, num_buses):
     v_calc = 0
     for i in range(num_buses):
