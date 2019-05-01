@@ -149,7 +149,7 @@ def choice_prob(ev, params, beta):
 
 
 @numba.jit(nopython=True)
-def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=1000000000):
+def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-6, max_it=1000000):
     """
     The function to calculate the expected value fix point.
 
@@ -162,7 +162,7 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000
                         engine in the second column.
     :param beta:        The discount factor.
     :type beta:         float
-    :param threshold:   A threshold for the convergence. By default set to 1e-12.
+    :param threshold:   A threshold for the convergence. By default set to 1e-6.
     :type threshold:    float
     :param max_it:      Maximum number of iterations. By default set to 1000000.
     :type max_it:       int
