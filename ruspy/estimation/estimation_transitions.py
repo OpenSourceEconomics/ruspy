@@ -37,7 +37,8 @@ def estimate_transitions(df, repl_4=True):
                                               x: 1 - np.sum(x)}))
         return result_transitions
     else:
-        state_count = (states.max() + 1) * [0]
+        space_state = states.max() + 1
+        state_count = np.zeros(shape=(space_state, space_state), dtype=int)
         transition_count, state_count = count_transitions_alt(transition_count,
                                                               state_count, num_bus,
                                                               num_periods, states,
@@ -112,10 +113,10 @@ def count_transitions_alt(transition_count, state_count, num_bus, num_periods,
         for period in range(num_periods - 1):
             if decisions[bus, period] == 0:
                 increase = states[bus, period + 1] - states[bus, period]
-                state_count[states[bus, period]] += 1
+                state_count[states[bus, period], states[bus, period + 1]] += 1
             else:
                 increase = states[bus, period + 1]
-                state_count[0] += 1
+                state_count[0, increase] += 1
             if increase >= len(transition_count):
                 transition_count_new = [0] * (increase + 1)
                 for i in range(len(transition_count)):
