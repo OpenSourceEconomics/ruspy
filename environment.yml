@@ -9,6 +9,7 @@ dependencies:
   - pytest-xdist
   - scipy
   - matplotlib
+  - pytest-cov
   - jupyter
   - numba
   - mpmath
