@@ -7,7 +7,7 @@ from material.figure_1 import plot_convergence
 from material.replication import get_table
 
 with open('material/init_paper.yml') as y:
-    init_dict = yaml.load(y)
+    init_dict = yaml.safe_load(y)
 if not os.path.isfile('figures/descr_2a.txt'):
     create_desc()
 if not os.path.isfile('figures/replication.txt'):

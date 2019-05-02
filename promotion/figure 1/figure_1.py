@@ -10,7 +10,7 @@ from ruspy.estimation.estimation_cost_parameters import myopic_costs
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 
 with open('init.yml') as y:
-    init_dict = yaml.load(y)
+    init_dict = yaml.safe_load(y)
 
 beta = init_dict['simulation']['beta']
 

@@ -11,7 +11,7 @@ from ruspy.simulation.robust_sim import get_worst_trans
 
 
 with open('init.yml') as y:
-    init_dict = yaml.load(y)
+    init_dict = yaml.safe_load(y)
 
 beta = init_dict['simulation']['beta']
 init_dict['simulation']['states'] = 90

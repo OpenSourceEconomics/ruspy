@@ -18,7 +18,7 @@ case_1 = pkl.load(open(TEST_RESOURCES_DIR + 'simulation_test/linear_5_agents.pkl
                        'rb'))
 
 with open(TEST_RESOURCES_DIR + 'simulation_test/sim_test_init.yml') as y:
-    init_dict = yaml.load(y)
+    init_dict = yaml.safe_load(y)
 
 @pytest.fixture
 def inputs():

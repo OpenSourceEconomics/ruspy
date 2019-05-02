@@ -19,7 +19,7 @@ from ruspy.data.data_processing import data_processing
 from ruspy.estimation.estimation_transitions import count_transitions
 
 with open(TEST_RESOURCES_DIR + 'replication_test/init_replication_test.yml') as y:
-    init_dict = yaml.load(y)
+    init_dict = yaml.safe_load(y)
 data_reading()
 data = data_processing(init_dict['replication'])
 

@@ -8,7 +8,7 @@ from ruspy.data.data_location import get_data_storage
 
 data_path = get_data_storage()
 with open('init_replication.yml') as y:
-    init_dict = yaml.load(y)
+    init_dict = yaml.safe_load(y)
 
 group = init_dict['replication']['groups']
 binsize = str(init_dict['replication']['binsize'])
