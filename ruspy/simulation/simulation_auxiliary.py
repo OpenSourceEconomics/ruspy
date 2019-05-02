@@ -5,8 +5,9 @@ from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 from ruspy.estimation.estimation_cost_parameters import myopic_costs
 
 
-def simulate_strategy(known_trans, increments, num_buses, num_periods, params, beta,
-                      unobs, maint_func):
+def simulate_strategy(
+    known_trans, increments, num_buses, num_periods, params, beta, unobs, maint_func
+):
     """
     This function manages the simulation process. It initializes the auxiliary
     variables and calls therefore the subfuctions from estimation auxiliary. It then
@@ -52,17 +53,38 @@ def simulate_strategy(known_trans, increments, num_buses, num_periods, params, b
         known_trans_mat = create_transition_matrix(num_states, known_trans)
         costs = myopic_costs(num_states, maint_func, params)
         ev = calc_fixp(num_states, known_trans_mat, costs, beta)
-        states, decisions, utilities, start_period = \
-            simulate_strategy_loop(num_buses, states, decisions, utilities, costs,
-                                   ev, increments, num_states, start_period,
-                                   num_periods, beta, unobs)
+        states, decisions, utilities, start_period = simulate_strategy_loop(
+            num_buses,
+            states,
+            decisions,
+            utilities,
+            costs,
+            ev,
+            increments,
+            num_states,
+            start_period,
+            num_periods,
+            beta,
+            unobs,
+        )
     return states, decisions, utilities, num_states
 
 
 @numba.jit(nopython=True)
-def simulate_strategy_loop(num_buses, states, decisions, utilities, costs,
-                           ev, increments, num_states, start_period, num_periods,
-                           beta, unobs):
+def simulate_strategy_loop(
+    num_buses,
+    states,
+    decisions,
+    utilities,
+    costs,
+    ev,
+    increments,
+    num_states,
+    start_period,
+    num_periods,
+    beta,
+    unobs,
+):
     """
     This function simulates the decision strategy, as long as the current period is
     below the number of periods and the current highest state of a bus is in the
@@ -114,14 +136,15 @@ def simulate_strategy_loop(num_buses, states, decisions, utilities, costs,
     for period in range(start_period, num_periods):
         for bus in range(num_buses):
             old_state = states[bus, period]
-            if (-costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) >\
-                    (-costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]):
+            if (-costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) > (
+                -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]
+            ):
                 decision = 0
-                utility = - costs[old_state, 0] + unobs[bus, period, 0]
+                utility = -costs[old_state, 0] + unobs[bus, period, 0]
                 new_state = old_state + increments[bus, period]
             else:
                 decision = 1
-                utility = - costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
+                utility = -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
                 new_state = increments[bus, period]
 
             decisions[bus, period] = decision
@@ -136,8 +159,18 @@ def simulate_strategy_loop(num_buses, states, decisions, utilities, costs,
 
 
 @numba.jit(nopython=True)
-def simulate_strategy_loop_known(num_buses, states, decisions, utilities, costs,
-                                 ev, increments, num_periods, beta, unobs):
+def simulate_strategy_loop_known(
+    num_buses,
+    states,
+    decisions,
+    utilities,
+    costs,
+    ev,
+    increments,
+    num_periods,
+    beta,
+    unobs,
+):
     """
     This function simulates the decision strategy, as long as the current period is
     below the number of periods and the current highest state of a bus is in the
@@ -184,14 +217,15 @@ def simulate_strategy_loop_known(num_buses, states, decisions, utilities, costs,
         for bus in range(num_buses):
 
             old_state = states[bus, period]
-            if (-costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) >\
-                    (-costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]):
+            if (-costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) > (
+                -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]
+            ):
                 decision = 0
-                utility = - costs[old_state, 0] + unobs[bus, period, 0]
+                utility = -costs[old_state, 0] + unobs[bus, period, 0]
                 new_state = old_state + increments[bus, period]
             else:
                 decision = 1
-                utility = - costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
+                utility = -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
                 new_state = increments[bus, period]
 
             decisions[bus, period] = decision

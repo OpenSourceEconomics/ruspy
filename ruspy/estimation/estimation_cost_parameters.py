@@ -52,8 +52,16 @@ def create_state_matrix(states, num_states, num_obs):
     return state_mat
 
 
-def loglike_opt_rule(params, maint_func, num_states, trans_mat, state_mat,
-                     decision_mat, beta, max_it=1000000):
+def loglike_opt_rule(
+    params,
+    maint_func,
+    num_states,
+    trans_mat,
+    state_mat,
+    decision_mat,
+    beta,
+    max_it=1000000,
+):
     """
     This is the logliklihood function for the estimation of the cost parameters.
 
@@ -176,8 +184,9 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000
         maint_cost = beta * ev - costs[:, 0]
         repl_cost = beta * ev[0] - costs[0, 1] - costs[0, 0]
         ev_min = maint_cost[0]
-        log_sum = ev_min + np.log(np.exp(maint_cost - ev_min) +
-                                  np.exp(repl_cost - ev_min))
+        log_sum = ev_min + np.log(
+            np.exp(maint_cost - ev_min) + np.exp(repl_cost - ev_min)
+        )
         ev_new = np.dot(trans_mat.T, log_sum)
         max_it += -1
     return ev_new

@@ -2,6 +2,4 @@
 
 import os
 
-os.system('make latexpdf')
-
-
+os.system("make latexpdf")
