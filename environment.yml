@@ -10,8 +10,12 @@ dependencies:
   - pytest-xdist
   - scipy
   - matplotlib
+  - pytest-cov
   - jupyter
   - numba
   - mpmath
+  - pip
   - pip:
       - pyyaml
+      - flake8
+      - black

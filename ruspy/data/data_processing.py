@@ -22,44 +22,58 @@ def data_processing(init_dict):
     :return: The processed data as pandas dataframe.
     """
     dirname = os.path.dirname(__file__)
-    for k, group in enumerate(init_dict['groups'].split(',')):
+    for k, group in enumerate(init_dict["groups"].split(",")):
         repl = dict()
-        df = pd.read_pickle(dirname + '/pkl/group_data/' + group + '.pkl')
+        df = pd.read_pickle(dirname + "/pkl/group_data/" + group + ".pkl")
         for i in df.index:
             repl[i] = 0
         for j, i in enumerate(df.columns.values[11:]):
-            df2 = df[['Bus_ID', i]]
+            df2 = df[["Bus_ID", i]]
             df2 = df2.assign(decision=0)
             for m in df2.index:
                 if repl[m] == 1:
-                    df2.at[m, i] = df2.iloc[m][i] - df.iloc[m]['Odo_1st']
+                    df2.at[m, i] = df2.iloc[m][i] - df.iloc[m]["Odo_1st"]
                 if repl[m] == 2:
-                    df2.at[m, i] = df2.iloc[m][i] - df.iloc[m]['Odo_2nd']
+                    df2.at[m, i] = df2.iloc[m][i] - df.iloc[m]["Odo_2nd"]
                 if i < df.columns.values[-1]:
-                    if (df.iloc[m][i+1] > df.iloc[m]['Odo_1st']) & (df.iloc[m]['Odo_1st'] != 0) & (repl[m] == 0):
-                        df2.at[m, 'decision'] = 1
+                    if (
+                        (df.iloc[m][i + 1] > df.iloc[m]["Odo_1st"])
+                        & (df.iloc[m]["Odo_1st"] != 0)
+                        & (repl[m] == 0)
+                    ):
+                        df2.at[m, "decision"] = 1
                         repl[m] = repl[m] + 1
-                    if (df.iloc[m][i+1] > df.iloc[m]['Odo_2nd']) & (df.iloc[m]['Odo_2nd'] != 0) & (repl[m] == 1):
-                        df2.at[m, 'decision'] = 1
+                    if (
+                        (df.iloc[m][i + 1] > df.iloc[m]["Odo_2nd"])
+                        & (df.iloc[m]["Odo_2nd"] != 0)
+                        & (repl[m] == 1)
+                    ):
+                        df2.at[m, "decision"] = 1
                         repl[m] = repl[m] + 1
-            df2 = df2.rename(columns={i: 'state'})
+            df2 = df2.rename(columns={i: "state"})
             if j == 0:
                 df3 = df2
             else:
                 df3 = pd.concat([df3, df2])
 
-        num_bus = len(df3['Bus_ID'].unique())
+        num_bus = len(df3["Bus_ID"].unique())
         num_periods = df3.shape[0] / num_bus
-        df3['period'] = np.arange(num_periods).repeat(num_bus).astype(int)
-        df3[['state']] = (df3[['state']] / init_dict['binsize']).astype(int)
-        df3.sort_values(['Bus_ID', 'period'], inplace=True)
+        df3["period"] = np.arange(num_periods).repeat(num_bus).astype(int)
+        df3[["state"]] = (df3[["state"]] / init_dict["binsize"]).astype(int)
+        df3.sort_values(["Bus_ID", "period"], inplace=True)
         df3.reset_index(drop=True, inplace=True)
         if k == 0:
             df4 = df3.copy()
         else:
             df4 = pd.concat([df4, df3], axis=0)
     df4.reset_index(drop=True, inplace=True)
-    os.makedirs(dirname + '/pkl/replication_data', exist_ok=True)
-    df4.to_pickle(dirname + '/pkl/replication_data/rep_' + init_dict['groups'] +
-                  '_' + str(init_dict['binsize']) + '.pkl')
+    os.makedirs(dirname + "/pkl/replication_data", exist_ok=True)
+    df4.to_pickle(
+        dirname
+        + "/pkl/replication_data/rep_"
+        + init_dict["groups"]
+        + "_"
+        + str(init_dict["binsize"])
+        + ".pkl"
+    )
     return df4

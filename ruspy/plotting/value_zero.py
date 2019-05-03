@@ -33,7 +33,7 @@ def discount_utility(v_disc, num_buses, gridsize, num_periods, utilities, beta):
     """
     num_points = int(num_periods / gridsize)
     for point in range(num_points + 1):
-        v = 0.
+        v = 0.0
         for i in range(point * gridsize):
             v += (beta ** i) * np.sum(utilities[:, i])
         v_disc[point] = v / num_buses

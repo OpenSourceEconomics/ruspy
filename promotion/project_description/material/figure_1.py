@@ -11,24 +11,25 @@ from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 
 
 def plot_convergence(init_dict):
-    beta = init_dict['simulation']['beta']
+    beta = init_dict["simulation"]["beta"]
 
-    df, unobs, utilities, num_states = simulate(init_dict['simulation'])
+    df, unobs, utilities, num_states = simulate(init_dict["simulation"])
 
-    costs = myopic_costs(num_states, lin_cost, init_dict['simulation']['params'])
-    trans_probs = np.array(init_dict['simulation']['known probs'])
+    costs = myopic_costs(num_states, lin_cost, init_dict["simulation"]["params"])
+    trans_probs = np.array(init_dict["simulation"]["known probs"])
     trans_mat = create_transition_matrix(num_states, trans_probs)
     ev = calc_fixp(num_states, trans_mat, costs, beta)
-    num_buses = init_dict['simulation']['buses']
-    num_periods = init_dict['simulation']['periods']
-    gridsize = init_dict['plot']['gridsize']
-    num_points = int(num_periods/gridsize)
+    num_buses = init_dict["simulation"]["buses"]
+    num_periods = init_dict["simulation"]["periods"]
+    gridsize = init_dict["plot"]["gridsize"]
+    num_points = int(num_periods / gridsize)
 
     v_exp = np.full(num_points, calc_ev_0(ev, unobs, num_buses))
 
     v_start = np.zeros(num_points)
-    v_disc = discount_utility(v_start, num_buses, gridsize, num_periods, utilities,
-                              beta)
+    v_disc = discount_utility(
+        v_start, num_buses, gridsize, num_periods, utilities, beta
+    )
 
     periods = np.arange(0, num_periods, gridsize)
 
@@ -41,9 +42,9 @@ def plot_convergence(init_dict):
     ax1.set_ylabel(r"Value at time 0")
     ax1.set_xlabel(r"Periods")
 
-    l1 = ax1.plot(periods, v_disc, color='blue')
-    l2 = ax1.plot(periods, v_exp, color='orange')
+    ax1.plot(periods, v_disc, color="blue")
+    ax1.plot(periods, v_exp, color="orange")
 
     plt.tight_layout()
-    os.makedirs('figures', exist_ok=True)
-    plt.savefig('figures/figure_1.png', dpi=300)
+    os.makedirs("figures", exist_ok=True)
+    plt.savefig("figures/figure_1.png", dpi=300)

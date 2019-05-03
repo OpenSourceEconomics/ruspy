@@ -15,4 +15,3 @@ def test():
     os.chdir(PACKAGE_DIR)
     pytest.main()
     os.chdir(current_directory)
-

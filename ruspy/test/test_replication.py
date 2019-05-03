@@ -18,58 +18,64 @@ from ruspy.data.data_reading import data_reading
 from ruspy.data.data_processing import data_processing
 from ruspy.estimation.estimation_transitions import count_transitions
 
-with open(TEST_RESOURCES_DIR + 'replication_test/init_replication_test.yml') as y:
+with open(TEST_RESOURCES_DIR + "replication_test/init_replication_test.yml") as y:
     init_dict = yaml.safe_load(y)
 data_reading()
-data = data_processing(init_dict['replication'])
+data = data_processing(init_dict["replication"])
 
-result_trans, result_fixp = estimate(init_dict['replication'], data)
+result_trans, result_fixp = estimate(init_dict["replication"], data)
+
 
 @pytest.fixture
 def inputs():
     out = dict()
-    out['trans_est'] = result_trans['x']
-    out['params_est'] = result_fixp['x']
-    out['trans_ll'] = result_trans['fun']
-    out['cost_ll'] = result_fixp['fun']
+    out["trans_est"] = result_trans["x"]
+    out["params_est"] = result_fixp["x"]
+    out["trans_ll"] = result_trans["fun"]
+    out["cost_ll"] = result_fixp["fun"]
     return out
+
 
 @pytest.fixture
 def outputs():
     out = dict()
-    out['trans_base'] = np.loadtxt(TEST_RESOURCES_DIR +
-                                   'replication_test/repl_test_trans.txt')
-    out['params_base'] = np.loadtxt(TEST_RESOURCES_DIR +
-                                    'replication_test/repl_test_params.txt')
-    out['transition_count'] = np.loadtxt(TEST_RESOURCES_DIR +
-                                         'replication_test/transition_count.txt')
-    out['trans_ll'] = 3140.570557
-    out['cost_ll'] = 163.585839
+    out["trans_base"] = np.loadtxt(
+        TEST_RESOURCES_DIR + "replication_test/repl_test_trans.txt"
+    )
+    out["params_base"] = np.loadtxt(
+        TEST_RESOURCES_DIR + "replication_test/repl_test_params.txt"
+    )
+    out["transition_count"] = np.loadtxt(
+        TEST_RESOURCES_DIR + "replication_test/transition_count.txt"
+    )
+    out["trans_ll"] = 3140.570557
+    out["cost_ll"] = 163.585839
     return out
 
 
 def test_repl_params(inputs, outputs):
-    assert_array_almost_equal(inputs['params_est'], outputs['params_base'], decimal=2)
+    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=2)
 
 
 def test_repl_trans(inputs, outputs):
-    assert_array_almost_equal(inputs['trans_est'], outputs['trans_base'], decimal=4)
+    assert_array_almost_equal(inputs["trans_est"], outputs["trans_base"], decimal=4)
 
 
 def test_trans_ll(inputs, outputs):
-    assert_allclose(inputs['trans_ll'], outputs['trans_ll'])
+    assert_allclose(inputs["trans_ll"], outputs["trans_ll"])
 
 
 def test_cost_ll(inputs, outputs):
-    assert_allclose(inputs['cost_ll'], outputs['cost_ll'])
+    assert_allclose(inputs["cost_ll"], outputs["cost_ll"])
 
 
 def test_transition_count(outputs):
     transition_count = [0]
-    num_bus = len(data['Bus_ID'].unique())
+    num_bus = len(data["Bus_ID"].unique())
     num_periods = int(data.shape[0] / num_bus)
-    states = data['state'].values.reshape(num_bus, num_periods)
-    decisions = data['decision'].values.reshape(num_bus, num_periods)
-    transition_count = np.array(count_transitions(transition_count, num_bus,
-                                                  num_periods, states, decisions))
-    assert_array_equal(transition_count, outputs['transition_count'])
+    states = data["state"].values.reshape(num_bus, num_periods)
+    decisions = data["decision"].values.reshape(num_bus, num_periods)
+    transition_count = np.array(
+        count_transitions(transition_count, num_bus, num_periods, states, decisions)
+    )
+    assert_array_equal(transition_count, outputs["transition_count"])

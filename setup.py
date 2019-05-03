@@ -6,16 +6,25 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "ruspy"
-DESCRIPTION = (
-    "Hier sollte eine Beschreibung stehen."
-)
+DESCRIPTION = "Hier sollte eine Beschreibung stehen."
 URL = ""
 EMAIL = "s6mables@uni-bonn.de"
 AUTHOR = "Maximilian Blesch"
 
 # What packages are required for this module to be executed?
-REQUIRED = ["numpy", "pytest", "pandas", "oyaml", 'scipy', 'pyyaml', 'matplotlib',
-            'mpmath', "numba"]
+REQUIRED = [
+    "numpy",
+    "pytest",
+    "pandas",
+    "oyaml",
+    "scipy",
+    "pyyaml",
+    "matplotlib",
+    "mpmath",
+    "numba",
+    "pre-commit",
+    "flake8",
+]
 
 
 here = os.path.abspath(os.path.dirname(__file__))
