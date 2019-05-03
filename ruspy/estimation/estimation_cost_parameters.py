@@ -84,7 +84,7 @@ def loglike_opt_rule(
 
     :return: The negative loglikelihood value for minimizing the objective function.
     """
-    costs = myopic_costs(num_states, maint_func, params)
+    costs = cost_func(num_states, maint_func, params)
     ev = calc_fixp(num_states, trans_mat, costs, beta, max_it=max_it)
     p_choice = choice_prob(ev, params, beta)
     ll_prob = np.log(np.dot(p_choice.T, state_mat))
@@ -107,7 +107,7 @@ def lin_cost(num_states, params):
     return states * 0.001 * params[0]
 
 
-def myopic_costs(num_states, maint_func, params):
+def cost_func(num_states, maint_func, params):
     """
     This function calculates a vector containing the costs for maintenance and
     replacement, without recognizing the future.
@@ -146,11 +146,11 @@ def choice_prob(ev, params, beta):
              column.
     """
     s = ev.shape[0]
-    costs = myopic_costs(s, lin_cost, params)
+    costs = cost_func(s, lin_cost, params)
     util_main = beta * ev - costs[:, 0]  # Utility to maintain the bus
     util_repl = np.full(util_main.shape, beta * ev[0] - costs[0, 0] - costs[0, 1])
     util = np.vstack((util_main, util_repl)).T
-    util_min = ev[0]
+    util_min = np.amin(util)
     util = util - util_min
     pchoice = np.exp(util) / (np.sum(np.exp(util), axis=1).reshape(s, -1))
     return pchoice

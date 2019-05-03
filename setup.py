@@ -16,13 +16,12 @@ REQUIRED = [
     "numpy",
     "pytest",
     "pandas",
-    "oyaml",
+    "pyyaml",
     "scipy",
     "pyyaml",
     "matplotlib",
     "mpmath",
     "numba",
-    "pre-commit",
     "flake8",
 ]
 

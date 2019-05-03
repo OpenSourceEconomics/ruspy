@@ -2,16 +2,16 @@ import numpy as np
 import scipy.optimize as opt
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
-from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 
 def get_worst_trans(init_dict, roh, num_states, max_it=1000, min_state=0):
     beta = init_dict["beta"]
-    x_0 = np.array(init_dict["known probs"])
+    x_0 = np.array(init_dict["known trans"])
     dim = x_0.shape[0]
     params = np.array(init_dict["params"])
-    costs = myopic_costs(num_states, lin_cost, params)
+    costs = cost_func(num_states, lin_cost, params)
     eq_constr = {"type": "eq", "fun": lambda x: 1 - np.sum(x)}
     ineq_constr = {
         "type": "ineq",

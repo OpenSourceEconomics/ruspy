@@ -2,7 +2,7 @@ import numpy as np
 import numba
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.estimation.estimation_cost_parameters import cost_func
 
 
 def simulate_strategy(
@@ -51,7 +51,7 @@ def simulate_strategy(
     while start_period < num_periods - 1:
         num_states = 2 * num_states
         known_trans_mat = create_transition_matrix(num_states, known_trans)
-        costs = myopic_costs(num_states, maint_func, params)
+        costs = cost_func(num_states, maint_func, params)
         ev = calc_fixp(num_states, known_trans_mat, costs, beta)
         states, decisions, utilities, start_period = simulate_strategy_loop(
             num_buses,

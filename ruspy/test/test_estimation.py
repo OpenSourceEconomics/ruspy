@@ -10,7 +10,7 @@ from numpy.testing import assert_array_almost_equal
 import pytest
 
 
-from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import choice_prob
@@ -41,9 +41,9 @@ def outputs():
     return out
 
 
-def test_myopic_costs(inputs, outputs):
+def test_cost_func(inputs, outputs):
     assert_array_almost_equal(
-        myopic_costs(inputs["nstates"], inputs["cost_fct"], inputs["params"]),
+        cost_func(inputs["nstates"], inputs["cost_fct"], inputs["params"]),
         outputs["myop_costs"],
     )
 

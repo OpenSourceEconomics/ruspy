@@ -9,7 +9,7 @@ import mpmath as mp
 import pandas as pd
 from ruspy.simulation.simulation_auxiliary import simulate_strategy
 from ruspy.estimation.estimation_cost_parameters import lin_cost
-from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.simulation.simulation_auxiliary import simulate_strategy_loop_known
 
 
@@ -49,11 +49,11 @@ def simulate(init_dict):
     num_buses = init_dict["buses"]
     beta = init_dict["beta"]
     num_periods = init_dict["periods"]
-    if "real probs" in init_dict.keys():
-        real_trans = np.array(init_dict["real probs"])
+    if "real trans" in init_dict.keys():
+        real_trans = np.array(init_dict["real trans"])
     else:
-        real_trans = np.array(init_dict["known probs"])
-    known_trans = np.array(init_dict["known probs"])
+        real_trans = np.array(init_dict["known trans"])
+    known_trans = np.array(init_dict["known trans"])
     params = np.array(init_dict["params"])
     if init_dict["maint_func"] == "linear":
         maint_func = lin_cost
@@ -70,7 +70,7 @@ def simulate(init_dict):
         # therefore the highest achievable state can be guessed.
         ev_known = np.array(init_dict["ev_known"])
         num_states = int(len(ev_known))
-        costs = myopic_costs(num_states, lin_cost, params)
+        costs = cost_func(num_states, lin_cost, params)
         states = np.zeros((num_buses, num_periods), dtype=int)
         decisions = np.zeros((num_buses, num_periods), dtype=int)
         utilities = np.zeros((num_buses, num_periods), dtype=float)

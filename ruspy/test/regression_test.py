@@ -13,7 +13,7 @@ from ruspy.test.ranodm_init import random_init
 from ruspy.simulation.simulation import simulate
 from ruspy.plotting.value_zero import discount_utility
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
-from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 
@@ -31,13 +31,13 @@ def test_regression_simulation(inputs):
     num_periods = init_dict["simulation"]["periods"]
     beta = init_dict["simulation"]["beta"]
     params = np.array(init_dict["simulation"]["params"])
-    probs = np.array(init_dict["simulation"]["known probs"])
+    probs = np.array(init_dict["simulation"]["known trans"])
     v_disc_ = [0.0, 0.0]
     v_disc = discount_utility(
         v_disc_, num_buses, num_periods, num_periods, utilities, beta
     )
     trans_mat = create_transition_matrix(num_states, probs)
-    costs = myopic_costs(num_states, lin_cost, params)
+    costs = cost_func(num_states, lin_cost, params)
     v_calc = calc_fixp(num_states, trans_mat, costs, beta)
     un_ob_av = 0
     for bus in range(num_buses):

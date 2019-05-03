@@ -2,7 +2,7 @@ import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-from ruspy.estimation.estimation_cost_parameters import myopic_costs
+from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.simulation.simulation import simulate
@@ -21,21 +21,21 @@ v_disc = []
 alpha_plot = []
 for alpha in np.arange(0, 0.8, 0.01):
     alpha_plot += [alpha]
-    known_trans_probs = np.array(init_dict["simulation"]["known probs"])
+    known_trans_probs = np.array(init_dict["simulation"]["known trans"])
     worst_trans = np.zeros(known_trans_probs.shape[0], dtype=float)
     remain = 1 - known_trans_probs[-1]
     worst_trans[-1] = known_trans_probs[-1] + alpha
     for i, p in enumerate(known_trans_probs[0:-1]):
         worst_trans[i] = p - (p / remain) * alpha
-    init_dict["simulation"]["real probs"] = worst_trans
+    init_dict["simulation"]["real trans"] = worst_trans
     df, unobs, utilities, num_states = simulate(init_dict["simulation"])
 
-    costs = myopic_costs(num_states, lin_cost, init_dict["simulation"]["params"])
+    costs = cost_func(num_states, lin_cost, init_dict["simulation"]["params"])
 
     num_buses = init_dict["simulation"]["buses"]
     num_periods = init_dict["simulation"]["periods"]
 
-    real_trans_probs = np.array(init_dict["simulation"]["real probs"])
+    real_trans_probs = np.array(init_dict["simulation"]["real trans"])
     real_trans_mat = create_transition_matrix(num_states, real_trans_probs)
     ev_real = calc_fixp(num_states, real_trans_mat, costs, beta)
 
