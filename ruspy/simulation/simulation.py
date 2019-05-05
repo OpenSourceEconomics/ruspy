@@ -99,9 +99,10 @@ def simulate(init_dict):
         )
 
     df = pd.DataFrame({"state": states.flatten(), "decision": decisions.flatten()})
-    df["period"] = np.arange(num_periods).repeat(num_buses).astype(int)
-    bus_id = np.array([])
-    for i in range(1, num_buses + 1):
-        bus_id = np.append(bus_id, np.full(num_periods, i, dtype=int))
+    bus_id = np.arange(1, num_buses+ 1).repeat(num_periods).astype(int)
     df["Bus_ID"] = bus_id
+    period = np.array([])
+    for i in range(num_buses):
+        period = np.append(period, np.arange(num_periods))
+    df["period"] = period.astype(int)
     return df, unobs, utilities, num_states
