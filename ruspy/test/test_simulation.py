@@ -6,17 +6,12 @@ compared to the true saved results.
 """
 
 import yaml
-import pickle as pkl
+import numpy as np
 import pytest
-from pandas.testing import assert_frame_equal
 from numpy.testing import assert_array_equal
 from ruspy.simulation.simulation import simulate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
-
-case_1 = pkl.load(
-    open(TEST_RESOURCES_DIR + "simulation_test/linear_5_agents.pkl", "rb")
-)
 
 with open(TEST_RESOURCES_DIR + "simulation_test/sim_test_init.yml") as y:
     init_dict = yaml.safe_load(y)
@@ -33,20 +28,25 @@ def inputs():
 
 @pytest.fixture
 def outputs():
-    out = {}
-    out["df"] = case_1[1]
-    out["unobs"] = case_1[2]
-    out["utilities"] = case_1[3]
+    out = dict()
+    out["states"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/states.txt")
+    out["decision"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/decision.txt")
+    out["unobs"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/unobs.txt")
+    out["utilities"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/utilites.txt")
     return out
 
 
 def test_states(inputs, outputs):
-    assert_frame_equal(inputs["df"], outputs["df"])
+     assert_array_equal(outputs['states'], inputs['df'].state)
+
+
+def test_decision(inputs, outputs):
+    assert_array_equal(outputs['decision'], inputs['df'].decision)
 
 
 def test_unobs(inputs, outputs):
-    assert_array_equal(inputs["unobs"], outputs["unobs"])
+    assert_array_equal(np.ndarray.flatten(inputs["unobs"]), outputs["unobs"])
 
 
 def test_utilities(inputs, outputs):
-    assert_array_equal(inputs["utilities"], outputs["utilities"])
+    assert_array_equal(np.ndarray.flatten(inputs["utilities"]), outputs["utilities"])
