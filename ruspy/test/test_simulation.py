@@ -32,7 +32,7 @@ def outputs():
     out["states"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/states.txt")
     out["decision"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/decision.txt")
     out["unobs"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/unobs.txt")
-    out["utilities"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/utilites.txt")
+    out["utilities"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/utilities.txt")
     return out
 
 

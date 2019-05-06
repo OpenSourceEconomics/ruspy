@@ -21,6 +21,7 @@ REQUIRED = [
     "pyyaml",
     "matplotlib",
     "mpmath",
+    "pre-commit",
     "numba",
     "flake8",
 ]
