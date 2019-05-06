@@ -1,5 +1,7 @@
 # Optimal Replacement of GMC Bus Engines: An Empirical Model of Harold Zurcher
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/91ce9e983dea4403b986f0ca69564818)](https://app.codacy.com/app/OpenSourceEconomics/ruspy?utm_source=github.com&utm_medium=referral&utm_content=OpenSourceEconomics/ruspy&utm_campaign=Badge_Grade_Dashboard)
+
 This repository contains code to replicate some descriptives and the major results of
 > Rust, J. (1987). [Optimal Replacement of GMC Bus Engines: An empirical model of Harold Zurcher.](https://doi.org/10.2307/1911259) *Econometrica*, Vol. 55, No.5, 999-1033.
 
