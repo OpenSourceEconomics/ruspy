@@ -16,7 +16,6 @@ REQUIRED = [
     "numpy",
     "pytest",
     "pandas",
-    "pyyaml",
     "scipy",
     "pyyaml",
     "matplotlib",
