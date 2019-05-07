@@ -22,7 +22,6 @@ REQUIRED = [
     "matplotlib",
     "mpmath",
     "numba",
-    "flake8",
 ]
 
 

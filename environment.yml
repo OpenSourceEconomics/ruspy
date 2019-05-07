@@ -19,3 +19,4 @@ dependencies:
       - pyyaml
       - flake8
       - black
+      - pre-commit
