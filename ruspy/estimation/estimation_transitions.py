@@ -4,7 +4,6 @@ probabilities.
 """
 import numpy as np
 from math import log
-import scipy.optimize as opt
 import numba
 
 
@@ -22,6 +21,7 @@ def estimate_transitions(df, repl_4=True):
              dictionary.
     """
     transition_count = [0]
+    result_transitions = dict()
     num_bus = len(df["Bus_ID"].unique())
     num_periods = int(df.shape[0] / num_bus)
     states = df["state"].values.reshape(num_bus, num_periods)
@@ -30,34 +30,21 @@ def estimate_transitions(df, repl_4=True):
         transition_count = count_transitions(
             transition_count, num_bus, num_periods, states, decisions
         )
-        dim = len(transition_count)
-        x_0 = np.full(dim, 0.1)
-        result_transitions = opt.minimize(
-            loglike,
-            args=transition_count,
-            x0=x_0,
-            bounds=[(1e-6, 1)] * dim,
-            method="SLSQP",
-            constraints=({"type": "eq", "fun": lambda x: 1 - np.sum(x)}),
-        )
-        return result_transitions
+
     else:
         space_state = states.max() + 1
         state_count = np.zeros(shape=(space_state, space_state), dtype=int)
         transition_count, state_count = count_transitions_alt(
             transition_count, state_count, num_bus, num_periods, states, decisions
         )
-        dim = len(transition_count)
-        x_0 = np.full(dim, 0.1)
-        result_transitions = opt.minimize(
-            loglike,
-            args=transition_count,
-            x0=x_0,
-            bounds=[(1e-6, 1)] * dim,
-            method="SLSQP",
-            constraints=({"type": "eq", "fun": lambda x: 1 - np.sum(x)}),
-        )
-        return result_transitions, state_count
+        result_transitions["state_count"] = state_count
+
+    trans_probs = np.array(transition_count) / sum(transition_count)
+    ll = loglike(trans_probs, transition_count)
+    result_transitions.update(
+        {"x": trans_probs, "fun": ll, "trans_count": transition_count}
+    )
+    return result_transitions
 
 
 @numba.jit(nopython=True)
@@ -145,6 +132,6 @@ def loglike(trans_probs, transition_count):
              function.
     """
     ll = 0
-    for i in range(len(trans_probs)):
-        ll = ll + transition_count[i] * log(trans_probs[i])
+    for i, p in enumerate(trans_probs):
+        ll = ll + transition_count[i] * log(p)
     return -ll

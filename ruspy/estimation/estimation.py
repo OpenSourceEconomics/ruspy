@@ -34,10 +34,7 @@ def estimate(init_dict, df, repl_4=True):
              probabilities and of the cost parameters as separate dictionaries.
     """
     beta = init_dict["beta"]
-    if repl_4:
-        transition_results = estimate_transitions(df)
-    else:
-        transition_results, state_count = estimate_transitions(df, repl_4=repl_4)
+    transition_results = estimate_transitions(df, repl_4=repl_4)
     endog = df.loc[:, "decision"]
     states = df.loc[:, "state"]
     num_obs = df.shape[0]
@@ -77,4 +74,4 @@ def estimate(init_dict, df, repl_4=True):
     if repl_4:
         return transition_results, result
     else:
-        return transition_results, state_count, result
+        return transition_results, result

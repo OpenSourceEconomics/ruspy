@@ -37,11 +37,11 @@ def outputs():
 
 
 def test_states(inputs, outputs):
-     assert_array_equal(outputs['states'], inputs['df'].state)
+    assert_array_equal(outputs["states"], inputs["df"].state)
 
 
 def test_decision(inputs, outputs):
-    assert_array_equal(outputs['decision'], inputs['df'].decision)
+    assert_array_equal(outputs["decision"], inputs["df"].decision)
 
 
 def test_unobs(inputs, outputs):
