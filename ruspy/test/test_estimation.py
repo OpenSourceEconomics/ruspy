@@ -15,6 +15,7 @@ from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import choice_prob
 from ruspy.estimation.estimation_cost_parameters import lin_cost
+from ruspy.estimation.estimation_cost_parameters import converge_choice
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
 
@@ -67,5 +68,14 @@ def test_calc_fixp(inputs, outputs):
 def test_choice_probs(inputs, outputs):
     assert_array_almost_equal(
         choice_prob(outputs["fixp"], outputs["costs"], inputs["beta"]),
+        outputs["choice_probs"],
+    )
+
+
+def test_choice_convergence(inputs, outputs):
+    assert_array_almost_equal(
+        converge_choice(
+            inputs["nstates"], outputs["trans_mat"], outputs["costs"], inputs["beta"]
+        ),
         outputs["choice_probs"],
     )
