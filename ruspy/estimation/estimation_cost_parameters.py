@@ -190,6 +190,7 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000
         )
         ev_new = np.dot(trans_mat.T, log_sum)
         max_it -= 1
+    print(max_it)
     return ev_new
 
 
@@ -241,4 +242,5 @@ def converge_choice(
             np.sum(np.exp(util), axis=1).reshape(num_states, -1)
         )
         max_it -= 1
+    print(max_it)
     return choice_new
