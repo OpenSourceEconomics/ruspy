@@ -32,7 +32,7 @@ def inputs():
 @pytest.fixture
 def outputs():
     out = dict()
-    out["myop_costs"] = np.loadtxt(TEST_RESOURCES_DIR + "estimation_test/myop_cost.txt")
+    out["costs"] = np.loadtxt(TEST_RESOURCES_DIR + "estimation_test/myop_cost.txt")
     out["trans_mat"] = np.loadtxt(TEST_RESOURCES_DIR + "estimation_test/trans_mat.txt")
     out["fixp"] = np.loadtxt(TEST_RESOURCES_DIR + "estimation_test/fixp.txt")
     out["choice_probs"] = np.loadtxt(
@@ -44,7 +44,7 @@ def outputs():
 def test_cost_func(inputs, outputs):
     assert_array_almost_equal(
         cost_func(inputs["nstates"], inputs["cost_fct"], inputs["params"]),
-        outputs["myop_costs"],
+        outputs["costs"],
     )
 
 
@@ -58,10 +58,7 @@ def test_create_trans_mat(inputs, outputs):
 def test_calc_fixp(inputs, outputs):
     assert_array_almost_equal(
         calc_fixp(
-            inputs["nstates"],
-            outputs["trans_mat"],
-            outputs["myop_costs"],
-            inputs["beta"],
+            inputs["nstates"], outputs["trans_mat"], outputs["costs"], inputs["beta"]
         ),
         outputs["fixp"],
     )
@@ -69,6 +66,6 @@ def test_calc_fixp(inputs, outputs):
 
 def test_choice_probs(inputs, outputs):
     assert_array_almost_equal(
-        choice_prob(outputs["fixp"], inputs["params"], inputs["beta"]),
+        choice_prob(outputs["fixp"], outputs["costs"], inputs["beta"]),
         outputs["choice_probs"],
     )
