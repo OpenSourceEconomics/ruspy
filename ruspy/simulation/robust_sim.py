@@ -52,3 +52,20 @@ def select_choice(trans_probs, num_states, costs, beta, max_it):
     trans_mat = create_transition_matrix(num_states, trans_probs)
     choice = converge_choice(num_states, trans_mat, costs, beta, max_it=max_it)
     return -choice[int(num_states / 2), 0]
+
+
+def draw_trans_probs_mulitvar(n, p, size):
+    dim = len(p)
+    cov = np.zeros(shape=(dim, dim), dtype=float)
+    for i in range(dim):
+        for j in range(dim):
+            if i == j:
+                cov[i, i] = n * p[i] * (1 - p[i])
+            else:
+                cov[i, j] = -n * p[i] * p[j]
+    mean = p * n
+    draw_array = np.random.multivariate_normal(mean, cov, size=size)
+    probs = []
+    for draw in draw_array:
+        probs += [draw / sum(draw)]
+    return probs, cov
