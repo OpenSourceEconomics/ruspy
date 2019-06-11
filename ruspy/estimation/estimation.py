@@ -59,7 +59,7 @@ def estimate(init_dict, df, repl_4=True):
                 beta,
                 max_it,
             ),
-            x0=np.array([10, 2]),
+            x0=np.array([5, 5]),
             bounds=[(1e-6, None), (1e-6, None)],
             method="L-BFGS-B",
         )
@@ -67,7 +67,7 @@ def estimate(init_dict, df, repl_4=True):
         result = opt.minimize(
             loglike_opt_rule,
             args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
-            x0=np.array([10, 2]),
+            x0=np.array([5, 5]),
             bounds=[(1e-6, None), (1e-6, None)],
             method="L-BFGS-B",
         )
