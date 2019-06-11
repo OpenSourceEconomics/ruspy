@@ -55,17 +55,22 @@ def select_choice(trans_probs, num_states, costs, beta, max_it):
 
 
 def draw_trans_probs_mulitvar(n, p, size):
+    mean = p * n
+    cov = calc_cov_multinomial(n, p) * (n ** 2)
+    draw_array = np.random.multivariate_normal(mean, cov, size=size)
+    probs = []
+    for draw in draw_array:
+        probs += [draw / sum(draw)]
+    return probs
+
+
+def calc_cov_multinomial(n, p):
     dim = len(p)
     cov = np.zeros(shape=(dim, dim), dtype=float)
     for i in range(dim):
         for j in range(dim):
             if i == j:
-                cov[i, i] = n * p[i] * (1 - p[i])
+                cov[i, i] = p[i] * (1 - p[i])
             else:
-                cov[i, j] = -n * p[i] * p[j]
-    mean = p * n
-    draw_array = np.random.multivariate_normal(mean, cov, size=size)
-    probs = []
-    for draw in draw_array:
-        probs += [draw / sum(draw)]
-    return probs, cov
+                cov[i, j] = -p[i] * p[j]
+    return cov / n
