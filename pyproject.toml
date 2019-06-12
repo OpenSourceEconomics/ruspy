@@ -1,10 +1,4 @@
 [tool.black]
 line-length = 88
 include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.gitignore
-  | documentation
-  | ruspy.egg-info
-)/
+exclude = '.git | .gitignore | documentation | ruspy.egg-info'
