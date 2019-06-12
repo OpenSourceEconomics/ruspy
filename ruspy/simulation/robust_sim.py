@@ -54,7 +54,9 @@ def select_choice(trans_probs, num_states, costs, beta, max_it):
     return -choice[int(num_states / 2), 0]
 
 
-def draw_trans_probs_mulitvar(n, p, size):
+def draw_trans_probs_mulitvar(n, p, size, seed=False):
+    if seed:
+        np.random.seed(seed)
     mean = p * n
     cov = calc_cov_multinomial(n, p) * (n ** 2)
     draw_array = np.random.multivariate_normal(mean, cov, size=size)
