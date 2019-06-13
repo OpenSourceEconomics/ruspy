@@ -26,19 +26,18 @@ def estimate_transitions(df, repl_4=True):
     num_periods = int(df.shape[0] / num_bus)
     states = df["state"].values.reshape(num_bus, num_periods)
     decisions = df["decision"].values.reshape(num_bus, num_periods)
+    space_state = states.max() + 1
+    state_count = np.zeros(shape=(space_state, space_state), dtype=int)
     if repl_4:
-        transition_count = count_transitions(
-            transition_count, num_bus, num_periods, states, decisions
-        )
+        count_func = count_transitions
 
     else:
-        space_state = states.max() + 1
-        state_count = np.zeros(shape=(space_state, space_state), dtype=int)
-        transition_count, state_count = count_transitions_alt(
-            transition_count, state_count, num_bus, num_periods, states, decisions
-        )
-        result_transitions["state_count"] = state_count
+        count_func = count_transitions_alt
 
+    transition_count, state_count = count_func(
+        transition_count, state_count, num_bus, num_periods, states, decisions
+    )
+    result_transitions["state_count"] = state_count
     trans_probs = np.array(transition_count) / sum(transition_count)
     ll = loglike(trans_probs, transition_count)
     result_transitions.update(
@@ -48,7 +47,9 @@ def estimate_transitions(df, repl_4=True):
 
 
 @numba.jit(nopython=True)
-def count_transitions(transition_count, num_bus, num_periods, states, decisions):
+def count_transitions(
+    transition_count, state_count, num_bus, num_periods, states, decisions
+):
     """
     This function counts how often the buses increased their state by 0, by 1 etc.
 
@@ -70,15 +71,17 @@ def count_transitions(transition_count, num_bus, num_periods, states, decisions)
         for period in range(num_periods - 1):
             if decisions[bus, period] == 0:
                 increase = states[bus, period + 1] - states[bus, period]
+                state_count[states[bus, period], states[bus, period + 1]] += 1
             else:
                 increase = 1
+                state_count[0, increase] += 1
             if increase >= len(transition_count):
                 transition_count_new = [0] * (increase + 1)
                 for i in range(len(transition_count)):
                     transition_count_new[i] = transition_count[i]
                 transition_count = transition_count_new
             transition_count[increase] += 1
-    return transition_count
+    return transition_count, state_count
 
 
 @numba.jit(nopython=True)
