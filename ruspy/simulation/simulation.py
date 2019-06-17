@@ -53,7 +53,6 @@ def simulate(init_dict):
         real_trans = np.array(init_dict["real trans"])
     else:
         real_trans = np.array(init_dict["known trans"])
-    known_trans = np.array(init_dict["known trans"])
     params = np.array(init_dict["params"])
     if init_dict["maint_func"] == "linear":
         maint_func = lin_cost
@@ -87,6 +86,7 @@ def simulate(init_dict):
             unobs,
         )
     else:
+        known_trans = np.array(init_dict["known trans"])
         states, decisions, utilities, num_states = simulate_strategy(
             known_trans,
             increments,

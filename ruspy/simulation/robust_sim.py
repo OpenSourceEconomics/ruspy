@@ -8,17 +8,16 @@ from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 
 def get_worst_trans(
-    init_dict, roh, num_states, choice=True, max_it=10000000, min_state=0
+    init_dict, x_0, rho, num_states, choice=True, max_it=10000000, min_state=0
 ):
     beta = init_dict["beta"]
-    x_0 = np.array(init_dict["known trans"])
     dim = x_0.shape[0]
     params = np.array(init_dict["params"])
     costs = cost_func(num_states, lin_cost, params)
     eq_constr = {"type": "eq", "fun": lambda x: 1 - np.sum(x)}
     ineq_constr = {
         "type": "ineq",
-        "fun": lambda x: roh - np.sum(np.multiply(x, np.log(np.divide(x, x_0)))),
+        "fun": lambda x: rho - np.sum(np.multiply(x, np.log(np.divide(x, x_0)))),
     }
     if choice:
         res = opt.minimize(
