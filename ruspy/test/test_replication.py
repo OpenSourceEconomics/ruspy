@@ -75,7 +75,11 @@ def test_transition_count(outputs):
     num_periods = int(data.shape[0] / num_bus)
     states = data["state"].values.reshape(num_bus, num_periods)
     decisions = data["decision"].values.reshape(num_bus, num_periods)
-    transition_count = np.array(
-        count_transitions(transition_count, num_bus, num_periods, states, decisions)
+    space_state = states.max() + 1
+    state_count = np.zeros(shape=(space_state, space_state), dtype=int)
+    transition_count, state_count = np.array(
+        count_transitions(
+            transition_count, state_count, num_bus, num_periods, states, decisions
+        )
     )
     assert_array_equal(transition_count, outputs["transition_count"])
