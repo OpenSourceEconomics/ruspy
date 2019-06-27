@@ -20,7 +20,7 @@ Also if you ran the creation script you can have a look at the detailed document
 
 If you would like to replicate the paper yourself, then please either leave the settings in [here](https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/replication/init_replication.yml) or change them and then run this [red button](https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/replication/red_button_replication.py).
 
-If you want to create a similar figure as the one in the project description proving the convergence of the mathematical model of the expected value and the discounted utility, please change or leave the settings in [here](https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/simulation/init.yml) and then run the script for the [plot](https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/simulation/figure_1.py).
+If you want to create a similar figure as the one in the project description proving the convergence of the mathematical model of the expected value and the discounted utility, please change or leave the settings in [here](https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/figure_1/init.yml) and then run the script for the [plot](https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/figure_1/figure_1.py).
 
 
 [![Build Status](https://travis-ci.org/OpenSourceEconomics/ruspy.svg?branch=master)](https://travis-ci.org/OpenSourceEconomics/ruspy)
