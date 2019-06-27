@@ -19,7 +19,9 @@ def data_processing(init_dict):
 
     :param init_dict: A dictionary containing the name of the group and the size of
     the milage bins, which is used to discretize the raw data.
+
     :return: The processed data as pandas dataframe.
+
     """
     dirname = os.path.dirname(__file__)
     for k, group in enumerate(init_dict["groups"].split(",")):

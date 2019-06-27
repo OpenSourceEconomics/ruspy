@@ -2,7 +2,7 @@ ruspy.simulation package
 ========================
 
 Introduction
------------
+------------
 The simulation package contains the functions to simulate a single agent in a dynamic discrete choice model. It is structured into two modules.
 The simulation module with the main function and the simulation\_auxiliary with all supplementary functions 
 

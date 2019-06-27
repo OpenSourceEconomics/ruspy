@@ -28,10 +28,12 @@ def estimate(init_dict, df, repl_4=True):
     :param df:        A pandas dataframe, which contains for each observation the Bus
                       ID, the current state of the bus, the current period and the
                       decision made in this period.
+
     :param repl_4: Auxiliary variable for the convention of the replacement increase.
 
     :return: The function returns the optimization result of the transition
              probabilities and of the cost parameters as separate dictionaries.
+
     """
     beta = init_dict["beta"]
     transition_results = estimate_transitions(df, repl_4=repl_4)
