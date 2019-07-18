@@ -13,7 +13,7 @@ from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.simulation.simulation_auxiliary import simulate_strategy_loop_known
 
 
-def simulate(init_dict):
+def simulate(init_dict, normal=True):
     """
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
@@ -58,7 +58,10 @@ def simulate(init_dict):
         maint_func = lin_cost
     else:
         maint_func = lin_cost
-    unobs = np.random.gumbel(loc=-mp.euler, size=[num_buses, num_periods, 2])
+    if normal:
+        unobs = np.random.normal(size=[num_buses, num_periods, 2])
+    else:
+        unobs = np.random.gumbel(loc=-mp.euler, size=[num_buses, num_periods, 2])
     increments = np.random.choice(
         len(real_trans), size=(num_buses, num_periods), p=real_trans
     )
