@@ -48,32 +48,11 @@ def estimate(init_dict, df, repl_4=True):
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states, num_obs)
-    if "max_it" in init_dict.keys():
-        max_it = int(init_dict["max_it"])
-        result = opt.minimize(
-            loglike_opt_rule,
-            args=(
-                maint_func,
-                num_states,
-                trans_mat,
-                state_mat,
-                decision_mat,
-                beta,
-                max_it,
-            ),
-            x0=np.array([5, 5]),
-            bounds=[(1e-6, None), (1e-6, None)],
-            method="L-BFGS-B",
-        )
-    else:
-        result = opt.minimize(
-            loglike_opt_rule,
-            args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
-            x0=np.array([5, 5]),
-            bounds=[(1e-6, None), (1e-6, None)],
-            method="L-BFGS-B",
-        )
-    if repl_4:
-        return transition_results, result
-    else:
-        return transition_results, result
+    result = opt.minimize(
+        loglike_opt_rule,
+        args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
+        x0=np.array([5, 5]),
+        bounds=[(1e-6, None), (1e-6, None)],
+        method="L-BFGS-B",
+    )
+    return transition_results, result
