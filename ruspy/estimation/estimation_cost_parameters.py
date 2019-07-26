@@ -7,6 +7,7 @@ import numpy as np
 import numba
 
 
+@numba.jit(nopython=True)
 def create_transition_matrix(num_states, trans_prob):
     """
     This function creates a markov transition matrix. By the assumptions of the
@@ -32,6 +33,7 @@ def create_transition_matrix(num_states, trans_prob):
     return trans_mat
 
 
+@numba.jit(nopython=True)
 def create_state_matrix(states, num_states, num_obs):
     """
     This function constructs a auxiliary matrix for the likelihood.
@@ -46,12 +48,13 @@ def create_state_matrix(states, num_states, num_obs):
                         with TRUE in each row at the column in which the bus was in
                         that observation.
     """
-    state_mat = np.full((num_states, num_obs), False, dtype=bool)
+    state_mat = np.full((num_states, num_obs), 0.0)
     for i, value in enumerate(states):
-        state_mat[value, i] = True
+        state_mat[value, i] = 1.0
     return state_mat
 
 
+@numba.jit(nopython=True)
 def loglike_opt_rule(
     params,
     maint_func,
@@ -94,6 +97,7 @@ def loglike_opt_rule(
     return -np.sum(decision_mat * ll_prob)
 
 
+@numba.jit(nopython=True)
 def lin_cost(num_states, params):
     """
     This function describes a linear cost function, which Rust concludes is the most
@@ -110,6 +114,7 @@ def lin_cost(num_states, params):
     return states * 0.001 * params[0]
 
 
+@numba.jit(nopython=True)
 def cost_func(num_states, maint_func, params):
     """
     This function calculates a vector containing the costs for maintenance and
@@ -131,6 +136,7 @@ def cost_func(num_states, maint_func, params):
     return np.vstack((maint_cost, repl_cost)).T
 
 
+@numba.jit(nopython=True)
 def choice_prob(ev, costs, beta):
     """
     This function calculates the choice probabilities to maintain or replace the
@@ -218,9 +224,7 @@ def converge_choice(
     """
     choice = np.zeros(shape=(num_states, 2))
     ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(-costs), axis=1)))
-    choice_new = np.exp(-costs) / (
-        np.sum(np.exp(-costs), axis=1).reshape(num_states, -1)
-    )
+    choice_new = choice_prob(ev_new, costs, beta)
     while (np.max(np.abs(choice_new - choice)) > threshold) & (max_it != 0):
         choice = choice_new
         ev = ev_new
@@ -231,14 +235,6 @@ def converge_choice(
             np.exp(maint_cost - ev_min) + np.exp(repl_cost - ev_min)
         )
         ev_new = np.dot(trans_mat.T, log_sum)
-        util_main = beta * ev_new - costs[:, 0]  # Utility to maintain the bus
-        util_repl = np.full(
-            util_main.shape, beta * ev_new[0] - costs[0, 0] - costs[0, 1]
-        )
-        util = np.vstack((util_main, util_repl)).T
-        util = util - np.amin(util)
-        choice_new = np.exp(util) / (
-            np.sum(np.exp(util), axis=1).reshape(num_states, -1)
-        )
+        choice_new = choice_prob(ev_new, costs, beta)
         max_it -= 1
     return choice_new

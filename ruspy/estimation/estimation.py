@@ -37,8 +37,8 @@ def estimate(init_dict, df, repl_4=True):
     """
     beta = init_dict["beta"]
     transition_results = estimate_transitions(df, repl_4=repl_4)
-    endog = df.loc[:, "decision"]
-    states = df.loc[:, "state"]
+    endog = df.loc[:, "decision"].to_numpy()
+    states = df.loc[:, "state"].to_numpy()
     num_obs = df.shape[0]
     num_states = init_dict["states"]
     if init_dict["maint_func"] == "linear":
