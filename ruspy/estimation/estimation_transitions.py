@@ -123,6 +123,7 @@ def count_transitions_alt(
     return transition_count, state_count
 
 
+@numba.jit(nopython=True)
 def loglike(trans_probs, transition_count):
     """
     The loglikelihood function for estimating the transition probabilities.

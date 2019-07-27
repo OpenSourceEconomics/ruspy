@@ -10,7 +10,7 @@ from ruspy.estimation.estimation_cost_parameters import loglike_opt_rule
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 
-def estimate(init_dict, df, repl_4=True):
+def estimate(init_dict, df, maint_func=lin_cost, repl_4=True):
     """
     This function calls the auxiliary functions to estimate the decision parameters.
     Therefore it manages the estimation process. As mentioned in the model theory
@@ -22,14 +22,15 @@ def estimate(init_dict, df, repl_4=True):
 
         :beta: (float)       : Discount factor.
         :states: (int)       : The size of the statespace.
-        :maint_func: (string): The type of cost function, as string. Only linear
-                               implemented so far.
+        :maint_func: (func)  : The maintenance cost function. Default is the linear
+                               from the paper.
 
     :param df:        A pandas dataframe, which contains for each observation the Bus
                       ID, the current state of the bus, the current period and the
                       decision made in this period.
 
-    :param repl_4: Auxiliary variable for the convention of the replacement increase.
+    :param repl_4: Auxiliary variable indicating the complete setting of the
+                   replication of the paper with group 4.
 
     :return: The function returns the optimization result of the transition
              probabilities and of the cost parameters as separate dictionaries.
@@ -40,11 +41,13 @@ def estimate(init_dict, df, repl_4=True):
     endog = df.loc[:, "decision"].to_numpy()
     states = df.loc[:, "state"].to_numpy()
     num_obs = df.shape[0]
-    num_states = init_dict["states"]
-    if init_dict["maint_func"] == "linear":
-        maint_func = lin_cost
+    # Our state space is 20% larger, than the maximal observed state. We prevent
+    # accumulation effects on the late states. As John Rust defines this variable we
+    # provide a hardcoded option for the full replication of the paper with group 4.
+    if repl_4:
+        num_states = 90
     else:
-        maint_func = lin_cost
+        num_states = int(1.2 * np.max(states))
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states, num_obs)
