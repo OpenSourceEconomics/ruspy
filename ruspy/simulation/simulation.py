@@ -71,7 +71,7 @@ def simulate(init_dict, ev_known=False, seed=None, shock=None):
         # therefore the highest achievable state can be guessed.
         ev_known = np.array(init_dict["ev_known"])
         num_states = int(len(ev_known))
-        costs = cost_func(num_states, lin_cost, params)
+        costs = cost_func(num_states, maint_func, params)
         states = np.zeros((num_buses, num_periods), dtype=int)
         decisions = np.zeros((num_buses, num_periods), dtype=int)
         utilities = np.zeros((num_buses, num_periods), dtype=float)

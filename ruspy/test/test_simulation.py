@@ -11,6 +11,8 @@ import pytest
 from numpy.testing import assert_array_equal
 from ruspy.simulation.simulation import simulate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
+from ruspy.estimation.estimation_cost_parameters import calc_fixp, cost_func, lin_cost
+from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 
 
 with open(TEST_RESOURCES_DIR + "simulation_test/sim_test_init.yml") as y:
@@ -21,6 +23,12 @@ with open(TEST_RESOURCES_DIR + "simulation_test/sim_test_init.yml") as y:
 def inputs():
     out = {}
     out["df"], out["unobs"], out["utilities"], num_states = simulate(
+        init_dict, seed=7023
+    )
+    costs = cost_func(num_states, lin_cost, init_dict["params"])
+    trans_mat = create_transition_matrix(num_states, np.array(init_dict["known trans"]))
+    init_dict["ev_known"] = calc_fixp(num_states, trans_mat, costs, init_dict["beta"])
+    out["df_known"], out["unobs_known"], out["utilities_known"], num_states = simulate(
         init_dict, seed=7023
     )
     return out
@@ -50,3 +58,19 @@ def test_unobs(inputs, outputs):
 
 def test_utilities(inputs, outputs):
     assert_array_equal(np.ndarray.flatten(inputs["utilities"]), outputs["utilities"])
+
+
+def test_states_known(inputs):
+    assert_array_equal(inputs["df_known"].state, inputs["df"].state)
+
+
+def test_decision_known(inputs):
+    assert_array_equal(inputs["df_known"].decision, inputs["df"].decision)
+
+
+def test_unobs_known(inputs):
+    assert_array_equal(inputs["unobs_known"], inputs["unobs"])
+
+
+def test_utilities_known(inputs):
+    assert_array_equal(inputs["utilities_known"], inputs["utilities"])
