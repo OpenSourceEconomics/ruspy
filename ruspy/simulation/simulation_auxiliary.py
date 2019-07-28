@@ -229,5 +229,6 @@ def simulate_strategy_loop_known(
 
             decisions[bus, period] = decision
             utilities[bus, period] = utility
-            states[bus, period + 1] = new_state
+            if period < num_periods - 1:
+                states[bus, period + 1] = new_state
     return states, decisions, utilities
