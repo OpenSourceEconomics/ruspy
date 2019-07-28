@@ -16,7 +16,7 @@ from ruspy.estimation.estimation import estimate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 from ruspy.data.data_reading import data_reading
 from ruspy.data.data_processing import data_processing
-from ruspy.estimation.estimation_transitions import count_transitions
+from ruspy.estimation.estimation_transitions import create_increases
 
 with open(TEST_RESOURCES_DIR + "replication_test/init_replication_test.yml") as y:
     init_dict = yaml.safe_load(y)
@@ -70,16 +70,16 @@ def test_cost_ll(inputs, outputs):
 
 
 def test_transition_count(outputs):
-    transition_count = [0]
     num_bus = len(data["Bus_ID"].unique())
     num_periods = int(data.shape[0] / num_bus)
     states = data["state"].values.reshape(num_bus, num_periods)
     decisions = data["decision"].values.reshape(num_bus, num_periods)
     space_state = states.max() + 1
     state_count = np.zeros(shape=(space_state, space_state), dtype=int)
-    transition_count, state_count = np.array(
-        count_transitions(
-            transition_count, state_count, num_bus, num_periods, states, decisions
+    increases = np.zeros(shape=(num_bus, num_periods - 1), dtype=int)
+    increases, state_count = np.array(
+        create_increases(
+            increases, state_count, num_bus, num_periods, states, decisions, repl_4=True
         )
     )
-    assert_array_equal(transition_count, outputs["transition_count"])
+    assert_array_equal(np.bincount(increases.flatten()), outputs["transition_count"])

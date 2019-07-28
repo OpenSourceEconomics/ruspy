@@ -53,11 +53,11 @@ def test_decision(inputs, outputs):
 
 
 def test_unobs(inputs, outputs):
-    assert_array_equal(np.ndarray.flatten(inputs["unobs"]), outputs["unobs"])
+    assert_array_equal(inputs["unobs"].flatten(), outputs["unobs"])
 
 
 def test_utilities(inputs, outputs):
-    assert_array_equal(np.ndarray.flatten(inputs["utilities"]), outputs["utilities"])
+    assert_array_equal(inputs["utilities"].flatten(), outputs["utilities"])
 
 
 def test_states_known(inputs):
