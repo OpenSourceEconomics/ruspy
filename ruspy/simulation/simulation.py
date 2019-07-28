@@ -14,7 +14,7 @@ from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.simulation.simulation_auxiliary import simulate_strategy_loop_known
 
 
-def simulate(init_dict, ev_known=False, shock=None):
+def simulate(init_dict, ev_known=False, seed=None, shock=None):
     """
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
@@ -46,16 +46,16 @@ def simulate(init_dict, ev_known=False, shock=None):
                        period the utility as a float.
         :num_states: : A integer documenting the size of the state space.
     """
-
-    np.random.seed(init_dict["seed"])
+    seed = 123 if seed is None else seed
+    np.random.seed(seed)
     num_buses = init_dict["buses"]
     beta = init_dict["beta"]
     num_periods = init_dict["periods"]
+    params = np.array(init_dict["params"])
     if "real trans" in init_dict.keys():
         real_trans = np.array(init_dict["real trans"])
     else:
         real_trans = np.array(init_dict["known trans"])
-    params = np.array(init_dict["params"])
     if init_dict["maint_func"] == "linear":
         maint_func = lin_cost
     else:

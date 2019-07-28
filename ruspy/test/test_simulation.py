@@ -21,7 +21,7 @@ with open(TEST_RESOURCES_DIR + "simulation_test/sim_test_init.yml") as y:
 def inputs():
     out = {}
     out["df"], out["unobs"], out["utilities"], num_states = simulate(
-        init_dict["simulation"]
+        init_dict, seed=7023
     )
     return out
 
