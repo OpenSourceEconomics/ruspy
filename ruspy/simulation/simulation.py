@@ -7,13 +7,14 @@ relevant variables.
 import numpy as np
 import mpmath as mp
 import pandas as pd
+import copy
 from ruspy.simulation.simulation_auxiliary import simulate_strategy
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.simulation.simulation_auxiliary import simulate_strategy_loop_known
 
 
-def simulate(init_dict, normal=False):
+def simulate(init_dict, ev_known=False, shock=None):
     """
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
@@ -45,6 +46,7 @@ def simulate(init_dict, normal=False):
                        period the utility as a float.
         :num_states: : A integer documenting the size of the state space.
     """
+
     np.random.seed(init_dict["seed"])
     num_buses = init_dict["buses"]
     beta = init_dict["beta"]
@@ -58,10 +60,7 @@ def simulate(init_dict, normal=False):
         maint_func = lin_cost
     else:
         maint_func = lin_cost
-    if normal:
-        unobs = np.random.normal(size=[num_buses, num_periods, 2])
-    else:
-        unobs = np.random.gumbel(loc=-mp.euler, size=[num_buses, num_periods, 2])
+    unobs = get_unobs(shock, num_buses, num_periods)
     increments = np.random.choice(
         len(real_trans), size=(num_buses, num_periods), p=real_trans
     )
@@ -109,3 +108,11 @@ def simulate(init_dict, normal=False):
         period = np.append(period, np.arange(num_periods))
     df["period"] = period.astype(int)
     return df, unobs, utilities, num_states
+
+
+def get_unobs(shock, num_buses, num_periods):
+    shock = {"distribution": "gumbel", "loc": -mp.euler} if shock is None else shock
+    dist_func_shocks = getattr(np.random, shock["distribution"])
+    shock_args = copy.deepcopy(shock)
+    del shock_args["distribution"]
+    return dist_func_shocks(**shock_args, size=[num_buses, num_periods, 2])
