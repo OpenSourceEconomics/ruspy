@@ -10,7 +10,7 @@ from ruspy.estimation.estimation_cost_parameters import loglike_opt_rule
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 
-def estimate(init_dict, df, maint_func=lin_cost, repl_4=True):
+def estimate(init_dict, df, maint_func=lin_cost, repl_4=False):
     """
     This function calls the auxiliary functions to estimate the decision parameters.
     Therefore it manages the estimation process. As mentioned in the model theory

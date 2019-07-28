@@ -23,7 +23,7 @@ with open(TEST_RESOURCES_DIR + "replication_test/init_replication_test.yml") as 
 data_reading()
 data = data_processing(init_dict["replication"])
 
-result_trans, result_fixp = estimate(init_dict["replication"], data)
+result_trans, result_fixp = estimate(init_dict["replication"], data, repl_4=True)
 
 
 @pytest.fixture

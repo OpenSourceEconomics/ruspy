@@ -215,7 +215,6 @@ def simulate_strategy_loop_known(
     """
     for period in range(num_periods):
         for bus in range(num_buses):
-
             old_state = states[bus, period]
             if (-costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) > (
                 -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]
