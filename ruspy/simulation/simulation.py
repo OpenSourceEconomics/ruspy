@@ -14,7 +14,7 @@ from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.simulation.simulation_auxiliary import simulate_strategy_loop_known
 
 
-def simulate(init_dict, ev_known=False, seed=None, shock=None):
+def simulate(init_dict, ev_known=None, shock=None, seed=None):
     """
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
@@ -52,10 +52,10 @@ def simulate(init_dict, ev_known=False, seed=None, shock=None):
     beta = init_dict["beta"]
     num_periods = init_dict["periods"]
     params = np.array(init_dict["params"])
-    if "real trans" in init_dict.keys():
-        real_trans = np.array(init_dict["real trans"])
+    if "real_trans" in init_dict.keys():
+        real_trans = np.array(init_dict["real_trans"])
     else:
-        real_trans = np.array(init_dict["known trans"])
+        real_trans = np.array(init_dict["known_trans"])
     if init_dict["maint_func"] == "linear":
         maint_func = lin_cost
     else:
@@ -64,12 +64,11 @@ def simulate(init_dict, ev_known=False, seed=None, shock=None):
     increments = np.random.choice(
         len(real_trans), size=(num_buses, num_periods), p=real_trans
     )
-    if "ev_known" in init_dict.keys():
+    if isinstance(ev_known, np.ndarray):
         # If there is already ev given, the auxiliary function is skipped and the
         # simulation is executed with no further increases of the state space. This
         # option is perfect if only one parameter in the setting is varied and
         # therefore the highest achievable state can be guessed.
-        ev_known = np.array(init_dict["ev_known"])
         num_states = int(len(ev_known))
         costs = cost_func(num_states, maint_func, params)
         states = np.zeros((num_buses, num_periods), dtype=int)
@@ -88,7 +87,7 @@ def simulate(init_dict, ev_known=False, seed=None, shock=None):
             unobs,
         )
     else:
-        known_trans = np.array(init_dict["known trans"])
+        known_trans = np.array(init_dict["known_trans"])
         states, decisions, utilities, num_states = simulate_strategy(
             known_trans,
             increments,
