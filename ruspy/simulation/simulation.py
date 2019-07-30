@@ -5,9 +5,7 @@ the function from this module and feed it with a init dictionary containing the
 relevant variables.
 """
 import numpy as np
-import mpmath as mp
 import pandas as pd
-import copy
 from ruspy.simulation.simulation_auxiliary import simulate_strategy
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 from ruspy.estimation.estimation_cost_parameters import cost_func
@@ -110,8 +108,10 @@ def simulate(init_dict, ev_known=None, shock=None, seed=None):
 
 
 def get_unobs(shock, num_buses, num_periods):
-    shock = {"distribution": "gumbel", "loc": -mp.euler} if shock is None else shock
-    dist_func_shocks = getattr(np.random, shock["distribution"])
-    shock_args = copy.deepcopy(shock)
-    del shock_args["distribution"]
-    return dist_func_shocks(**shock_args, size=[num_buses, num_periods, 2])
+    shock = (
+        pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel")
+        if shock is None
+        else shock
+    )
+    dist_func_shocks = getattr(np.random, shock.name)
+    return dist_func_shocks(**shock, size=[num_buses, num_periods, 2])
