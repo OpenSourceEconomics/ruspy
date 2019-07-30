@@ -6,6 +6,7 @@ relevant variables.
 """
 import numpy as np
 import pandas as pd
+import scipy.stats as stats
 from ruspy.simulation.simulation_auxiliary import simulate_strategy
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 from ruspy.estimation.estimation_cost_parameters import cost_func
@@ -109,9 +110,9 @@ def simulate(init_dict, ev_known=None, shock=None, seed=None):
 
 def get_unobs(shock, num_buses, num_periods):
     shock = (
-        pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel")
+        pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r")
         if shock is None
         else shock
     )
-    dist_func_shocks = getattr(np.random, shock.name)
-    return dist_func_shocks(**shock, size=[num_buses, num_periods, 2])
+    dist_func_shocks = getattr(stats, shock.name)
+    return dist_func_shocks.rvs(**shock, size=[num_buses, num_periods, 2])

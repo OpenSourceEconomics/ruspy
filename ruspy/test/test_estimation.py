@@ -24,7 +24,7 @@ def inputs():
     out = dict()
     out["nstates"] = 90
     out["cost_fct"] = lin_cost
-    out["params"] = [10, 2]
+    out["params"] = np.array([10, 2])
     out["trans_prob"] = np.array([0.2, 0.3, 0.15, 0.35])
     out["beta"] = 0.9999
     return out

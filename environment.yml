@@ -1,8 +1,8 @@
 name: ruspy
 
 dependencies:
-  - python=3.6
-  - numpy=1.15.4
+  - python
+  - numpy
   - sphinx
   - pandas
   - statsmodels
