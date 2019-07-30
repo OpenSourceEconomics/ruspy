@@ -109,10 +109,21 @@ def simulate(init_dict, ev_known=None, shock=None, seed=None):
 
 
 def get_unobs(shock, num_buses, num_periods):
+    unobs = np.empty(shape=(num_buses, num_periods, 2), dtype=float)
     shock = (
-        pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r")
+        (
+            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r"),
+            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r"),
+        )
         if shock is None
         else shock
     )
-    dist_func_shocks = getattr(stats, shock.name)
-    return dist_func_shocks.rvs(**shock, size=[num_buses, num_periods, 2])
+    dist_func_shocks_maint = getattr(stats, shock[0].name)
+    dist_func_shocks_repl = getattr(stats, shock[1].name)
+    unobs[:, :, 0] = dist_func_shocks_maint.rvs(
+        **shock[0], size=[num_buses, num_periods]
+    )
+    unobs[:, :, 1] = dist_func_shocks_repl.rvs(
+        **shock[1], size=[num_buses, num_periods]
+    )
+    return unobs
