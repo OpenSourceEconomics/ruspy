@@ -34,30 +34,26 @@ def data_reading():
         3: "Year_pur",
         4: "Month_1st",
         5: "Year_1st",
-        6: "Odo_1st",
+        6: "Odo_1",
         7: "Month_2nd",
         8: "Year_2nd",
-        9: "Odo_2nd",
+        9: "Odo_2",
         10: "Month_begin",
         11: "Year_begin",
     }
 
     dirname = os.path.dirname(__file__)
-    dict_df = dict()
     for keys in dict_data:
-        r = dict_data[keys][0]
-        c = dict_data[keys][1]
-        f_raw = open(dirname + "/original_data/" + keys + ".asc").read()
-        f_col = f_raw.split("\n")
+        r, c = dict_data[keys][0], dict_data[keys][1]
+        file_cols = open(dirname + "/original_data/" + keys + ".asc").read().split("\n")
         df = pd.DataFrame()
         for j in range(0, c):
             for k in range(j * r, (j + 1) * r):
-                df.loc[(k - j * r) + 1, j + 1] = float(f_col[k])
+                df.loc[(k - j * r) + 1, j + 1] = float(file_cols[k])
         df = df.transpose()
-        df = df.rename(columns=re_col)
+        df.rename(columns=re_col, inplace=True)
         df["Bus_ID"] = df["Bus_ID"].astype(int)
-        df = df.reset_index()
-        df = df.drop(df.columns[[0]], axis=1)
-        dict_df[dict_data[keys][2]] = df
+        df.reset_index(inplace=True)
+        df.drop(df.columns[[0]], axis=1, inplace=True)
         os.makedirs(dirname + "/pkl/group_data", exist_ok=True)
         df.to_pickle(dirname + "/pkl/group_data/" + dict_data[keys][2] + ".pkl")
