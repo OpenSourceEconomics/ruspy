@@ -5,7 +5,6 @@ from ruspy.estimation.estimation_cost_parameters import (
     create_transition_matrix,
     create_state_matrix,
     loglike_opt_rule,
-    lin_cost,
 )
 from estimagic.differentiation.differentiation import hessian
 
@@ -27,6 +26,7 @@ def cov_multinomial(n, p):
 def params_hess(params, df, beta, maint_func, repl_4=False):
     """Calculates the hessian of the cost parameters."""
     transition_results = estimate_transitions(df, repl_4=repl_4)
+    ll_trans = transition_results["fun"]
     states = df.loc[:, "state"].to_numpy()
     num_obs = df.shape[0]
     if repl_4:
@@ -39,16 +39,18 @@ def params_hess(params, df, beta, maint_func, repl_4=False):
     decision_mat = np.vstack(((1 - endog), endog))
     params_df = pd.DataFrame(index=["RC", "theta_1_1"], columns=["value"], data=params)
     wrap_func = create_wrap_func(
-        lin_cost, num_states, trans_mat, state_mat, decision_mat, beta
+        maint_func, num_states, trans_mat, state_mat, decision_mat, beta, ll_trans
     )
     return hessian(wrap_func, params_df)
 
 
-def create_wrap_func(lin_cost, num_states, trans_mat, state_mat, decision_mat, beta):
+def create_wrap_func(
+    maint_cost, num_states, trans_mat, state_mat, decision_mat, beta, ll_trans
+):
     def wrap_func(x):
         x_np = x["value"].to_numpy()
-        return loglike_opt_rule(
-            x_np, lin_cost, num_states, trans_mat, state_mat, decision_mat, beta
+        return ll_trans + loglike_opt_rule(
+            x_np, maint_cost, num_states, trans_mat, state_mat, decision_mat, beta
         )
 
     return wrap_func
