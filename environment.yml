@@ -1,5 +1,10 @@
 name: ruspy
 
+channels:
+  - defaults
+  - conda-forge
+  - janosg
+
 dependencies:
   - python
   - numpy
@@ -15,6 +20,7 @@ dependencies:
   - numba
   - mpmath
   - pip
+  - estimagic
   - pip:
       - pyyaml
       - flake8
