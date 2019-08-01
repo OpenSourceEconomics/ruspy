@@ -1,14 +1,16 @@
 import numpy as np
+import pandas as pd
 from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.estimation.estimation_cost_parameters import (
     create_transition_matrix,
     create_state_matrix,
     loglike_opt_rule,
+    lin_cost,
 )
 from estimagic.differentiation.differentiation import hessian
 
 
-def calc_cov_multinomial(n, p):
+def cov_multinomial(n, p):
     """Calculates the covariance matrix of a multinominal distribution. We use this
     function to calculate the standard errors of the transition probabilities"""
     dim = len(p)
@@ -22,7 +24,7 @@ def calc_cov_multinomial(n, p):
     return cov / n
 
 
-def params_hess(params, df, maint_func, beta, repl_4=False):
+def params_hess(params, df, beta, maint_func, repl_4=False):
     """Calculates the hessian of the cost parameters."""
     transition_results = estimate_transitions(df, repl_4=repl_4)
     states = df.loc[:, "state"].to_numpy()
@@ -35,8 +37,18 @@ def params_hess(params, df, maint_func, beta, repl_4=False):
     state_mat = create_state_matrix(states, num_states, num_obs)
     endog = df.loc[:, "decision"].to_numpy()
     decision_mat = np.vstack(((1 - endog), endog))
-    return hessian(
-        loglike_opt_rule,
-        params,
-        func_args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
+    params_df = pd.DataFrame(index=["RC", "theta_1_1"], columns=["value"], data=params)
+    wrap_func = create_wrap_func(
+        lin_cost, num_states, trans_mat, state_mat, decision_mat, beta
     )
+    return hessian(wrap_func, params_df)
+
+
+def create_wrap_func(lin_cost, num_states, trans_mat, state_mat, decision_mat, beta):
+    def wrap_func(x):
+        x_np = x["value"].to_numpy()
+        return loglike_opt_rule(
+            x_np, lin_cost, num_states, trans_mat, state_mat, decision_mat, beta
+        )
+
+    return wrap_func
