@@ -45,12 +45,12 @@ def params_hess(params, df, beta, maint_func, repl_4=False):
 
 
 def create_wrap_func(
-    maint_cost, num_states, trans_mat, state_mat, decision_mat, beta, ll_trans
+    maint_func, num_states, trans_mat, state_mat, decision_mat, beta, ll_trans
 ):
     def wrap_func(x):
         x_np = x["value"].to_numpy()
         return ll_trans + loglike_opt_rule(
-            x_np, maint_cost, num_states, trans_mat, state_mat, decision_mat, beta
+            x_np, maint_func, num_states, trans_mat, state_mat, decision_mat, beta
         )
 
     return wrap_func

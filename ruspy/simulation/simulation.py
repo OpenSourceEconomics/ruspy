@@ -45,8 +45,8 @@ def simulate(init_dict, ev_known=None, shock=None, seed=None):
                        period the utility as a float.
         :num_states: : A integer documenting the size of the state space.
     """
-    seed = 123 if seed is None else seed
-    np.random.seed(seed)
+    if "seed" in init_dict.keys():
+        np.random.seed(init_dict["seed"])
     num_buses = init_dict["buses"]
     beta = init_dict["beta"]
     num_periods = init_dict["periods"]

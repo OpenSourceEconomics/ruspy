@@ -29,7 +29,7 @@ def inputs():
     trans_mat = create_transition_matrix(num_states, np.array(init_dict["known_trans"]))
     ev = calc_fixp(num_states, trans_mat, costs, init_dict["beta"])
     out["df_known"], out["unobs_known"], out["utilities_known"], num_states = simulate(
-        init_dict, ev_known=ev, seed=7023
+        init_dict, ev_known=ev
     )
     return out
 
