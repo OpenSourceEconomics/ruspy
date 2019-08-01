@@ -22,7 +22,8 @@ def calc_cov_multinomial(n, p):
     return cov / n
 
 
-def params_std(params, df, maint_func, beta, repl_4=False):
+def params_hess(params, df, maint_func, beta, repl_4=False):
+    """Calculates the hessian of the cost parameters."""
     transition_results = estimate_transitions(df, repl_4=repl_4)
     states = df.loc[:, "state"].to_numpy()
     num_obs = df.shape[0]
