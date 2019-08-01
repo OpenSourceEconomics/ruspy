@@ -22,7 +22,6 @@ dependencies:
   - pip
   - estimagic
   - pip:
-      - pyyaml
       - flake8
       - black
       - pre-commit
