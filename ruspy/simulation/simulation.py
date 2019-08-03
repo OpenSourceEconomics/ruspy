@@ -63,7 +63,7 @@ def simulate(init_dict, ev_known=None, shock=None):
     increments = np.random.choice(
         len(real_trans), size=(num_buses, num_periods), p=real_trans
     )
-    if isinstance(ev_known, np.ndarray):
+    if ev_known is not None:
         # If there is already ev given, the auxiliary function is skipped and the
         # simulation is executed with no further increases of the state space. This
         # option is perfect if only one parameter in the setting is varied and
