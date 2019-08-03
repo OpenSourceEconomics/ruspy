@@ -98,7 +98,7 @@ def loglike_opt_rule(
 
 
 @numba.jit(nopython=True)
-def lin_cost(num_states, params):
+def lin_cost(num_states, params, scale=0.001):
     """
     This function describes a linear cost function, which Rust concludes is the most
     realistic maintenance function.
@@ -107,11 +107,12 @@ def lin_cost(num_states, params):
     :type num_states:   int
     :param params:      A numpy array containing the parameters shaping the cost
                         function.
+    :param scale:       A factor for scaling the maintenance costs.
 
     :return: A numpy array containing the maintenance cost for each state.
     """
     states = np.arange(num_states)
-    return states * 0.001 * params[0]
+    return states * scale * params[0]
 
 
 @numba.jit(nopython=True)
