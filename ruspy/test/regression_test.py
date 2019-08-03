@@ -33,9 +33,7 @@ def test_regression_simulation(inputs):
     params = np.array(init_dict["simulation"]["params"])
     probs = np.array(init_dict["simulation"]["known_trans"])
     v_disc_ = np.array([0.0, 0.0])
-    v_disc = discount_utility(
-        v_disc_, num_buses, num_periods, num_periods, utilities, beta
-    )
+    v_disc = discount_utility(v_disc_, num_periods, utilities, beta)
     trans_mat = create_transition_matrix(num_states, probs)
     costs = cost_func(num_states, lin_cost, params)
     v_calc = calc_fixp(num_states, trans_mat, costs, beta)

@@ -22,9 +22,7 @@ with open(TEST_RESOURCES_DIR + "simulation_test/sim_test_init.yml") as y:
 @pytest.fixture
 def inputs():
     out = {}
-    out["df"], out["unobs"], out["utilities"], num_states = simulate(
-        init_dict, seed=7023
-    )
+    out["df"], out["unobs"], out["utilities"], num_states = simulate(init_dict)
     costs = cost_func(num_states, lin_cost, np.array(init_dict["params"]))
     trans_mat = create_transition_matrix(num_states, np.array(init_dict["known_trans"]))
     ev = calc_fixp(num_states, trans_mat, costs, init_dict["beta"])
