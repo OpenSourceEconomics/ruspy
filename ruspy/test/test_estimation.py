@@ -56,6 +56,14 @@ def test_create_trans_mat(inputs, outputs):
     )
 
 
+def test_trans_mat_rows_one(inputs):
+    control = np.ones(inputs["nstates"])
+    assert_array_almost_equal(
+        create_transition_matrix(inputs["nstates"], inputs["trans_prob"]).sum(axis=1),
+        control,
+    )
+
+
 def test_calc_fixp(inputs, outputs):
     assert_array_almost_equal(
         calc_fixp(
