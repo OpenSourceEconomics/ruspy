@@ -25,9 +25,9 @@ def create_transition_matrix(num_states, trans_prob):
     for i in range(num_states):  # Loop over all states.
         for j, p in enumerate(trans_prob):  # Loop over the possible increases.
             if i + j < num_states - 1:
-                trans_mat[i + j][i] = p  # This is the transpose of the trans_mat
+                trans_mat[i, i + j] = p
             elif i + j == num_states - 1:
-                trans_mat[num_states - 1][i] = trans_prob[j:].sum()
+                trans_mat[i, num_states - 1] = trans_prob[j:].sum()
             else:
                 pass
     return trans_mat
@@ -186,7 +186,7 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000
     :return: A numpy array containing for each state the expected value fixed point.
     """
     ev = np.zeros(num_states)
-    ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(-costs), axis=1)))
+    ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
     while (np.max(np.abs(ev_new - ev)) > threshold) & (max_it != 0):
         ev = ev_new
         maint_cost = beta * ev - costs[:, 0]
@@ -195,7 +195,7 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000
         log_sum = ev_min + np.log(
             np.exp(maint_cost - ev_min) + np.exp(repl_cost - ev_min)
         )
-        ev_new = np.dot(trans_mat.T, log_sum)
+        ev_new = np.dot(trans_mat, log_sum)
         max_it -= 1
     return ev_new
 
@@ -224,7 +224,7 @@ def converge_choice(
     :return: A numpy array containing for each state the expected value fixed point.
     """
     choice = np.zeros(shape=(num_states, 2))
-    ev_new = np.dot(trans_mat.T, np.log(np.sum(np.exp(-costs), axis=1)))
+    ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
     choice_new = choice_prob(ev_new, costs, beta)
     while (np.max(np.abs(choice_new - choice)) > threshold) & (max_it != 0):
         choice = choice_new
@@ -235,7 +235,7 @@ def converge_choice(
         log_sum = ev_min + np.log(
             np.exp(maint_cost - ev_min) + np.exp(repl_cost - ev_min)
         )
-        ev_new = np.dot(trans_mat.T, log_sum)
+        ev_new = np.dot(trans_mat, log_sum)
         choice_new = choice_prob(ev_new, costs, beta)
         max_it -= 1
     return choice_new
