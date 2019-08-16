@@ -25,7 +25,7 @@ def create_transition_matrix(num_states, trans_prob):
     for i in range(num_states):  # Loop over all states.
         for j, p in enumerate(trans_prob):  # Loop over the possible increases.
             if i + j < num_states - 1:
-                trans_mat[i + j][i] = p
+                trans_mat[i + j][i] = p  # This is the transpose of the trans_mat
             elif i + j == num_states - 1:
                 trans_mat[num_states - 1][i] = trans_prob[j:].sum()
             else:
