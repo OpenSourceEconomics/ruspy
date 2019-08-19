@@ -5,22 +5,22 @@ This module first takes the settings and simulates a dataset. Then the results a
 compared to the true saved results.
 """
 
-import yaml
 import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
 from ruspy.simulation.simulation import simulate
-from ruspy.ruspy_config import TEST_RESOURCES_DIR
-from ruspy.estimation.estimation_cost_parameters import calc_fixp, cost_func, lin_cost
-from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-
-
-with open(TEST_RESOURCES_DIR + "simulation_test/sim_test_init.yml") as y:
-    init_dict = yaml.safe_load(y)
+from ruspy.estimation.estimation_cost_parameters import (
+    calc_fixp,
+    cost_func,
+    lin_cost,
+    create_transition_matrix,
+)
+from ruspy.test.ranodm_init import random_init
 
 
 @pytest.fixture
 def inputs():
+    init_dict = random_init()["simulation"]
     out = {}
     out["df"], out["unobs"], out["utilities"], num_states = simulate(init_dict)
     costs = cost_func(num_states, lin_cost, np.array(init_dict["params"]))
@@ -30,33 +30,6 @@ def inputs():
         init_dict, ev_known=ev
     )
     return out
-
-
-# @pytest.fixture
-# def outputs():
-#     out = dict()
-#     out["states"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/states.txt")
-#     out["decision"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/decision.txt")
-#     out["unobs"] = np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/unobs.txt")
-#     out["utilities"] =
-#     np.loadtxt(TEST_RESOURCES_DIR + "simulation_test/utilities.txt")
-#     return out
-#
-#
-# def test_states(inputs, outputs):
-#     assert_array_equal(outputs["states"], inputs["df"].state)
-#
-#
-# def test_decision(inputs, outputs):
-#     assert_array_equal(outputs["decision"], inputs["df"].decision)
-#
-#
-# def test_unobs(inputs, outputs):
-#     assert_array_equal(inputs["unobs"].flatten(), outputs["unobs"])
-#
-#
-# def test_utilities(inputs, outputs):
-#     assert_array_equal(inputs["utilities"].flatten(), outputs["utilities"])
 
 
 def test_states_known(inputs):

@@ -10,12 +10,15 @@ from numpy.testing import assert_array_almost_equal
 import pytest
 
 
-from ruspy.estimation.estimation_cost_parameters import cost_func
-from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-from ruspy.estimation.estimation_cost_parameters import calc_fixp
-from ruspy.estimation.estimation_cost_parameters import choice_prob
-from ruspy.estimation.estimation_cost_parameters import lin_cost
-from ruspy.estimation.estimation_cost_parameters import converge_choice
+from ruspy.estimation.estimation_cost_parameters import (
+    cost_func,
+    create_transition_matrix,
+    calc_fixp,
+    choice_prob,
+    lin_cost,
+    converge_choice,
+)
+from ruspy.test.ranodm_init import random_init
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
 
@@ -78,4 +81,16 @@ def test_choice_convergence(inputs, outputs):
             inputs["nstates"], outputs["trans_mat"], outputs["costs"], inputs["beta"]
         ),
         outputs["choice_probs"],
+    )
+
+
+def test_trans_mat_rows_one():
+    rand_dict = random_init()
+    control = np.ones(rand_dict["estimation"]["states"])
+    assert_array_almost_equal(
+        create_transition_matrix(
+            rand_dict["estimation"]["states"],
+            np.array(rand_dict["simulation"]["known_trans"]),
+        ).sum(axis=1),
+        control,
     )
