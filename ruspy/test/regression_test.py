@@ -11,7 +11,7 @@ from numpy.testing import assert_allclose
 import numpy as np
 from ruspy.test.ranodm_init import random_init
 from ruspy.simulation.simulation import simulate
-from ruspy.plotting.value_zero import discount_utility
+from ruspy.simulation.value_zero import discount_utility
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix

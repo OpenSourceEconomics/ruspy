@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import yaml
 import numpy as np
 from ruspy.simulation.simulation import simulate
-from ruspy.plotting.value_zero import discount_utility
-from ruspy.plotting.value_zero import calc_ev_0
+from ruspy.plotting import discount_utility
+from ruspy.plotting import calc_ev_0
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 from ruspy.estimation.estimation_cost_parameters import cost_func
