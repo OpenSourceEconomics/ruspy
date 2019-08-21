@@ -36,7 +36,7 @@ def estimate_transitions(df, repl_4=False):
     )
     result_transitions["state_count"] = state_count
     transition_count = np.bincount(increases.flatten())
-    trans_probs = np.array(transition_count) / sum(transition_count)
+    trans_probs = np.array(transition_count) / np.sum(transition_count)
     ll = loglike(trans_probs, transition_count)
     result_transitions.update(
         {"x": trans_probs, "fun": ll, "trans_count": transition_count}
