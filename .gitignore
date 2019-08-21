@@ -11,7 +11,7 @@ sim_file.pkl
 *.toc
 *.fls
 *.fdb_latexmk
-../pip-wheel-metadata
+pip-wheel-metadata/
 *.synctex.gz
 .ipynb*
 .pytest_cache
