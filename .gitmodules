@@ -10,3 +10,6 @@
 [submodule "promotion/project_description/bibliography"]
 	path = promotion/project_description/bibliography
 	url = https://github.com/eisenhauerIO/bibliography.git
+[submodule "promotion/replication/zurcher_data"]
+	path = promotion/replication/zurcher_data
+	url = https://github.com/OpenSourceEconomics/zurcher_data.git
