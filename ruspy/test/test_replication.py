@@ -11,18 +11,23 @@ longest test time.
 import pytest
 import yaml
 import numpy as np
+import pandas as pd
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_allclose
 from ruspy.estimation.estimation import estimate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
-from ruspy.data.data_reading import data_reading
-from ruspy.data.data_processing import data_processing
 from ruspy.estimation.estimation_transitions import create_increases
+
 
 with open(TEST_RESOURCES_DIR + "replication_test/init_replication_test.yml") as y:
     init_dict = yaml.safe_load(y)
-data_reading()
-data = data_processing(init_dict["replication"])
-
+group_folder = "replication_test/group_4/"
+bus_id = np.loadtxt(TEST_RESOURCES_DIR + group_folder + "Bus_ID.txt", dtype=int)
+state = np.loadtxt(TEST_RESOURCES_DIR + group_folder + "state.txt", dtype=int)
+decision = np.loadtxt(TEST_RESOURCES_DIR + group_folder + "decision.txt", dtype=int)
+period = np.loadtxt(TEST_RESOURCES_DIR + group_folder + "period.txt", dtype=int)
+data = pd.DataFrame(
+    {"Bus_ID": bus_id, "state": state, "decision": decision, "period": period}
+)
 result_trans, result_fixp = estimate(init_dict["replication"], data, repl_4=True)
 
 
