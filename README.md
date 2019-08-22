@@ -25,4 +25,5 @@ If you want to create a similar figure as the one in the project description pro
 
 [![Build Status](https://travis-ci.org/OpenSourceEconomics/ruspy.svg?branch=master)](https://travis-ci.org/OpenSourceEconomics/ruspy)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/91ce9e983dea4403b986f0ca69564818)](https://app.codacy.com/app/OpenSourceEconomics/ruspy?utm_source=github.com&utm_medium=referral&utm_content=OpenSourceEconomics/ruspy&utm_campaign=Badge_Grade_Dashboard)
+[![DOI](https://zenodo.org/badge/145026441.svg)](https://zenodo.org/badge/latestdoi/145026441)
 
