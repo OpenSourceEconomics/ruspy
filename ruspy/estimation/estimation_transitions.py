@@ -16,8 +16,10 @@ def estimate_transitions(df, repl_4=False):
     :param df: A pandas dataframe, which contains for each observation the Bus ID,
     the current state of the bus, the current period and the decision made in this
     period.
-    :param repl_4: Auxiliary variable indicating the complete setting of the
-                   replication of the paper with group 4.
+
+    :param repl_4: Auxiliary variable indicating the transition estimation as in Rust
+        (1987). The treatment of the engine replacement decision for the state
+        transitions is hardcoded below.
 
     :return: The optimization result of the transition probabilities estimation as a
              dictionary.
@@ -61,8 +63,10 @@ def create_increases(
                              each period the state as an integer.
     :param decisions:        A two dimensional numpy array containing for each bus in
                              each period the decision as an integer.
-    :param repl_4: Auxiliary variable indicating the complete setting of the
-                   replication of the paper with group 4.
+
+    :param repl_4: Auxiliary variable indicating the transition estimation as in Rust
+        (1987). The treatment of the engine replacement decision for the state
+        transitions is hardcoded below.
 
     :return: A list with the highest increase as maximal index and the increase
              counts as entries.
@@ -75,7 +79,7 @@ def create_increases(
                 state_count[states[bus, period], states[bus, period + 1]] += 1
             else:
                 if repl_4:
-                    increases[bus, period] = 1
+                    increases[bus, period] = 1  # This is the setting from Rust (1987)
                 else:
                     increases[bus, period] = states[bus, period + 1]
                 state_count[0, increases[bus, period]] += 1
