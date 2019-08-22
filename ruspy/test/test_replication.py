@@ -11,19 +11,22 @@ longest test time.
 import pytest
 import yaml
 import numpy as np
+import pandas as pd
+import os
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_allclose
 from ruspy.estimation.estimation import estimate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
-from ruspy.data.data_reading import data_reading
-from ruspy.data.data_processing import data_processing
 from ruspy.estimation.estimation_transitions import create_increases
+
 
 with open(TEST_RESOURCES_DIR + "replication_test/init_replication_test.yml") as y:
     init_dict = yaml.safe_load(y)
-data_reading()
-data = data_processing(init_dict["replication"])
-
-result_trans, result_fixp = estimate(init_dict["replication"], data, repl_4=True)
+group_folder = TEST_RESOURCES_DIR + "replication_test/group_4/"
+data = {}
+for file in os.listdir(group_folder):
+    data[os.fsdecode(file)[:-4]] = np.loadtxt(group_folder + file, dtype=int)
+df = pd.DataFrame(data)
+result_trans, result_fixp = estimate(init_dict["replication"], df, repl_4=True)
 
 
 @pytest.fixture
@@ -70,10 +73,10 @@ def test_cost_ll(inputs, outputs):
 
 
 def test_transition_count(outputs):
-    num_bus = len(data["Bus_ID"].unique())
-    num_periods = int(data.shape[0] / num_bus)
-    states = data["state"].values.reshape(num_bus, num_periods)
-    decisions = data["decision"].values.reshape(num_bus, num_periods)
+    num_bus = len(df["Bus_ID"].unique())
+    num_periods = int(df.shape[0] / num_bus)
+    states = df["state"].values.reshape(num_bus, num_periods)
+    decisions = df["decision"].values.reshape(num_bus, num_periods)
     space_state = states.max() + 1
     state_count = np.zeros(shape=(space_state, space_state), dtype=int)
     increases = np.zeros(shape=(num_bus, num_periods - 1), dtype=int)

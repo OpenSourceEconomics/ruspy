@@ -41,13 +41,7 @@ def estimate(init_dict, df, maint_func=lin_cost, repl_4=False):
     endog = df.loc[:, "decision"].to_numpy()
     states = df.loc[:, "state"].to_numpy()
     num_obs = df.shape[0]
-    # Our state space is 20% larger, than the maximal observed state. We prevent
-    # accumulation effects on the late states. As John Rust defines this variable we
-    # provide a hardcoded option for the full replication of the paper with group 4.
-    if repl_4:
-        num_states = 90
-    else:
-        num_states = int(1.2 * np.max(states))
+    num_states = init_dict["states"]
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states, num_obs)
