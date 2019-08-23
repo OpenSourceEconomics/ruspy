@@ -6,14 +6,11 @@ relevant variables.
 """
 import numpy as np
 import pandas as pd
-import scipy.stats as stats
-from ruspy.simulation.simulation_auxiliary import simulate_strategy
-from ruspy.estimation.estimation_cost_parameters import lin_cost
-from ruspy.estimation.estimation_cost_parameters import cost_func
-from ruspy.simulation.simulation_auxiliary import simulate_strategy_loop_known
+from ruspy.simulation.simulation_auxiliary import simulate_strategy, get_unobs
+from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func
 
 
-def simulate(init_dict, ev_known=None, shock=None):
+def simulate(init_dict, ev_known, real_trans_mat, shock=None):
     """
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
@@ -51,52 +48,34 @@ def simulate(init_dict, ev_known=None, shock=None):
     beta = init_dict["beta"]
     num_periods = init_dict["periods"]
     params = np.array(init_dict["params"])
-    if "real_trans" in init_dict.keys():
-        real_trans = np.array(init_dict["real_trans"])
-    else:
-        real_trans = np.array(init_dict["known_trans"])
     if init_dict["maint_func"] == "linear":
         maint_func = lin_cost
     else:
         maint_func = lin_cost
+    if ev_known.shape[0] != real_trans_mat.shape[0]:
+        raise ValueError(
+            "The transition matrix and the expected value of the agent "
+            "need to have the same size."
+        )
+    num_states = ev_known.shape[0]
     unobs = get_unobs(shock, num_buses, num_periods)
-    increments = np.random.choice(
-        len(real_trans), size=(num_buses, num_periods), p=real_trans
+    increments = get_increments(real_trans_mat, num_periods, num_buses)
+    costs = cost_func(num_states, maint_func, params)
+    states = np.zeros((num_buses, num_periods), dtype=int)
+    decisions = np.zeros((num_buses, num_periods), dtype=int)
+    utilities = np.zeros((num_buses, num_periods), dtype=float)
+    states, decisions, utilities = simulate_strategy(
+        num_buses,
+        states,
+        decisions,
+        utilities,
+        costs,
+        ev_known,
+        increments,
+        num_periods,
+        beta,
+        unobs,
     )
-    if ev_known is not None:
-        # If there is already ev given, the auxiliary function is skipped and the
-        # simulation is executed with no further increases of the state space. This
-        # option is perfect if only one parameter in the setting is varied and
-        # therefore the highest achievable state can be guessed.
-        num_states = int(len(ev_known))
-        costs = cost_func(num_states, maint_func, params)
-        states = np.zeros((num_buses, num_periods), dtype=int)
-        decisions = np.zeros((num_buses, num_periods), dtype=int)
-        utilities = np.zeros((num_buses, num_periods), dtype=float)
-        states, decisions, utilities = simulate_strategy_loop_known(
-            num_buses,
-            states,
-            decisions,
-            utilities,
-            costs,
-            ev_known,
-            increments,
-            num_periods,
-            beta,
-            unobs,
-        )
-    else:
-        known_trans = np.array(init_dict["known_trans"])
-        states, decisions, utilities, num_states = simulate_strategy(
-            known_trans,
-            increments,
-            num_buses,
-            num_periods,
-            params,
-            beta,
-            unobs,
-            maint_func,
-        )
 
     df = pd.DataFrame({"state": states.flatten(), "decision": decisions.flatten()})
     bus_id = np.arange(1, num_buses + 1).repeat(num_periods).astype(int)
@@ -105,25 +84,16 @@ def simulate(init_dict, ev_known=None, shock=None):
     for _ in range(num_buses):
         period = np.append(period, np.arange(num_periods))
     df["period"] = period.astype(int)
-    return df, unobs, utilities, num_states
+    return df, unobs, utilities
 
 
-def get_unobs(shock, num_buses, num_periods):
-    unobs = np.empty(shape=(num_buses, num_periods, 2), dtype=float)
-    shock = (
-        (
-            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r"),
-            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r"),
+def get_increments(real_trans_mat, num_periods, num_buses):
+    num_states = real_trans_mat.shape[0]
+    increments = np.zeros(shape=(num_states, num_buses, num_periods))
+    for s in range(num_states):
+        max_state = np.max(real_trans_mat[s, :].nonzero())
+        p = real_trans_mat[s, s : (max_state + 1)]  # noqa: E203
+        increments[s, :, :] = np.random.choice(
+            len(p), size=(num_buses, num_periods), p=p
         )
-        if shock is None
-        else shock
-    )
-    dist_func_shocks_maint = getattr(stats, shock[0].name)
-    dist_func_shocks_repl = getattr(stats, shock[1].name)
-    unobs[:, :, 0] = dist_func_shocks_maint.rvs(
-        **shock[0], size=[num_buses, num_periods]
-    )
-    unobs[:, :, 1] = dist_func_shocks_repl.rvs(
-        **shock[1], size=[num_buses, num_periods]
-    )
-    return unobs
+    return increments
