@@ -106,7 +106,7 @@ def get_unobs(shock, num_buses, num_periods):
 
 def get_increments(real_trans_mat, num_periods, num_buses):
     num_states = real_trans_mat.shape[0]
-    increments = np.zeros(shape=(num_states, num_buses, num_periods))
+    increments = np.zeros(shape=(num_states, num_buses, num_periods), dtype=int)
     for s in range(num_states):
         max_state = np.max(real_trans_mat[s, :].nonzero())
         p = real_trans_mat[s, s : (max_state + 1)]  # noqa: E203
