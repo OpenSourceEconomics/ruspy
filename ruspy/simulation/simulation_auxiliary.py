@@ -68,11 +68,11 @@ def simulate_strategy(
             ):
                 decision = 0
                 utility = -costs[old_state, 0] + unobs[bus, period, 0]
-                new_state = old_state + increments[bus, period]
+                new_state = old_state + increments[old_state, bus, period]
             else:
                 decision = 1
                 utility = -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
-                new_state = increments[bus, period]
+                new_state = increments[0, bus, period]
 
             decisions[bus, period] = decision
             utilities[bus, period] = utility
@@ -102,3 +102,15 @@ def get_unobs(shock, num_buses, num_periods):
         **shock[1], size=[num_buses, num_periods]
     )
     return unobs
+
+
+def get_increments(real_trans_mat, num_periods, num_buses):
+    num_states = real_trans_mat.shape[0]
+    increments = np.zeros(shape=(num_states, num_buses, num_periods))
+    for s in range(num_states):
+        max_state = np.max(real_trans_mat[s, :].nonzero())
+        p = real_trans_mat[s, s : (max_state + 1)]  # noqa: E203
+        increments[s, :, :] = np.random.choice(
+            len(p), size=(num_buses, num_periods), p=p
+        )
+    return increments

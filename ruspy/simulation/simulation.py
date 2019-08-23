@@ -6,7 +6,11 @@ relevant variables.
 """
 import numpy as np
 import pandas as pd
-from ruspy.simulation.simulation_auxiliary import simulate_strategy, get_unobs
+from ruspy.simulation.simulation_auxiliary import (
+    simulate_strategy,
+    get_unobs,
+    get_increments,
+)
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func
 
 
@@ -85,15 +89,3 @@ def simulate(init_dict, ev_known, real_trans_mat, shock=None):
         period = np.append(period, np.arange(num_periods))
     df["period"] = period.astype(int)
     return df, unobs, utilities
-
-
-def get_increments(real_trans_mat, num_periods, num_buses):
-    num_states = real_trans_mat.shape[0]
-    increments = np.zeros(shape=(num_states, num_buses, num_periods))
-    for s in range(num_states):
-        max_state = np.max(real_trans_mat[s, :].nonzero())
-        p = real_trans_mat[s, s : (max_state + 1)]  # noqa: E203
-        increments[s, :, :] = np.random.choice(
-            len(p), size=(num_buses, num_periods), p=p
-        )
-    return increments
