@@ -16,7 +16,6 @@ from ruspy.estimation.estimation_cost_parameters import (
     calc_fixp,
     choice_prob,
     lin_cost,
-    converge_choice,
 )
 from ruspy.test.ranodm_init import random_init
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
@@ -71,15 +70,6 @@ def test_calc_fixp(inputs, outputs):
 def test_choice_probs(inputs, outputs):
     assert_array_almost_equal(
         choice_prob(outputs["fixp"], outputs["costs"], inputs["beta"]),
-        outputs["choice_probs"],
-    )
-
-
-def test_choice_convergence(inputs, outputs):
-    assert_array_almost_equal(
-        converge_choice(
-            inputs["nstates"], outputs["trans_mat"], outputs["costs"], inputs["beta"]
-        ),
         outputs["choice_probs"],
     )
 

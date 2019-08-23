@@ -90,9 +90,8 @@ def loglike_opt_rule(
     :return: The negative loglikelihood value for minimizing the objective function.
     """
     costs = cost_func(num_states, maint_func, params)
-    # ev = calc_fixp(num_states, trans_mat, costs, beta, max_it=max_it)
-    # p_choice = choice_prob(ev, costs, beta)
-    p_choice = converge_choice(num_states, trans_mat, costs, beta, max_it=max_it)
+    ev = calc_fixp(num_states, trans_mat, costs, beta, max_it)
+    p_choice = choice_prob(ev, costs, beta)
     ll_prob = np.log(np.dot(p_choice.T, state_mat))
     return -np.sum(decision_mat * ll_prob)
 
@@ -165,7 +164,7 @@ def choice_prob(ev, costs, beta):
 
 
 @numba.jit(nopython=True)
-def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=1000000):
+def calc_fixp(num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-12):
     """
     The function to calculate the expected value fix point.
 
@@ -198,44 +197,3 @@ def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000
         ev_new = np.dot(trans_mat, log_sum)
         max_it -= 1
     return ev_new
-
-
-@numba.jit(nopython=True)
-def converge_choice(
-    num_states, trans_mat, costs, beta, threshold=1e-12, max_it=100000000
-):
-    """
-    The function to calculate the expected value fix point.
-
-    :param num_states:  The size of the state space.
-    :type num_states:   int
-    :param trans_mat:   A two dimensional numpy array containing a s x s markov
-                        transition matrix.
-    :param costs:       A two dimensional float numpy array containing for each
-                        state the cost to maintain in the first and to replace the bus
-                        engine in the second column.
-    :param beta:        The discount factor.
-    :type beta:         float
-    :param threshold:   A threshold for the convergence. By default set to 1e-6.
-    :type threshold:    float
-    :param max_it:      Maximum number of iterations. By default set to 1000000.
-    :type max_it:       int
-
-    :return: A numpy array containing for each state the expected value fixed point.
-    """
-    choice = np.zeros(shape=(num_states, 2))
-    ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
-    choice_new = choice_prob(ev_new, costs, beta)
-    while (np.max(np.abs(choice_new - choice)) > threshold) & (max_it != 0):
-        choice = choice_new
-        ev = ev_new
-        maint_cost = beta * ev - costs[:, 0]
-        repl_cost = beta * ev[0] - costs[0, 1] - costs[0, 0]
-        ev_min = maint_cost[0]
-        log_sum = ev_min + np.log(
-            np.exp(maint_cost - ev_min) + np.exp(repl_cost - ev_min)
-        )
-        ev_new = np.dot(trans_mat, log_sum)
-        choice_new = choice_prob(ev_new, costs, beta)
-        max_it -= 1
-    return choice_new

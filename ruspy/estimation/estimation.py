@@ -10,7 +10,7 @@ from ruspy.estimation.estimation_cost_parameters import loglike_opt_rule
 from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 
-def estimate(init_dict, df, maint_func=lin_cost, repl_4=False):
+def estimate(init_dict, df, repl_4=False):
     """
     This function calls the auxiliary functions to estimate the decision parameters.
     Therefore it manages the estimation process. As mentioned in the model theory
@@ -42,6 +42,7 @@ def estimate(init_dict, df, maint_func=lin_cost, repl_4=False):
     states = df.loc[:, "state"].to_numpy()
     num_obs = df.shape[0]
     num_states = init_dict["states"]
+    maint_func = lin_cost  # For now just set this to a linear cost function
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states, num_obs)
