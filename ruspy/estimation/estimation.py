@@ -42,10 +42,7 @@ def estimate(init_dict, df, repl_4=False):
     states = df.loc[:, "state"].to_numpy()
     num_obs = df.shape[0]
     num_states = init_dict["states"]
-    if init_dict["maint_func"] == "linear":
-        maint_func = lin_cost
-    else:
-        maint_func = lin_cost
+    maint_func = lin_cost  # For now just set this to a linear cost function
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states, num_obs)

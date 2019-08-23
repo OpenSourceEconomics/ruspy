@@ -90,7 +90,7 @@ def loglike_opt_rule(
     :return: The negative loglikelihood value for minimizing the objective function.
     """
     costs = cost_func(num_states, maint_func, params)
-    ev = calc_fixp(num_states, trans_mat, costs, beta, max_it=max_it)
+    ev = calc_fixp(num_states, trans_mat, costs, beta, max_it)
     p_choice = choice_prob(ev, costs, beta)
     ll_prob = np.log(np.dot(p_choice.T, state_mat))
     return -np.sum(decision_mat * ll_prob)
@@ -164,7 +164,7 @@ def choice_prob(ev, costs, beta):
 
 
 @numba.jit(nopython=True)
-def calc_fixp(num_states, trans_mat, costs, beta, threshold=1e-12, max_it=1000000):
+def calc_fixp(num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-12):
     """
     The function to calculate the expected value fix point.
 
