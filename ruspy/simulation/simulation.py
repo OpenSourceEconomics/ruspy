@@ -63,23 +63,15 @@ def simulate(init_dict, ev_known, real_trans_mat, shock=None):
         )
     num_states = ev_known.shape[0]
     unobs = get_unobs(shock, num_buses, num_periods)
-    increments = get_increments(real_trans_mat, num_periods, num_buses)
     costs = cost_func(num_states, maint_func, params)
     states = np.zeros((num_buses, num_periods), dtype=int)
     decisions = np.zeros((num_buses, num_periods), dtype=int)
     utilities = np.zeros((num_buses, num_periods), dtype=float)
-    states, decisions, utilities = simulate_strategy(
-        num_buses,
-        states,
-        decisions,
-        utilities,
-        costs,
-        ev_known,
-        increments,
-        num_periods,
-        beta,
-        unobs,
-    )
+    for bus in range(num_buses):
+        increments = get_increments(real_trans_mat, num_periods)
+        states, decisions, utilities = simulate_strategy(
+            bus, states, decisions, utilities, costs, ev_known, increments, beta, unobs
+        )
 
     df = pd.DataFrame({"state": states.flatten(), "decision": decisions.flatten()})
     bus_id = np.arange(1, num_buses + 1).repeat(num_periods).astype(int)

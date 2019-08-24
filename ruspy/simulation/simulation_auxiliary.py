@@ -6,16 +6,7 @@ import scipy.stats as stats
 
 @numba.jit(nopython=True)
 def simulate_strategy(
-    num_buses,
-    states,
-    decisions,
-    utilities,
-    costs,
-    ev,
-    increments,
-    num_periods,
-    beta,
-    unobs,
+    bus, states, decisions, utilities, costs, ev, increments, beta, unobs
 ):
     """
     This function simulates the decision strategy, as long as the current period is
@@ -60,26 +51,26 @@ def simulate_strategy(
 
     """
     num_states = ev.shape[0]
+    num_periods = decisions.shape[1]
     for period in range(num_periods):
-        for bus in range(num_buses):
-            old_state = states[bus, period]
-            if (-costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) > (
-                -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]
-            ):
-                decision = 0
-                utility = -costs[old_state, 0] + unobs[bus, period, 0]
-                new_state = old_state + increments[old_state, bus, period]
-            else:
-                decision = 1
-                utility = -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
-                new_state = increments[0, bus, period]
+        old_state = states[bus, period]
+        if (-costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) > (
+            -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]
+        ):
+            decision = 0
+            utility = -costs[old_state, 0] + unobs[bus, period, 0]
+            new_state = old_state + increments[old_state, period]
+        else:
+            decision = 1
+            utility = -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
+            new_state = increments[0, period]
 
-            decisions[bus, period] = decision
-            utilities[bus, period] = utility
-            if period < num_periods - 1:
-                states[bus, period + 1] = new_state
-            if new_state > num_states - 10:
-                raise ValueError("State space is too small.")
+        decisions[bus, period] = decision
+        utilities[bus, period] = utility
+        if period < num_periods - 1:
+            states[bus, period + 1] = new_state
+        if new_state > num_states - 10:
+            raise ValueError("State space is too small.")
     return states, decisions, utilities
 
 
@@ -104,13 +95,11 @@ def get_unobs(shock, num_buses, num_periods):
     return unobs
 
 
-def get_increments(real_trans_mat, num_periods, num_buses):
+def get_increments(real_trans_mat, num_periods):
     num_states = real_trans_mat.shape[0]
-    increments = np.zeros(shape=(num_states, num_buses, num_periods), dtype=int)
+    increments = np.zeros(shape=(num_states, num_periods), dtype=int)
     for s in range(num_states):
         max_state = np.max(real_trans_mat[s, :].nonzero())
         p = real_trans_mat[s, s : (max_state + 1)]  # noqa: E203
-        increments[s, :, :] = np.random.choice(
-            len(p), size=(num_buses, num_periods), p=p
-        )
+        increments[s, :] = np.random.choice(len(p), size=num_periods, p=p)
     return increments
