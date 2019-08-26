@@ -72,11 +72,19 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
             bus, states, decisions, utilities, costs, ev_known, increments, beta, unobs
         )
 
-    df = pd.DataFrame({"state": states.flatten(), "decision": decisions.flatten()})
+    df = pd.DataFrame(
+        {
+            "state": states.flatten(),
+            "decision": decisions.flatten(),
+            "utilities": utilities.flatten(),
+            "unobs_maint": unobs[:, :, 0].flatten(),
+            "unobs_repl": unobs[:, :, 1].flatten(),
+        }
+    )
     bus_id = np.arange(1, num_buses + 1).repeat(num_periods).astype(int)
     df["Bus_ID"] = bus_id
     period = np.array([])
     for _ in range(num_buses):
         period = np.append(period, np.arange(num_periods))
     df["period"] = period.astype(int)
-    return df, unobs, utilities
+    return df

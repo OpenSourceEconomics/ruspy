@@ -37,7 +37,12 @@ def test_regression_simulation(inputs):
     costs = cost_func(num_states, lin_cost, params)
     ev = calc_fixp(num_states, trans_mat, costs, beta)
 
-    df, unobs, utilities = simulate(init_dict["simulation"], ev, trans_mat)
+    df = simulate(init_dict["simulation"], ev, trans_mat)
+    unobs = np.zeros((num_buses, num_periods, 2), dtype=float)
+    unobs[:, :, 0] = df["unobs_maint"].to_numpy().reshape(num_buses, num_periods)
+    unobs[:, :, 1] = df["unobs_repl"].to_numpy().reshape(num_buses, num_periods)
+    utilities = df["utilities"].to_numpy().reshape(num_buses, num_periods)
+
     ev_calc = calc_ev_0(ev, unobs, num_buses)
 
     v_disc = discount_utility(num_periods, utilities, beta)
