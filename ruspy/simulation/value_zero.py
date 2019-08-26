@@ -7,7 +7,7 @@ import numpy as np
 
 
 @numba.jit(nopython=True)
-def discount_utility(v_disc, gridsize, utilities, beta):
+def discount_utility(gridsize, utilities, beta):
     """
     This function can be called to average the discounted utility of all buses in a
     sample. It is designed for a plot, where the averaged discounted utility in
@@ -15,8 +15,6 @@ def discount_utility(v_disc, gridsize, utilities, beta):
     the last point, at which the function is evaluated is always the averaged
     discounted utility of all periods in time 0.
 
-    :param v_disc:      A list or numpy array, containing for each point to be evaluated
-                        a float zero.
     :param gridsize:    The gridsize for the periods to be evaluated.
     :type gridsize:     int
     :param utilities:   A two dimensional numpy array containing for each bus in
@@ -29,8 +27,9 @@ def discount_utility(v_disc, gridsize, utilities, beta):
     """
     num_buses = utilities.shape[0]
     num_periods = utilities.shape[1]
-    num_points = int(num_periods / gridsize)
-    for point in range(num_points + 1):
+    num_points = int(num_periods / gridsize) + 1
+    v_disc = np.zeros(num_points, dtype=numba.float64)
+    for point in range(num_points):
         v = 0.0
         for i in range(point * gridsize):
             v += (beta ** i) * np.sum(utilities[:, i])
