@@ -54,9 +54,13 @@ def simulate_strategy(
     num_periods = decisions.shape[1]
     for period in range(num_periods):
         old_state = states[bus, period]
-        if (-costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]) > (
+        value_replace = (
             -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]
-        ):
+        )
+        value_maintain = (
+            -costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]
+        )
+        if value_maintain > value_replace:
             decision = 0
             utility = -costs[old_state, 0] + unobs[bus, period, 0]
             new_state = old_state + increments[old_state, period]
@@ -75,7 +79,19 @@ def simulate_strategy(
 
 
 def get_unobs(shock, num_buses, num_periods):
+    """
+    :param shock            : A tuple of pandas.Series, where each Series name is
+                             the scipy distribution function and the data is the loc
+                             and scale specification.
+    :param num_buses        : Number of buses to be simulated.
+    :param num_periods      : Number of periods to be simulated.
+
+    :return: A 3d numpy array containing for each bus in each period a random shock
+    for each decision.
+    """
     unobs = np.empty(shape=(num_buses, num_periods, 2), dtype=float)
+    # If no specification on the shocks is given. A right skewed gumbel distribution
+    # with mean 0 and scale pi^2/6 is assumed for each shock component.
     shock = (
         (
             pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r"),
