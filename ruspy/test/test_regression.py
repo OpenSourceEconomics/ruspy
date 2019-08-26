@@ -31,7 +31,7 @@ def test_regression_simulation(inputs):
     beta = init_dict["simulation"]["beta"]
     params = np.array(init_dict["simulation"]["params"])
     probs = np.array(init_dict["simulation"]["known_trans"])
-    num_states = 200
+    num_states = init_dict["simulation"]["states"]
 
     trans_mat = create_transition_matrix(num_states, probs)
     costs = cost_func(num_states, lin_cost, params)
