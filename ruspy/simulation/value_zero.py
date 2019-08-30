@@ -17,8 +17,8 @@ def discount_utility(gridsize, utilities, beta):
 
     :param gridsize:    The gridsize for the periods to be evaluated.
     :type gridsize:     int
-    :param utilities:   A two dimensional numpy array containing for each bus in
-                        each period the utility as a float.A
+    :param utilities:   A 2d numpy array containing the realized observed utilities
+                        of dimension(num_buses, num_periods).
     :param beta:        The discount factor.
     :type beta:         float
 
