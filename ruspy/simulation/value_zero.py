@@ -36,8 +36,7 @@ def calc_ev_0(df, ev):
     num_buses = df["Bus_ID"].nunique()
     num_periods = int(df["period"].max()) + 1
     unobs = np.zeros((num_buses, num_periods, 2), dtype=float)
-    unobs[:, :, 0] = df["unobs_maint"].to_numpy().reshape(num_buses,
-                                                                  num_periods)
+    unobs[:, :, 0] = df["unobs_maint"].to_numpy().reshape(num_buses, num_periods)
     unobs[:, :, 1] = df["unobs_repl"].to_numpy().reshape(num_buses, num_periods)
     return calc_ev_0_loop(ev, unobs, num_buses)
 
