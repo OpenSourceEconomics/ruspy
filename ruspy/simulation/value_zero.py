@@ -17,7 +17,7 @@ def discount_utility(df, gridsize, beta):
     num_buses = df["Bus_ID"].nunique()
     num_periods = int(df["period"].max()) + 1
     num_points = int(num_periods / gridsize) + 1
-    utilities = df["utilities"].to_numpy().reshape(num_buses, num_periods)
+    utilities = df["utilities"].to_numpy(np.float64).reshape(num_buses, num_periods)
     return disc_ut_loop(gridsize, num_buses, num_points, utilities, beta)
 
 
@@ -35,7 +35,7 @@ def disc_ut_loop(gridsize, num_buses, num_points, utilities, beta):
 def calc_ev_0(df, ev):
     num_buses = df["Bus_ID"].nunique()
     num_periods = int(df["period"].max()) + 1
-    unobs = np.zeros((num_buses, num_periods, 2), dtype=float)
+    unobs = np.zeros((num_buses, num_periods, 2), dtype=np.float64)
     unobs[:, :, 0] = df["unobs_maint"].to_numpy().reshape(num_buses, num_periods)
     unobs[:, :, 1] = df["unobs_repl"].to_numpy().reshape(num_buses, num_periods)
     return calc_ev_0_loop(ev, unobs, num_buses)
@@ -43,8 +43,8 @@ def calc_ev_0(df, ev):
 
 @numba.jit(nopython=True)
 def calc_ev_0_loop(ev, unobs, num_buses):
-    v_calc = 0
+    v_calc = 0.
     for i in range(num_buses):
-        v_calc = v_calc + unobs[i, 0, 0] + ev[0]
+        v_calc += unobs[i, 0, 0] + ev[0]
     v_calc = v_calc / num_buses
     return v_calc

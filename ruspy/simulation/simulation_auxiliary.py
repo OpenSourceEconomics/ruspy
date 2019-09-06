@@ -111,11 +111,11 @@ def get_unobs(shock, num_buses, num_periods):
     return unobs
 
 
-def get_increments(real_trans_mat, num_periods):
-    num_states = real_trans_mat.shape[0]
+def get_increments(trans_mat, num_periods):
+    num_states = trans_mat.shape[0]
     increments = np.zeros(shape=(num_states, num_periods), dtype=int)
     for s in range(num_states):
-        max_state = np.max(real_trans_mat[s, :].nonzero())
-        p = real_trans_mat[s, s : (max_state + 1)]  # noqa: E203
+        max_state = np.max(trans_mat[s, :].nonzero())
+        p = trans_mat[s, s: (max_state + 1)]  # noqa: E203
         increments[s, :] = np.random.choice(len(p), size=num_periods, p=p)
     return increments
