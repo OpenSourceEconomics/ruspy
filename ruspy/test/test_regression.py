@@ -26,7 +26,6 @@ def inputs():
 
 def test_regression_simulation(inputs):
     init_dict = random_init(inputs)
-    num_buses = init_dict["simulation"]["buses"]
     num_periods = init_dict["simulation"]["periods"]
     beta = init_dict["simulation"]["beta"]
     params = np.array(init_dict["simulation"]["params"])
@@ -38,13 +37,9 @@ def test_regression_simulation(inputs):
     ev = calc_fixp(num_states, trans_mat, costs, beta)
 
     df = simulate(init_dict["simulation"], ev, trans_mat)
-    unobs = np.zeros((num_buses, num_periods, 2), dtype=float)
-    unobs[:, :, 0] = df["unobs_maint"].to_numpy().reshape(num_buses, num_periods)
-    unobs[:, :, 1] = df["unobs_repl"].to_numpy().reshape(num_buses, num_periods)
-    utilities = df["utilities"].to_numpy().reshape(num_buses, num_periods)
 
-    ev_calc = calc_ev_0(ev, unobs, num_buses)
+    ev_calc = calc_ev_0(df, ev)
 
-    v_disc = discount_utility(num_periods, utilities, beta)
+    v_disc = discount_utility(df, num_periods, beta)
 
     assert_allclose(v_disc[1] / ev_calc, 1, rtol=1e-02)

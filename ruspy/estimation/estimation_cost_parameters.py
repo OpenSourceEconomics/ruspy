@@ -188,11 +188,15 @@ def calc_fixp(num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-1
     ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
     while (np.max(np.abs(ev_new - ev)) > threshold) & (max_it != 0):
         ev = ev_new
-        maint_cost = beta * ev - costs[:, 0]
-        repl_cost = beta * ev[0] - costs[0, 1] - costs[0, 0]
-        ev_min = maint_cost[0]
+        maint_value = beta * ev - costs[:, 0]
+        repl_value = beta * ev[0] - costs[0, 1] - costs[0, 0]
+
+        # Select the minimal absolute value to rescale the value vector for the
+        # exponential function.
+        ev_min = maint_value[0]
+
         log_sum = ev_min + np.log(
-            np.exp(maint_cost - ev_min) + np.exp(repl_cost - ev_min)
+            np.exp(maint_value - ev_min) + np.exp(repl_value - ev_min)
         )
         ev_new = np.dot(trans_mat, log_sum)
         max_it -= 1
