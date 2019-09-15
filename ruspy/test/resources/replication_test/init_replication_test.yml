@@ -2,10 +2,6 @@
 
 replication:
 
-  groups  : group_4
-  binsize : 5000
-  beta    : 0.9999
-  states  : 90
-  maint_func : linear
+
 
 
