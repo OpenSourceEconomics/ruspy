@@ -9,24 +9,20 @@ longest test time.
 """
 
 import pytest
-import yaml
 import numpy as np
-import pandas as pd
-import os
+import pickle as pkl
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_allclose
 from ruspy.estimation.estimation import estimate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 from ruspy.estimation.estimation_transitions import create_increases
 
 
-with open(TEST_RESOURCES_DIR + "replication_test/init_replication_test.yml") as y:
-    init_dict = yaml.safe_load(y)
-group_folder = TEST_RESOURCES_DIR + "replication_test/group_4/"
-data = {}
-for file in os.listdir(group_folder):
-    data[os.fsdecode(file)[:-4]] = np.loadtxt(group_folder + file, dtype=int)
-df = pd.DataFrame(data)
-result_trans, result_fixp = estimate(init_dict["replication"], df, repl_4=True)
+TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
+
+init_dict = {"groups": "group_4", "binsize": 5000, "beta": 0.9999, "states": 90}
+
+df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
+result_trans, result_fixp = estimate(init_dict, df, repl_4=True)
 
 
 @pytest.fixture
@@ -42,15 +38,9 @@ def inputs():
 @pytest.fixture
 def outputs():
     out = dict()
-    out["trans_base"] = np.loadtxt(
-        TEST_RESOURCES_DIR + "replication_test/repl_test_trans.txt"
-    )
-    out["params_base"] = np.loadtxt(
-        TEST_RESOURCES_DIR + "replication_test/repl_test_params.txt"
-    )
-    out["transition_count"] = np.loadtxt(
-        TEST_RESOURCES_DIR + "replication_test/transition_count.txt"
-    )
+    out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
+    out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
+    out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
     out["cost_ll"] = 163.585839
     return out
@@ -61,7 +51,7 @@ def test_repl_params(inputs, outputs):
 
 
 def test_repl_trans(inputs, outputs):
-    assert_array_almost_equal(inputs["trans_est"], outputs["trans_base"], decimal=4)
+    assert_array_almost_equal(inputs["trans_est"], outputs["trans_base"])
 
 
 def test_trans_ll(inputs, outputs):
