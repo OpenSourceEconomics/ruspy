@@ -61,12 +61,13 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
             "need to have the same size."
         )
     num_states = ev_known.shape[0]
-    unobs = get_unobs(shock, num_buses, num_periods)
     costs = cost_func(num_states, maint_func, params)
+    unobs = np.zeros(shape=(num_buses, num_periods, 2), dtype=np.float64)
     states = np.zeros((num_buses, num_periods), dtype=int)
     decisions = np.zeros((num_buses, num_periods), dtype=int)
     utilities = np.zeros((num_buses, num_periods), dtype=float)
     for bus in range(num_buses):
+        unobs[bus, :, :] = get_unobs(shock, num_periods)
         increments = get_increments(trans_mat, num_periods)
         states, decisions, utilities = simulate_strategy(
             bus, states, decisions, utilities, costs, ev_known, increments, beta, unobs

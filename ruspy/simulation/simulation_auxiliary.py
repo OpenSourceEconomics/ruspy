@@ -78,7 +78,7 @@ def simulate_strategy(
     return states, decisions, utilities
 
 
-def get_unobs(shock, num_buses, num_periods):
+def get_unobs(shock, num_periods):
     """
     :param shock            : A tuple of pandas.Series, where each Series name is
                              the scipy distribution function and the data is the loc
@@ -89,7 +89,7 @@ def get_unobs(shock, num_buses, num_periods):
     :return: A 3d numpy array containing for each bus in each period a random shock
     for each decision.
     """
-    unobs = np.empty(shape=(num_buses, num_periods, 2), dtype=float)
+    unobs = np.empty(shape=(num_periods, 2), dtype=np.float64)
     # If no specification on the shocks is given. A right skewed gumbel distribution
     # with mean 0 and scale pi^2/6 is assumed for each shock component.
     shock = (
@@ -102,12 +102,8 @@ def get_unobs(shock, num_buses, num_periods):
     )
     dist_func_shocks_maint = getattr(stats, shock[0].name)
     dist_func_shocks_repl = getattr(stats, shock[1].name)
-    unobs[:, :, 0] = dist_func_shocks_maint.rvs(
-        **shock[0], size=[num_buses, num_periods]
-    )
-    unobs[:, :, 1] = dist_func_shocks_repl.rvs(
-        **shock[1], size=[num_buses, num_periods]
-    )
+    unobs[:, 0] = dist_func_shocks_maint.rvs(**shock[0], size=[num_periods])
+    unobs[:, 1] = dist_func_shocks_repl.rvs(**shock[1], size=[num_periods])
     return unobs
 
 
@@ -116,6 +112,6 @@ def get_increments(trans_mat, num_periods):
     increments = np.zeros(shape=(num_states, num_periods), dtype=int)
     for s in range(num_states):
         max_state = np.max(trans_mat[s, :].nonzero())
-        p = trans_mat[s, s: (max_state + 1)]  # noqa: E203
+        p = trans_mat[s, s : (max_state + 1)]  # noqa: E203
         increments[s, :] = np.random.choice(len(p), size=num_periods, p=p)
     return increments
