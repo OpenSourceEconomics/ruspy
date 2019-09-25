@@ -14,7 +14,7 @@ from ruspy.simulation.simulation_auxiliary import (
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func
 
 
-def simulate(init_dict, ev_known, trans_mat, shock=None):
+def simulate(init_dict, ev_known, trans_mat, shock=None, pool_trans=False):
     """
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
@@ -69,6 +69,8 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
     for bus in range(num_buses):
         unobs[bus, :, :] = get_unobs(shock, num_periods)
         increments = get_increments(trans_mat, num_periods)
+        if pool_trans:
+            increments[:] = increments[0, :]
         states, decisions, utilities = simulate_strategy(
             bus, states, decisions, utilities, costs, ev_known, increments, beta, unobs
         )
