@@ -11,7 +11,7 @@ def simulate_strategy(
     utilities,
     costs,
     ev,
-    increments,
+    trans_mat,
     beta,
     maint_func,
     repl_func,
@@ -73,19 +73,27 @@ def simulate_strategy(
         if value_maintain > value_replace:
             decision = 0
             utility = -costs[old_state, 0] + unobs[0]
-            new_state = old_state + increments[old_state, period]
+            intermediate_state = old_state
         else:
             decision = 1
             utility = -costs[0, 0] - costs[0, 1] + unobs[1]
-            new_state = increments[0, period]
+            intermediate_state = 0
 
         decisions[bus, period] = decision
         utilities[bus, period] = utility
+        new_state = intermediate_state + draw_increment(intermediate_state, trans_mat)
         if period < num_periods - 1:
             states[bus, period + 1] = new_state
         if new_state > num_states - 10:
             raise ValueError("State space is too small.")
     return states, decisions, utilities
+
+
+@numba.jit(nopython=True)
+def draw_increment(state, trans_mat):
+    max_state = np.max(np.nonzero(trans_mat[state, :])[0])
+    p = trans_mat[state, state : (max_state + 1)]  # noqa: E203
+    return np.argmax(np.random.multinomial(1, p))
 
 
 def get_unobs_data(shock):
@@ -129,13 +137,3 @@ def draw_unob(dist_name, loc, scale):
         return np.random.normal(loc, scale)
     else:
         raise ValueError
-
-
-def get_increments(trans_mat, num_periods):
-    num_states = trans_mat.shape[0]
-    increments = np.zeros(shape=(num_states, num_periods), dtype=int)
-    for s in range(num_states):
-        max_state = np.max(trans_mat[s, :].nonzero())
-        p = trans_mat[s, s : (max_state + 1)]  # noqa: E203
-        increments[s, :] = np.random.choice(len(p), size=num_periods, p=p)
-    return increments

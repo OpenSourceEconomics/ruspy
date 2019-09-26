@@ -6,11 +6,7 @@ relevant variables.
 """
 import numpy as np
 import pandas as pd
-from ruspy.simulation.simulation_auxiliary import (
-    simulate_strategy,
-    get_unobs_data,
-    get_increments,
-)
+from ruspy.simulation.simulation_auxiliary import simulate_strategy, get_unobs_data
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func
 
 
@@ -67,9 +63,6 @@ def simulate(init_dict, ev_known, trans_mat, shock=None, pool_trans=False):
     decisions = np.zeros((num_buses, num_periods), dtype=int)
     utilities = np.zeros((num_buses, num_periods), dtype=float)
     for bus in range(num_buses):
-        increments = get_increments(trans_mat, num_periods)
-        if pool_trans:
-            increments[:] = increments[0, :]
         states, decisions, utilities = simulate_strategy(
             bus,
             states,
@@ -77,7 +70,7 @@ def simulate(init_dict, ev_known, trans_mat, shock=None, pool_trans=False):
             utilities,
             costs,
             ev_known,
-            increments,
+            trans_mat,
             beta,
             maint_func,
             repl_func,
