@@ -1,12 +1,21 @@
 import pandas as pd
 import numpy as np
 import numba
-import scipy.stats as stats
 
 
 @numba.jit(nopython=True)
 def simulate_strategy(
-    bus, states, decisions, utilities, costs, ev, increments, beta, unobs
+    bus,
+    states,
+    decisions,
+    utilities,
+    costs,
+    ev,
+    increments,
+    beta,
+    maint_func,
+    repl_func,
+    loc_scale,
 ):
     """
     This function simulates the decision strategy, as long as the current period is
@@ -54,19 +63,20 @@ def simulate_strategy(
     num_periods = decisions.shape[1]
     for period in range(num_periods):
         old_state = states[bus, period]
-        value_replace = (
-            -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1] + beta * ev[0]
+        unobs = (
+            draw_unob(maint_func, loc_scale[0, 0], loc_scale[0, 1]),
+            draw_unob(repl_func, loc_scale[1, 0], loc_scale[1, 1]),
         )
-        value_maintain = (
-            -costs[old_state, 0] + unobs[bus, period, 0] + beta * ev[old_state]
-        )
+
+        value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]
+        value_maintain = -costs[old_state, 0] + unobs[0] + beta * ev[old_state]
         if value_maintain > value_replace:
             decision = 0
-            utility = -costs[old_state, 0] + unobs[bus, period, 0]
+            utility = -costs[old_state, 0] + unobs[0]
             new_state = old_state + increments[old_state, period]
         else:
             decision = 1
-            utility = -costs[0, 0] - costs[0, 1] + unobs[bus, period, 1]
+            utility = -costs[0, 0] - costs[0, 1] + unobs[1]
             new_state = increments[0, period]
 
         decisions[bus, period] = decision
@@ -78,33 +88,47 @@ def simulate_strategy(
     return states, decisions, utilities
 
 
-def get_unobs(shock, num_periods):
+def get_unobs_data(shock):
     """
     :param shock            : A tuple of pandas.Series, where each Series name is
                              the scipy distribution function and the data is the loc
                              and scale specification.
-    :param num_buses        : Number of buses to be simulated.
-    :param num_periods      : Number of periods to be simulated.
 
-    :return: A 3d numpy array containing for each bus in each period a random shock
-    for each decision.
+    :return: A list of distribution names and an array of loc and scalle parameters.
     """
-    unobs = np.empty(shape=(num_periods, 2), dtype=np.float64)
     # If no specification on the shocks is given. A right skewed gumbel distribution
     # with mean 0 and scale pi^2/6 is assumed for each shock component.
     shock = (
         (
-            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r"),
-            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel_r"),
+            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel"),
+            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel"),
         )
         if shock is None
         else shock
     )
-    dist_func_shocks_maint = getattr(stats, shock[0].name)
-    dist_func_shocks_repl = getattr(stats, shock[1].name)
-    unobs[:, 0] = dist_func_shocks_maint.rvs(**shock[0], size=[num_periods])
-    unobs[:, 1] = dist_func_shocks_repl.rvs(**shock[1], size=[num_periods])
-    return unobs
+
+    loc_scale = np.zeros((2, 2), dtype=float)
+    for i, params in enumerate(shock):
+        if "loc" in params.index:
+            loc_scale[i, 0] = params["loc"]
+        else:
+            loc_scale[i, 0] = 0
+        if "scale" in params.index:
+            loc_scale[i, 1] = params["scale"]
+        else:
+            loc_scale[i, 1] = 1
+
+    return shock[0].name, shock[1].name, loc_scale
+
+
+@numba.jit(nopython=True)
+def draw_unob(dist_name, loc, scale):
+    if dist_name == "gumbel":
+        return np.random.gumbel(loc, scale)
+    elif dist_name == "normal":
+        return np.random.normal(loc, scale)
+    else:
+        raise ValueError
 
 
 def get_increments(trans_mat, num_periods):

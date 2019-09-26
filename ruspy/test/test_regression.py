@@ -11,7 +11,7 @@ from numpy.testing import assert_allclose
 import numpy as np
 from ruspy.test.ranodm_init import random_init
 from ruspy.simulation.simulation import simulate
-from ruspy.simulation.value_zero import discount_utility, calc_ev_0
+from ruspy.simulation.value_zero import discount_utility
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
@@ -20,7 +20,7 @@ from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 @pytest.fixture
 def inputs():
-    constraints = {"PERIODS": 70000, "BUSES": 100, "BETA": 0.9999}
+    constraints = {"PERIODS": 70000, "BUSES": 200, "BETA": 0.9999}
     return constraints
 
 
@@ -38,8 +38,6 @@ def test_regression_simulation(inputs):
 
     df = simulate(init_dict["simulation"], ev, trans_mat)
 
-    ev_calc = calc_ev_0(df, ev)
-
     v_disc = discount_utility(df, num_periods, beta)
 
-    assert_allclose(v_disc[1] / ev_calc, 1, rtol=1e-02)
+    assert_allclose(v_disc[1] / ev[0], 1, rtol=1e-02)

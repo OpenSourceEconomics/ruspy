@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from ruspy.simulation.simulation_auxiliary import (
     simulate_strategy,
-    get_unobs,
+    get_unobs_data,
     get_increments,
 )
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func
@@ -62,17 +62,26 @@ def simulate(init_dict, ev_known, trans_mat, shock=None, pool_trans=False):
         )
     num_states = ev_known.shape[0]
     costs = cost_func(num_states, maint_func, params)
-    unobs = np.zeros(shape=(num_buses, num_periods, 2), dtype=np.float64)
+    maint_func, repl_func, loc_scale = get_unobs_data(shock)
     states = np.zeros((num_buses, num_periods), dtype=int)
     decisions = np.zeros((num_buses, num_periods), dtype=int)
     utilities = np.zeros((num_buses, num_periods), dtype=float)
     for bus in range(num_buses):
-        unobs[bus, :, :] = get_unobs(shock, num_periods)
         increments = get_increments(trans_mat, num_periods)
         if pool_trans:
             increments[:] = increments[0, :]
         states, decisions, utilities = simulate_strategy(
-            bus, states, decisions, utilities, costs, ev_known, increments, beta, unobs
+            bus,
+            states,
+            decisions,
+            utilities,
+            costs,
+            ev_known,
+            increments,
+            beta,
+            maint_func,
+            repl_func,
+            loc_scale,
         )
 
     df = pd.DataFrame(
@@ -80,8 +89,6 @@ def simulate(init_dict, ev_known, trans_mat, shock=None, pool_trans=False):
             "state": states.flatten(),
             "decision": decisions.flatten(),
             "utilities": utilities.flatten(),
-            "unobs_maint": unobs[:, :, 0].flatten(),
-            "unobs_repl": unobs[:, :, 1].flatten(),
         }
     )
     bus_id = np.arange(1, num_buses + 1).repeat(num_periods).astype(int)
