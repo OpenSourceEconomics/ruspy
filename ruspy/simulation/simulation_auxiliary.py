@@ -5,16 +5,13 @@ import numba
 
 @numba.jit(nopython=True)
 def simulate_strategy(
-    bus,
-    states,
-    decisions,
-    utilities,
+    num_periods,
     costs,
     ev,
     trans_mat,
     beta,
-    maint_func,
-    repl_func,
+    maint_shock_dist_name,
+    repl_shock_dist_name,
     loc_scale,
     seed,
 ):
@@ -23,31 +20,15 @@ def simulate_strategy(
     below the number of periods and the current highest state of a bus is in the
     first half of the state space.
 
-    :param num_buses:    The number of buses to be simulated.
-    :type num_buses:     int
-    :param states:       A two dimensional numpy array containing for each bus in each
-                         period the state as integer. Default value for each bus
-                         in each period not yet simulated is zero.
-    :param decisions:    A two dimensional numpy array containing for each bus in each
-                         period the decision as integer. Default value for each bus
-                         in each period not yet simulated is zero.
-    :param utilities:    A two dimensional numpy array containing for each bus in each
-                         period the utility as float. Default value for each bus
-                         in each period not yet simulated is zero.
     :param costs:        A two dimensional float numpy array containing for each
                          state the cost to maintain in the first and to replace the bus
                          engine in the second column.
     :param ev:           A numpy array containing for each state the expected value
                          fixed point.total
-    :param increments:   A two dimensional numpy array containing for each bus in each
-                         period a random drawn state increase as integer.
     :param num_periods:  The number of periods to be simulated.
     :type num_periods:   int
     :param beta:         The discount factor.
     :type beta:          float
-    :param unobs:        A three dimensional numpy array containing for each bus,
-                         for each period for the decision to maintain or replace the
-                         bus engine a random drawn utility as float.
 
     :return: The function returns the following objects:
 
@@ -62,12 +43,14 @@ def simulate_strategy(
     """
     np.random.seed(seed)
     num_states = ev.shape[0]
-    num_periods = decisions.shape[1]
+    states = np.zeros(num_periods, dtype=numba.int32)
+    decisions = np.zeros(num_periods, dtype=numba.int32)
+    utilities = np.zeros(num_periods, dtype=numba.float32)
     for period in range(num_periods):
-        old_state = states[bus, period]
+        old_state = states[period]
         unobs = (
-            draw_unob(maint_func, loc_scale[0, 0], loc_scale[0, 1]),
-            draw_unob(repl_func, loc_scale[1, 0], loc_scale[1, 1]),
+            draw_unob(maint_shock_dist_name, loc_scale[0, 0], loc_scale[0, 1]),
+            draw_unob(repl_shock_dist_name, loc_scale[1, 0], loc_scale[1, 1]),
         )
 
         value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]
@@ -81,11 +64,11 @@ def simulate_strategy(
             utility = -costs[0, 0] - costs[0, 1] + unobs[1]
             intermediate_state = 0
 
-        decisions[bus, period] = decision
-        utilities[bus, period] = utility
+        decisions[period] = decision
+        utilities[period] = utility
         new_state = intermediate_state + draw_increment(intermediate_state, trans_mat)
         if period < num_periods - 1:
-            states[bus, period + 1] = new_state
+            states[period + 1] = new_state
         if new_state > num_states - 10:
             raise ValueError("State space is too small.")
     return states, decisions, utilities
