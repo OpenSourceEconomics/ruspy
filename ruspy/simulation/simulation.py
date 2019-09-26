@@ -10,7 +10,7 @@ from ruspy.simulation.simulation_auxiliary import simulate_strategy, get_unobs_d
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func
 
 
-def simulate(init_dict, ev_known, trans_mat, shock=None, pool_trans=False):
+def simulate(init_dict, ev_known, trans_mat, shock=None):
     """
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
@@ -63,6 +63,7 @@ def simulate(init_dict, ev_known, trans_mat, shock=None, pool_trans=False):
     decisions = np.zeros((num_buses, num_periods), dtype=int)
     utilities = np.zeros((num_buses, num_periods), dtype=float)
     for bus in range(num_buses):
+        seed = np.random.randint(1, 100000)
         states, decisions, utilities = simulate_strategy(
             bus,
             states,
@@ -75,6 +76,7 @@ def simulate(init_dict, ev_known, trans_mat, shock=None, pool_trans=False):
             maint_func,
             repl_func,
             loc_scale,
+            seed,
         )
 
     df = pd.DataFrame(

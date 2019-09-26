@@ -16,6 +16,7 @@ def simulate_strategy(
     maint_func,
     repl_func,
     loc_scale,
+    seed,
 ):
     """
     This function simulates the decision strategy, as long as the current period is
@@ -59,6 +60,7 @@ def simulate_strategy(
         :num_states: (int) : The size of the state space.
 
     """
+    np.random.seed(seed)
     num_states = ev.shape[0]
     num_periods = decisions.shape[1]
     for period in range(num_periods):
