@@ -50,21 +50,16 @@ def simulate_strategy(
     for bus in range(num_buses):
         for period in range(num_periods):
             old_state = states[bus, period]
-            unobs = (
-                draw_unob(maint_shock_dist_name, loc_scale[0, 0], loc_scale[0, 1]),
-                draw_unob(repl_shock_dist_name, loc_scale[1, 0], loc_scale[1, 1]),
-            )
 
-            value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]
-            value_maintain = -costs[old_state, 0] + unobs[0] + beta * ev[old_state]
-            if value_maintain > value_replace:
-                decision = 0
-                utility = -costs[old_state, 0] + unobs[0]
-                intermediate_state = old_state
-            else:
-                decision = 1
-                utility = -costs[0, 0] - costs[0, 1] + unobs[1]
-                intermediate_state = 0
+            intermediate_state, decision, utility = decide(
+                old_state,
+                costs,
+                beta,
+                ev,
+                maint_shock_dist_name,
+                repl_shock_dist_name,
+                loc_scale,
+            )
 
             decisions[bus, period] = decision
             utilities[bus, period] = utility
@@ -76,6 +71,28 @@ def simulate_strategy(
             if new_state > num_states - 10:
                 raise ValueError("State space is too small.")
     return states, decisions, utilities
+
+
+@numba.jit(nopython=True)
+def decide(
+    old_state, costs, beta, ev, maint_shock_dist_name, repl_shock_dist_name, loc_scale
+):
+    unobs = (
+        draw_unob(maint_shock_dist_name, loc_scale[0, 0], loc_scale[0, 1]),
+        draw_unob(repl_shock_dist_name, loc_scale[1, 0], loc_scale[1, 1]),
+    )
+
+    value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]
+    value_maintain = -costs[old_state, 0] + unobs[0] + beta * ev[old_state]
+    if value_maintain > value_replace:
+        decision = 0
+        utility = -costs[old_state, 0] + unobs[0]
+        intermediate_state = old_state
+    else:
+        decision = 1
+        utility = -costs[0, 0] - costs[0, 1] + unobs[1]
+        intermediate_state = 0
+    return intermediate_state, decision, utility
 
 
 @numba.jit(nopython=True)
