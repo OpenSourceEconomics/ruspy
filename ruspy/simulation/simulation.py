@@ -6,11 +6,7 @@ relevant variables.
 """
 import numpy as np
 import pandas as pd
-from ruspy.simulation.simulation_auxiliary import (
-    simulate_strategy,
-    get_unobs,
-    get_increments,
-)
+from ruspy.simulation.simulation_auxiliary import simulate_strategy, get_unobs_data
 from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func
 
 
@@ -49,7 +45,9 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
                        period the utility as a float.
     """
     if "seed" in init_dict.keys():
-        np.random.seed(init_dict["seed"])
+        seed = init_dict["seed"]
+    else:
+        seed = np.random.randint(1, 100000)
     num_buses = init_dict["buses"]
     beta = init_dict["beta"]
     num_periods = init_dict["periods"]
@@ -62,30 +60,31 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
         )
     num_states = ev_known.shape[0]
     costs = cost_func(num_states, maint_func, params)
-    unobs = np.zeros(shape=(num_buses, num_periods, 2), dtype=np.float64)
-    states = np.zeros((num_buses, num_periods), dtype=int)
-    decisions = np.zeros((num_buses, num_periods), dtype=int)
-    utilities = np.zeros((num_buses, num_periods), dtype=float)
-    for bus in range(num_buses):
-        unobs[bus, :, :] = get_unobs(shock, num_periods)
-        increments = get_increments(trans_mat, num_periods)
-        states, decisions, utilities = simulate_strategy(
-            bus, states, decisions, utilities, costs, ev_known, increments, beta, unobs
-        )
+    maint_shock_dist_name, repl_shock_dist_name, loc_scale = get_unobs_data(shock)
+    states, decisions, utilities = simulate_strategy(
+        num_periods,
+        num_buses,
+        costs,
+        ev_known,
+        trans_mat,
+        beta,
+        maint_shock_dist_name,
+        repl_shock_dist_name,
+        loc_scale,
+        seed,
+    )
 
     df = pd.DataFrame(
         {
+            "Bus_ID": np.arange(1, num_buses + 1, dtype=np.uint32)
+            .reshape(1, num_buses)
+            .repeat(num_periods, axis=1)
+            .flatten(),
+            "period": np.arange(num_periods, dtype=np.uint32).repeat(num_buses),
             "state": states.flatten(),
-            "decision": decisions.flatten(),
+            "decision": decisions.astype(np.uint8).flatten(),
             "utilities": utilities.flatten(),
-            "unobs_maint": unobs[:, :, 0].flatten(),
-            "unobs_repl": unobs[:, :, 1].flatten(),
         }
     )
-    bus_id = np.arange(1, num_buses + 1).repeat(num_periods).astype(int)
-    df["Bus_ID"] = bus_id
-    period = np.array([])
-    for _ in range(num_buses):
-        period = np.append(period, np.arange(num_periods))
-    df["period"] = period.astype(int)
+
     return df
