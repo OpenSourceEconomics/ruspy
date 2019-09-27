@@ -85,11 +85,11 @@ def decide(
     value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]
     value_maintain = -costs[old_state, 0] + unobs[0] + beta * ev[old_state]
     if value_maintain > value_replace:
-        decision = 0
+        decision = False
         utility = -costs[old_state, 0] + unobs[0]
         intermediate_state = old_state
     else:
-        decision = 1
+        decision = True
         utility = -costs[0, 0] - costs[0, 1] + unobs[1]
         intermediate_state = 0
     return intermediate_state, decision, utility
