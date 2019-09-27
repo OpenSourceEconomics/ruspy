@@ -45,7 +45,9 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
                        period the utility as a float.
     """
     if "seed" in init_dict.keys():
-        np.random.seed(init_dict["seed"])
+        seed = init_dict["seed"]
+    else:
+        seed = np.random.randint(1, 100000)
     num_buses = init_dict["buses"]
     beta = init_dict["beta"]
     num_periods = init_dict["periods"]
@@ -59,30 +61,30 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
     num_states = ev_known.shape[0]
     costs = cost_func(num_states, maint_func, params)
     maint_shock_dist_name, repl_shock_dist_name, loc_scale = get_unobs_data(shock)
-    df = pd.DataFrame(columns=["Bus_ID", "period", "state", "decision", "utilities"])
-    for bus in range(1, num_buses + 1):
-        seed = np.random.randint(1, 100000)
-        states, decisions, utilities = simulate_strategy(
-            num_periods,
-            costs,
-            ev_known,
-            trans_mat,
-            beta,
-            maint_shock_dist_name,
-            repl_shock_dist_name,
-            loc_scale,
-            seed,
-        )
+    states, decisions, utilities = simulate_strategy(
+        num_periods,
+        num_buses,
+        costs,
+        ev_known,
+        trans_mat,
+        beta,
+        maint_shock_dist_name,
+        repl_shock_dist_name,
+        loc_scale,
+        seed,
+    )
 
-        df = df.append(
-            pd.DataFrame(
-                {
-                    "Bus_ID": bus,
-                    "period": np.arange(num_periods, dtype=int),
-                    "state": states,
-                    "decision": decisions,
-                    "utilities": utilities,
-                }
-            )
-        )
+    df = pd.DataFrame(
+        {
+            "Bus_ID": np.arange(1, num_buses + 1, dtype=np.uint32)
+            .reshape(1, num_buses)
+            .repeat(num_periods, axis=1)
+            .flatten(),
+            "period": np.arange(num_periods, dtype=np.uint32).repeat(num_buses),
+            "state": states.flatten(),
+            "decision": decisions.astype(np.uint8).flatten(),
+            "utilities": utilities.flatten(),
+        }
+    )
+
     return df

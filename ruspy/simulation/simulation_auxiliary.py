@@ -6,6 +6,7 @@ import numba
 @numba.jit(nopython=True)
 def simulate_strategy(
     num_periods,
+    num_buses,
     costs,
     ev,
     trans_mat,
@@ -43,34 +44,37 @@ def simulate_strategy(
     """
     np.random.seed(seed)
     num_states = ev.shape[0]
-    states = np.zeros(num_periods, dtype=numba.int32)
-    decisions = np.zeros(num_periods, dtype=numba.int32)
-    utilities = np.zeros(num_periods, dtype=numba.float32)
-    for period in range(num_periods):
-        old_state = states[period]
-        unobs = (
-            draw_unob(maint_shock_dist_name, loc_scale[0, 0], loc_scale[0, 1]),
-            draw_unob(repl_shock_dist_name, loc_scale[1, 0], loc_scale[1, 1]),
-        )
+    states = np.zeros((num_buses, num_periods), dtype=numba.u2)
+    decisions = np.zeros((num_buses, num_periods), dtype=numba.b1)
+    utilities = np.zeros((num_buses, num_periods), dtype=numba.float32)
+    for bus in range(num_buses):
+        for period in range(num_periods):
+            old_state = states[bus, period]
+            unobs = (
+                draw_unob(maint_shock_dist_name, loc_scale[0, 0], loc_scale[0, 1]),
+                draw_unob(repl_shock_dist_name, loc_scale[1, 0], loc_scale[1, 1]),
+            )
 
-        value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]
-        value_maintain = -costs[old_state, 0] + unobs[0] + beta * ev[old_state]
-        if value_maintain > value_replace:
-            decision = 0
-            utility = -costs[old_state, 0] + unobs[0]
-            intermediate_state = old_state
-        else:
-            decision = 1
-            utility = -costs[0, 0] - costs[0, 1] + unobs[1]
-            intermediate_state = 0
+            value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]
+            value_maintain = -costs[old_state, 0] + unobs[0] + beta * ev[old_state]
+            if value_maintain > value_replace:
+                decision = 0
+                utility = -costs[old_state, 0] + unobs[0]
+                intermediate_state = old_state
+            else:
+                decision = 1
+                utility = -costs[0, 0] - costs[0, 1] + unobs[1]
+                intermediate_state = 0
 
-        decisions[period] = decision
-        utilities[period] = utility
-        new_state = intermediate_state + draw_increment(intermediate_state, trans_mat)
-        if period < num_periods - 1:
-            states[period + 1] = new_state
-        if new_state > num_states - 10:
-            raise ValueError("State space is too small.")
+            decisions[bus, period] = decision
+            utilities[bus, period] = utility
+            new_state = intermediate_state + draw_increment(
+                intermediate_state, trans_mat
+            )
+            if period < num_periods - 1:
+                states[bus, period + 1] = new_state
+            if new_state > num_states - 10:
+                raise ValueError("State space is too small.")
     return states, decisions, utilities
 
 
