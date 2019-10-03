@@ -11,7 +11,6 @@ from numpy.testing import assert_allclose
 import numpy as np
 from ruspy.test.ranodm_init import random_init
 from ruspy.simulation.simulation import simulate
-from ruspy.simulation.value_zero import discount_utility
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
@@ -26,7 +25,6 @@ def inputs():
 
 def test_regression_simulation(inputs):
     init_dict = random_init(inputs)
-    num_periods = init_dict["simulation"]["periods"]
     beta = init_dict["simulation"]["beta"]
     params = np.array(init_dict["simulation"]["params"])
     probs = np.array(init_dict["simulation"]["known_trans"])
@@ -38,11 +36,13 @@ def test_regression_simulation(inputs):
 
     df = simulate(init_dict["simulation"], ev, trans_mat)
 
-    utilities = (
-        df["utilities"]
-        .to_numpy()
-        .reshape(init_dict["simulation"]["buses"], num_periods)
-    )
-    v_disc = discount_utility(utilities, num_periods, beta)
+    v_disc = discount_utility(df, beta)
 
     assert_allclose(v_disc / ev[0], 1, rtol=1e-02)
+
+
+def discount_utility(df, beta):
+    v = 0.0
+    for i in df.index.levels[0]:
+        v += np.sum(np.multiply(beta ** df.xs([i]).index, df.xs([i])["utilities"]))
+    return v / len(df.index.levels[0])
