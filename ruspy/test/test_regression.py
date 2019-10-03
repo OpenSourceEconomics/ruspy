@@ -38,6 +38,11 @@ def test_regression_simulation(inputs):
 
     df = simulate(init_dict["simulation"], ev, trans_mat)
 
-    v_disc = discount_utility(df, num_periods, beta)
+    utilities = (
+        df["utilities"]
+        .to_numpy()
+        .reshape(init_dict["simulation"]["buses"], num_periods)
+    )
+    v_disc = discount_utility(utilities, num_periods, beta)
 
-    assert_allclose(v_disc[1] / ev[0], 1, rtol=1e-02)
+    assert_allclose(v_disc / ev[0], 1, rtol=1e-02)
