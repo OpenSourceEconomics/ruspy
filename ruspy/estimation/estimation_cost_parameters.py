@@ -4,10 +4,11 @@ function. Therefore it also contains the heart of this project. The python
 implementation of fix point algorithm developed by John Rust.
 """
 import numpy as np
-import numba
+
+# import numba
 
 
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
 def create_transition_matrix(num_states, trans_prob):
     """
     This function creates a markov transition matrix. By the assumptions of the
@@ -33,7 +34,7 @@ def create_transition_matrix(num_states, trans_prob):
     return trans_mat
 
 
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
 def create_state_matrix(states, num_states, num_obs):
     """
     This function constructs a auxiliary matrix for the likelihood.
@@ -54,7 +55,7 @@ def create_state_matrix(states, num_states, num_obs):
     return state_mat
 
 
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
 def loglike_opt_rule(
     params,
     maint_func,
@@ -96,7 +97,7 @@ def loglike_opt_rule(
     return -np.sum(decision_mat * ll_prob)
 
 
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
 def lin_cost(num_states, params, scale=0.001):
     """
     This function describes a linear cost function, which Rust concludes is the most
@@ -114,7 +115,7 @@ def lin_cost(num_states, params, scale=0.001):
     return states * scale * params[0]
 
 
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
 def cost_func(num_states, maint_func, params):
     """
     This function calculates a vector containing the costs for maintenance and
@@ -136,7 +137,7 @@ def cost_func(num_states, maint_func, params):
     return np.vstack((maint_cost, repl_cost)).T
 
 
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
 def choice_prob(ev, costs, beta):
     """
     This function calculates the choice probabilities to maintain or replace the
@@ -163,8 +164,10 @@ def choice_prob(ev, costs, beta):
     return pchoice
 
 
-@numba.jit(nopython=True)
-def calc_fixp(num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-12):
+# @numba.jit(nopython=True)
+def calc_fixp(
+    num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-12, switch_tol=1e-3
+):
     """
     The function to calculate the expected value fix point.
 
@@ -184,20 +187,51 @@ def calc_fixp(num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-1
 
     :return: A numpy array containing for each state the expected value fixed point.
     """
+    it_count = 0
+    # contract_count = 0
+    # kanteorich_count = 0
     ev = np.zeros(num_states)
     ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
-    while (np.max(np.abs(ev_new - ev)) > threshold) & (max_it != 0):
+    converge_crit = np.max(np.abs(ev_new - ev))
+    while converge_crit > threshold:
         ev = ev_new
-        maint_value = beta * ev - costs[:, 0]
-        repl_value = beta * ev[0] - costs[0, 1] - costs[0, 0]
+        if converge_crit > switch_tol:
+            ev_new = contraction_iteration(ev, trans_mat, costs, beta)
+            # contract_count +=1
+        else:
+            ev_new = kantevorich_step(ev, trans_mat, costs, beta)
+            # kanteorich_count += 1
 
-        # Select the minimal absolute value to rescale the value vector for the
-        # exponential function.
-        ev_min = maint_value[0]
-
-        log_sum = ev_min + np.log(
-            np.exp(maint_value - ev_min) + np.exp(repl_value - ev_min)
-        )
-        ev_new = np.dot(trans_mat, log_sum)
-        max_it -= 1
+        it_count += 1
+        if it_count > max_it:
+            break
+        converge_crit = np.max(np.abs(ev_new - ev))
+    # import pdb
+    # pdb.set_trace()
     return ev_new
+
+
+# @numba.jit(nopython=True)
+def contraction_iteration(ev, trans_mat, costs, beta):
+    maint_value = beta * ev - costs[:, 0]
+    repl_value = beta * ev[0] - costs[0, 1] - costs[0, 0]
+
+    # Select the minimal absolute value to rescale the value vector for the
+    # exponential function.
+    ev_min = maint_value[0]
+
+    log_sum = ev_min + np.log(
+        np.exp(maint_value - ev_min) + np.exp(repl_value - ev_min)
+    )
+    return np.dot(trans_mat, log_sum)
+
+
+# @numba.jit(nopython=True)
+def kantevorich_step(ev, trans_mat, costs, beta):
+    state_size = ev.shape[0]
+    choice_probs = choice_prob(ev, costs, beta)
+    # Need to stack first column
+    t_prime = trans_mat[:, 1:] * choice_probs[1:, 0]
+    iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
+    eye_minus_t_prime_inv = np.linalg.inv(np.eye(state_size) - t_prime)
+    return ev - np.dot(eye_minus_t_prime_inv, (ev - iteration_step))
