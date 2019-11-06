@@ -19,19 +19,18 @@ from ruspy.estimation.estimation_transitions import create_increases
 
 TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 
-init_dict = {"groups": "group_4", "binsize": 5000, "beta": 0.9999, "states": 90}
-
-df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
-
 
 @pytest.fixture(scope="module")
 def inputs():
     out = dict()
+    init_dict = {"groups": "group_4", "binsize": 5000, "beta": 0.9999, "states": 90}
+    df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df, repl_4=True)
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
     out["cost_ll"] = result_fixp["fun"]
+    out["df"] = df
     return out
 
 
@@ -62,11 +61,11 @@ def test_cost_ll(inputs, outputs):
     assert_allclose(inputs["cost_ll"], outputs["cost_ll"])
 
 
-def test_transition_count(outputs):
-    num_bus = len(df["Bus_ID"].unique())
-    num_periods = int(df.shape[0] / num_bus)
-    states = df["state"].values.reshape(num_bus, num_periods)
-    decisions = df["decision"].values.reshape(num_bus, num_periods)
+def test_transition_count(inputs, outputs):
+    num_bus = len(inputs["df"]["Bus_ID"].unique())
+    num_periods = int(inputs["df"].shape[0] / num_bus)
+    states = inputs["df"]["state"].values.reshape(num_bus, num_periods)
+    decisions = inputs["df"]["decision"].values.reshape(num_bus, num_periods)
     space_state = states.max() + 1
     state_count = np.zeros(shape=(space_state, space_state), dtype=int)
     increases = np.zeros(shape=(num_bus, num_periods - 1), dtype=int)
