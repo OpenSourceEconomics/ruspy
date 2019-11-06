@@ -30,7 +30,10 @@ def inputs():
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
     out["cost_ll"] = result_fixp["fun"]
-    out["df"] = df
+    out["num_bus"] = len(df["Bus_ID"].unique())
+    out["num_periods"] = int(df.shape[0] / out["num_bus"])
+    out["states"] = df["state"]
+    out["decisions"] = df["decision"]
     return out
 
 
@@ -62,10 +65,10 @@ def test_cost_ll(inputs, outputs):
 
 
 def test_transition_count(inputs, outputs):
-    num_bus = len(inputs["df"]["Bus_ID"].unique())
-    num_periods = int(inputs["df"].shape[0] / num_bus)
-    states = inputs["df"]["state"].values.reshape(num_bus, num_periods)
-    decisions = inputs["df"]["decision"].values.reshape(num_bus, num_periods)
+    num_bus = inputs["num_bus"]
+    num_periods = inputs["num_periods"]
+    states = inputs["states"].values.reshape(num_bus, num_periods)
+    decisions = inputs["decisions"].values.reshape(num_bus, num_periods)
     space_state = states.max() + 1
     state_count = np.zeros(shape=(space_state, space_state), dtype=int)
     increases = np.zeros(shape=(num_bus, num_periods - 1), dtype=int)
