@@ -22,12 +22,12 @@ TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 init_dict = {"groups": "group_4", "binsize": 5000, "beta": 0.9999, "states": 90}
 
 df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
-result_trans, result_fixp = estimate(init_dict, df, repl_4=True)
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def inputs():
     out = dict()
+    result_trans, result_fixp = estimate(init_dict, df, repl_4=True)
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
@@ -35,7 +35,7 @@ def inputs():
     return out
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def outputs():
     out = dict()
     out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
