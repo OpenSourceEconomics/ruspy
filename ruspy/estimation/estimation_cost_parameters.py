@@ -166,7 +166,7 @@ def choice_prob(ev, costs, beta):
 
 # @numba.jit(nopython=True)
 def calc_fixp(
-    num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-12, switch_tol=1e-3
+    num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-12, switch_tol=1e-6
 ):
     """
     The function to calculate the expected value fix point.
@@ -188,8 +188,8 @@ def calc_fixp(
     :return: A numpy array containing for each state the expected value fixed point.
     """
     it_count = 0
-    # contract_count = 0
-    # kanteorich_count = 0
+    contract_count = 0
+    kantevorich_count = 0
     ev = np.zeros(num_states)
     ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
     converge_crit = np.max(np.abs(ev_new - ev))
@@ -197,17 +197,17 @@ def calc_fixp(
         ev = ev_new
         if converge_crit > switch_tol:
             ev_new = contraction_iteration(ev, trans_mat, costs, beta)
-            # contract_count +=1
+            contract_count += 1
         else:
             ev_new = kantevorich_step(ev, trans_mat, costs, beta)
-            # kanteorich_count += 1
+            import pdb
 
+            pdb.set_trace()
+            kantevorich_count += 1
         it_count += 1
         if it_count > max_it:
             break
         converge_crit = np.max(np.abs(ev_new - ev))
-    # import pdb
-    # pdb.set_trace()
     return ev_new
 
 
@@ -230,8 +230,14 @@ def contraction_iteration(ev, trans_mat, costs, beta):
 def kantevorich_step(ev, trans_mat, costs, beta):
     state_size = ev.shape[0]
     choice_probs = choice_prob(ev, costs, beta)
-    # Need to stack first column
-    t_prime = trans_mat[:, 1:] * choice_probs[1:, 0]
+    t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
+    t_prime = beta * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
     iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
-    eye_minus_t_prime_inv = np.linalg.inv(np.eye(state_size) - t_prime)
-    return ev - np.dot(eye_minus_t_prime_inv, (ev - iteration_step))
+    import pdb
+
+    pdb.set_trace()
+    return ev - np.linalg.lstsq(np.eye(state_size) - t_prime, (ev - iteration_step))[0]
+
+
+def calc_convergence_crit(ev, trans_mat, costs, beta):
+    return np.max(np.max(ev - contraction_iteration(ev, trans_mat, costs, beta)))
