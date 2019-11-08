@@ -25,19 +25,21 @@ def estimate_transitions(df, repl_4=False):
              dictionary.
     """
     result_transitions = dict()
-    num_bus = len(df["Bus_ID"].unique())
-    num_periods = int(df.shape[0] / num_bus)
-    states = df["state"].values.reshape(num_bus, num_periods)
-    decisions = df["decision"].values.reshape(num_bus, num_periods)
-    space_state = states.max() + 1
-    state_count = np.zeros(shape=(space_state, space_state), dtype=int)
-    increases = np.zeros(shape=(num_bus, num_periods - 1), dtype=int)
-
-    increases, state_count = create_increases(
-        increases, state_count, num_bus, num_periods, states, decisions, repl_4
-    )
-    result_transitions["state_count"] = state_count
-    transition_count = np.bincount(increases.flatten())
+    # num_bus = len(df["Bus_ID"].unique())
+    # num_periods = int(df.shape[0] / num_bus)
+    # states = df["state"].values.reshape(num_bus, num_periods)
+    # decisions = df["decision"].values.reshape(num_bus, num_periods)
+    # space_state = states.max() + 1
+    # state_count = np.zeros(shape=(space_state, space_state), dtype=int)
+    # increases = np.zeros(shape=(num_bus, num_periods - 1), dtype=int)
+    #
+    # increases, state_count = create_increases(
+    #     increases, state_count, num_bus, num_periods, states, decisions, repl_4
+    # )
+    # result_transitions["state_count"] = state_count
+    usage = df["usage"].astype(int)
+    # usage = usage[~np.isnan(usage)]
+    transition_count = np.bincount(usage)
     trans_probs = np.array(transition_count) / np.sum(transition_count)
     ll = loglike(trans_probs, transition_count)
     result_transitions.update(
