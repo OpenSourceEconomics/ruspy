@@ -72,7 +72,12 @@ def kantevorich_step(ev, trans_mat, costs, beta):
     t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
     t_prime = beta * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
     iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
-    return ev - np.linalg.lstsq(np.eye(state_size) - t_prime, (ev - iteration_step))[0]
+    return (
+        ev
+        - np.linalg.lstsq(
+            np.eye(state_size) - t_prime, (ev - iteration_step), rcond=None
+        )[0]
+    )
 
 
 def calc_convergence_crit(ev, trans_mat, costs, beta):
