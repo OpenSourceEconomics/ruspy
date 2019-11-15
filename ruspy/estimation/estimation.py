@@ -5,8 +5,8 @@ import numba
 import numpy as np
 import scipy.optimize as opt
 
-from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-from ruspy.estimation.estimation_cost_parameters import loglike_opt_rule
+from ruspy.estimation.est_cost_params import loglike_opt_rule
+from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.model_code.cost_functions import lin_cost
 

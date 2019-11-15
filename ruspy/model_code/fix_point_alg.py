@@ -1,6 +1,6 @@
 import numpy as np
 
-from ruspy.estimation.estimation_cost_parameters import choice_prob
+from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 
 
 def calc_fixp(
@@ -68,7 +68,7 @@ def contraction_iteration(ev, trans_mat, costs, beta):
 
 def kantevorich_step(ev, trans_mat, costs, beta):
     state_size = ev.shape[0]
-    choice_probs = choice_prob(ev, costs, beta)
+    choice_probs = choice_prob_gumbel(ev, costs, beta)
     t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
     t_prime = beta * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
     iteration_step = contraction_iteration(ev, trans_mat, costs, beta)

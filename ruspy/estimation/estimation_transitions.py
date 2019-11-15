@@ -98,3 +98,29 @@ def loglike(trans_probs, transition_count):
     """
     ll = np.sum(np.multiply(transition_count, np.log(trans_probs)))
     return -ll
+
+
+@numba.jit(nopython=True)
+def create_transition_matrix(num_states, trans_prob):
+    """
+    This function creates a markov transition matrix. By the assumptions of the
+    underlying model, only the diagonal and elements to the right can have a non-zero
+    entry.
+
+    :param num_states:  The size of the state space s.
+    :type num_states:   int
+    :param trans_prob:  A numpy array containing the transition probabilities for a
+                        state increase.
+
+    :return: A two dimensional numpy array containing a s x s markov transition matrix.
+    """
+    trans_mat = np.zeros((num_states, num_states))
+    for i in range(num_states):  # Loop over all states.
+        for j, p in enumerate(trans_prob):  # Loop over the possible increases.
+            if i + j < num_states - 1:
+                trans_mat[i, i + j] = p
+            elif i + j == num_states - 1:
+                trans_mat[i, num_states - 1] = trans_prob[j:].sum()
+            else:
+                pass
+    return trans_mat
