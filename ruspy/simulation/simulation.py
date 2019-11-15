@@ -76,18 +76,16 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
         loc_scale,
         seed,
     )
-
+    bus_ids = np.arange(num_buses) + 1
+    periods = np.arange(num_periods)
+    idx = pd.MultiIndex.from_product([bus_ids, periods], names=["Bus_ID", "period"])
     df = pd.DataFrame(
-        {
-            "Bus_ID": np.arange(1, num_buses + 1, dtype=np.uint32)
-            .reshape(1, num_buses)
-            .repeat(num_periods, axis=1)
-            .flatten(),
-            "period": np.arange(num_periods, dtype=np.uint32).repeat(num_buses),
+        index=idx,
+        data={
             "state": states.flatten(),
             "decision": decisions.astype(np.uint8).flatten(),
             "utilities": utilities.flatten(),
-        }
+        },
     )
 
     return df
