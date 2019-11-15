@@ -17,7 +17,7 @@ before_script:
 script:
     - source .envrc
     - py.test
-    - ex-promotion-nbs.py
+    - ex_promotion_nbs.py
 
 
 after_success:
