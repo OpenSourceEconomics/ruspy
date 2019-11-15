@@ -9,10 +9,10 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-from ruspy.estimation.estimation_cost_parameters import calc_fixp
-from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-from ruspy.estimation.estimation_cost_parameters import lin_cost
+from ruspy.estimation.fix_point_alg import calc_fixp
+from ruspy.model_code.cost_functions import calc_obs_costs
+from ruspy.model_code.cost_functions import lin_cost
 from ruspy.simulation.simulation import simulate
 from ruspy.simulation.value_zero import discount_utility
 from ruspy.test.ranodm_init import random_init
@@ -33,7 +33,7 @@ def test_regression_simulation(inputs):
     num_states = init_dict["simulation"]["states"]
 
     trans_mat = create_transition_matrix(num_states, probs)
-    costs = cost_func(num_states, lin_cost, params)
+    costs = calc_obs_costs(num_states, lin_cost, params)
     ev = calc_fixp(trans_mat, costs, beta)
 
     df = simulate(init_dict["simulation"], ev, trans_mat)

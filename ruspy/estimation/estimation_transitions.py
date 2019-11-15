@@ -2,9 +2,8 @@
 This module contains the functions necessary for the estimation process of transition
 probabilities.
 """
-import numpy as np
-from math import log
 import numba
+import numpy as np
 
 
 def estimate_transitions(df, repl_4=False):
@@ -24,7 +23,7 @@ def estimate_transitions(df, repl_4=False):
     :return: The optimization result of the transition probabilities estimation as a
              dictionary.
     """
-    result_transitions = dict()
+    result_transitions = {}
     num_bus = len(df["Bus_ID"].unique())
     num_periods = int(df.shape[0] / num_bus)
     states = df["state"].values.reshape(num_bus, num_periods)
@@ -86,7 +85,6 @@ def create_increases(
     return increases, state_count
 
 
-@numba.jit(nopython=True)
 def loglike(trans_probs, transition_count):
     """
     The loglikelihood function for estimating the transition probabilities.
@@ -98,7 +96,5 @@ def loglike(trans_probs, transition_count):
     :return: The negative loglikelihood value for minimizing the second liklihood
              function.
     """
-    ll = 0
-    for i, p in enumerate(trans_probs):
-        ll = ll + transition_count[i] * log(p)
+    ll = np.sum(np.multiply(transition_count, np.log(trans_probs)))
     return -ll

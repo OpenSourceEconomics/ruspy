@@ -6,8 +6,11 @@ relevant variables.
 """
 import numpy as np
 import pandas as pd
-from ruspy.simulation.simulation_auxiliary import simulate_strategy, get_unobs_data
-from ruspy.estimation.estimation_cost_parameters import lin_cost, cost_func
+
+from ruspy.model_code.cost_functions import calc_obs_costs
+from ruspy.model_code.cost_functions import lin_cost
+from ruspy.simulation.simulation_auxiliary import get_unobs_data
+from ruspy.simulation.simulation_auxiliary import simulate_strategy
 
 
 def simulate(init_dict, ev_known, trans_mat, shock=None):
@@ -59,7 +62,7 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
             "need to have the same size."
         )
     num_states = ev_known.shape[0]
-    costs = cost_func(num_states, maint_func, params)
+    costs = calc_obs_costs(num_states, maint_func, params)
     maint_shock_dist_name, repl_shock_dist_name, loc_scale = get_unobs_data(shock)
     states, decisions, utilities = simulate_strategy(
         num_periods,

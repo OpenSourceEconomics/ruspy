@@ -8,11 +8,11 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_almost_equal
 
-from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import choice_prob
-from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-from ruspy.estimation.estimation_cost_parameters import lin_cost
+from ruspy.estimation.fix_point_alg import calc_fixp
+from ruspy.model_code.cost_functions import calc_obs_costs
+from ruspy.model_code.cost_functions import lin_cost
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 from ruspy.test.ranodm_init import random_init
 
@@ -42,7 +42,7 @@ def outputs():
 
 def test_cost_func(inputs, outputs):
     assert_array_almost_equal(
-        cost_func(inputs["nstates"], inputs["cost_fct"], inputs["params"]),
+        calc_obs_costs(inputs["nstates"], inputs["cost_fct"], inputs["params"]),
         outputs["costs"],
     )
 

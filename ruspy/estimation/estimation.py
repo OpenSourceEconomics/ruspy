@@ -1,13 +1,14 @@
 """
 This module contains the main function for the estimation process.
 """
+import numba
 import numpy as np
 import scipy.optimize as opt
-from ruspy.estimation.estimation_transitions import estimate_transitions
+
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-from ruspy.estimation.estimation_cost_parameters import create_state_matrix
 from ruspy.estimation.estimation_cost_parameters import loglike_opt_rule
-from ruspy.estimation.estimation_cost_parameters import lin_cost
+from ruspy.estimation.estimation_transitions import estimate_transitions
+from ruspy.model_code.cost_functions import lin_cost
 
 
 def estimate(init_dict, df, repl_4=False):
@@ -54,3 +55,24 @@ def estimate(init_dict, df, repl_4=False):
         method="L-BFGS-B",
     )
     return transition_results, result
+
+
+@numba.jit(nopython=True)
+def create_state_matrix(states, num_states, num_obs):
+    """
+    This function constructs a auxiliary matrix for the likelihood.
+
+    :param states:      A numpy array containing the observed states.
+    :param num_states:  The size of the state space s.
+    :type num_states:   int
+    :param num_obs:     The total number of observations n.
+    :type num_obs:      int
+
+    :return:            A two dimensional numpy array containing n x s matrix
+                        with TRUE in each row at the column in which the bus was in
+                        that observation.
+    """
+    state_mat = np.full((num_states, num_obs), 0.0)
+    for i, value in enumerate(states):
+        state_mat[value, i] = 1.0
+    return state_mat
