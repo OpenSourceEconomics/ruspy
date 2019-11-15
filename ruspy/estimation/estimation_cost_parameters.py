@@ -3,12 +3,11 @@ This module contains functions for estimating the parameters shaping the cost
 function. Therefore it also contains the heart of this project. The python
 implementation of fix point algorithm developed by John Rust.
 """
+import numba
 import numpy as np
 
-# import numba
 
-
-# @numba.jit(nopython=True)
+@numba.jit(nopython=True)
 def create_transition_matrix(num_states, trans_prob):
     """
     This function creates a markov transition matrix. By the assumptions of the
@@ -34,7 +33,7 @@ def create_transition_matrix(num_states, trans_prob):
     return trans_mat
 
 
-# @numba.jit(nopython=True)
+@numba.jit(nopython=True)
 def create_state_matrix(states, num_states, num_obs):
     """
     This function constructs a auxiliary matrix for the likelihood.
@@ -55,7 +54,6 @@ def create_state_matrix(states, num_states, num_obs):
     return state_mat
 
 
-# @numba.jit(nopython=True)
 def loglike_opt_rule(
     params,
     maint_func,
@@ -91,13 +89,12 @@ def loglike_opt_rule(
     :return: The negative loglikelihood value for minimizing the objective function.
     """
     costs = cost_func(num_states, maint_func, params)
-    ev = calc_fixp(num_states, trans_mat, costs, beta, max_it)
+    ev = calc_fixp(trans_mat, costs, beta, max_it)
     p_choice = choice_prob(ev, costs, beta)
     ll_prob = np.log(np.dot(p_choice.T, state_mat))
     return -np.sum(decision_mat * ll_prob)
 
 
-# @numba.jit(nopython=True)
 def lin_cost(num_states, params, scale=0.001):
     """
     This function describes a linear cost function, which Rust concludes is the most
@@ -115,7 +112,6 @@ def lin_cost(num_states, params, scale=0.001):
     return states * scale * params[0]
 
 
-# @numba.jit(nopython=True)
 def cost_func(num_states, maint_func, params):
     """
     This function calculates a vector containing the costs for maintenance and
@@ -137,7 +133,6 @@ def cost_func(num_states, maint_func, params):
     return np.vstack((maint_cost, repl_cost)).T
 
 
-# @numba.jit(nopython=True)
 def choice_prob(ev, costs, beta):
     """
     This function calculates the choice probabilities to maintain or replace the
@@ -164,9 +159,14 @@ def choice_prob(ev, costs, beta):
     return pchoice
 
 
-# @numba.jit(nopython=True)
 def calc_fixp(
-    num_states, trans_mat, costs, beta, max_it=1000000, threshold=1e-12, switch_tol=1e-6
+    trans_mat,
+    costs,
+    beta,
+    threshold=1e-16,
+    switch_tol=1e-3,
+    max_contr_steps=20,
+    max_newt_kant_steps=20,
 ):
     """
     The function to calculate the expected value fix point.
@@ -187,31 +187,27 @@ def calc_fixp(
 
     :return: A numpy array containing for each state the expected value fixed point.
     """
-    it_count = 0
-    contract_count = 0
-    kantevorich_count = 0
-    ev = np.zeros(num_states)
+    contr_step_count = 0
+    newt_kante_step_count = 0
     ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
-    converge_crit = np.max(np.abs(ev_new - ev))
+    converge_crit = threshold + 1  # Make sure that the loop starts
     while converge_crit > threshold:
-        ev = ev_new
-        if converge_crit > switch_tol:
+        while converge_crit > switch_tol:
+            ev = ev_new
             ev_new = contraction_iteration(ev, trans_mat, costs, beta)
-            contract_count += 1
-        else:
-            ev_new = kantevorich_step(ev, trans_mat, costs, beta)
-            import pdb
-
-            pdb.set_trace()
-            kantevorich_count += 1
-        it_count += 1
-        if it_count > max_it:
+            contr_step_count += 1
+            if contr_step_count > max_contr_steps:
+                break
+            converge_crit = np.amax(np.abs(ev_new - ev))
+        ev = ev_new
+        ev_new = kantevorich_step(ev, trans_mat, costs, beta)
+        newt_kante_step_count += 1
+        if newt_kante_step_count > max_newt_kant_steps:
             break
-        converge_crit = np.max(np.abs(ev_new - ev))
+        converge_crit = calc_convergence_crit(ev_new, trans_mat, costs, beta)
     return ev_new
 
 
-# @numba.jit(nopython=True)
 def contraction_iteration(ev, trans_mat, costs, beta):
     maint_value = beta * ev - costs[:, 0]
     repl_value = beta * ev[0] - costs[0, 1] - costs[0, 0]
@@ -226,18 +222,14 @@ def contraction_iteration(ev, trans_mat, costs, beta):
     return np.dot(trans_mat, log_sum)
 
 
-# @numba.jit(nopython=True)
 def kantevorich_step(ev, trans_mat, costs, beta):
     state_size = ev.shape[0]
     choice_probs = choice_prob(ev, costs, beta)
     t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
     t_prime = beta * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
     iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
-    import pdb
-
-    pdb.set_trace()
     return ev - np.linalg.lstsq(np.eye(state_size) - t_prime, (ev - iteration_step))[0]
 
 
 def calc_convergence_crit(ev, trans_mat, costs, beta):
-    return np.max(np.max(ev - contraction_iteration(ev, trans_mat, costs, beta)))
+    return np.amax(np.abs(ev - contraction_iteration(ev, trans_mat, costs, beta)))
