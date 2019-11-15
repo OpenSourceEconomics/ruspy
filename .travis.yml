@@ -15,7 +15,9 @@ before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
 
 script:
-    - py.test --cov=ruspy
+    - source .envrc
+    - py.test
+    - ex-promotion-nbs.py
 
 
 after_success:

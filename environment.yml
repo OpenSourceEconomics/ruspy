@@ -19,3 +19,4 @@ dependencies:
       - flake8
       - black
       - pre-commit
+      - jupyter_contrib_nbextensions
