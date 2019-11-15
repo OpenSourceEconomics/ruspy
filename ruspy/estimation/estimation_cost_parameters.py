@@ -55,14 +55,7 @@ def create_state_matrix(states, num_states, num_obs):
 
 
 def loglike_opt_rule(
-    params,
-    maint_func,
-    num_states,
-    trans_mat,
-    state_mat,
-    decision_mat,
-    beta,
-    max_it=10000000,
+    params, maint_func, num_states, trans_mat, state_mat, decision_mat, beta,
 ):
     """
     This is the logliklihood function for the estimation of the cost parameters.
@@ -89,7 +82,7 @@ def loglike_opt_rule(
     :return: The negative loglikelihood value for minimizing the objective function.
     """
     costs = cost_func(num_states, maint_func, params)
-    ev = calc_fixp(trans_mat, costs, beta, max_it)
+    ev = calc_fixp(trans_mat, costs, beta)
     p_choice = choice_prob(ev, costs, beta)
     ll_prob = np.log(np.dot(p_choice.T, state_mat))
     return -np.sum(decision_mat * ll_prob)

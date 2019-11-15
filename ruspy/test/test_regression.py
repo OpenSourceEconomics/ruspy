@@ -5,17 +5,17 @@ to ensure enough observations. It then simulates a dataset and the compares the
 discounted utility average over all buses, with the theoretical expected value
 calculated by the NFXP.
 """
-
+import numpy as np
 import pytest
 from numpy.testing import assert_allclose
-import numpy as np
-from ruspy.test.ranodm_init import random_init
-from ruspy.simulation.simulation import simulate
-from ruspy.simulation.value_zero import discount_utility
+
 from ruspy.estimation.estimation_cost_parameters import calc_fixp
 from ruspy.estimation.estimation_cost_parameters import cost_func
 from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
 from ruspy.estimation.estimation_cost_parameters import lin_cost
+from ruspy.simulation.simulation import simulate
+from ruspy.simulation.value_zero import discount_utility
+from ruspy.test.ranodm_init import random_init
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def test_regression_simulation(inputs):
 
     trans_mat = create_transition_matrix(num_states, probs)
     costs = cost_func(num_states, lin_cost, params)
-    ev = calc_fixp(num_states, trans_mat, costs, beta)
+    ev = calc_fixp(trans_mat, costs, beta)
 
     df = simulate(init_dict["simulation"], ev, trans_mat)
 
