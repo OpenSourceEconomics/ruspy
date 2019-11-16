@@ -48,7 +48,9 @@ def calc_fixp(
         newt_kante_step_count += 1
         if newt_kante_step_count > max_newt_kant_steps:
             break
-        converge_crit = calc_convergence_crit(ev_new, trans_mat, costs, beta)
+        converge_crit = np.max(
+            np.abs(ev - contraction_iteration(ev, trans_mat, costs, beta))
+        )
     return ev_new
 
 
@@ -68,17 +70,19 @@ def contraction_iteration(ev, trans_mat, costs, beta):
 
 def kantevorich_step(ev, trans_mat, costs, beta):
     state_size = ev.shape[0]
-    choice_probs = choice_prob_gumbel(ev, costs, beta)
-    t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
-    t_prime = beta * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
+    t_prime = fixp_point_dev(ev, trans_mat, costs, beta)
     iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
-    return (
+    ev_new = (
         ev
         - np.linalg.lstsq(
             np.eye(state_size) - t_prime, (ev - iteration_step), rcond=None
         )[0]
     )
+    return ev_new
 
 
-def calc_convergence_crit(ev, trans_mat, costs, beta):
-    return np.amax(np.abs(ev - contraction_iteration(ev, trans_mat, costs, beta)))
+def fixp_point_dev(ev, trans_mat, costs, beta):
+    choice_probs = choice_prob_gumbel(ev, costs, beta)
+    t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
+    t_prime = beta * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
+    return t_prime

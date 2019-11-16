@@ -37,3 +37,7 @@ def lin_cost(num_states, params, scale=0.001):
     """
     states = np.arange(num_states)
     return states * scale * params[0]
+
+
+def lin_cost_dev(num_states, scale=0.001):
+    return np.arange(num_states) * scale

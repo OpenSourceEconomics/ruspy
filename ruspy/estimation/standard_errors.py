@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from estimagic.differentiation.differentiation import hessian
 
-from ruspy.estimation.est_cost_params import loglike_opt_rule
-from ruspy.estimation.estimation import create_state_matrix
+from ruspy.estimation.est_cost_params import create_state_matrix
+from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
 
@@ -48,7 +48,7 @@ def create_wrap_func(
 ):
     def wrap_func(x):
         x_np = x["value"].to_numpy()
-        return ll_trans + loglike_opt_rule(
+        return ll_trans + loglike_cost_params(
             x_np, maint_func, num_states, trans_mat, state_mat, decision_mat, beta
         )
 
