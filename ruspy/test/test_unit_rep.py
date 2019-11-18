@@ -5,6 +5,7 @@ import pytest
 from numpy.testing import assert_allclose
 
 from ruspy.estimation.est_cost_params import create_state_matrix
+from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import lin_cost
@@ -66,7 +67,7 @@ def test_ll_params_derivative(inputs, outputs):
     decision_mat = np.vstack(((1 - endog), endog))
     beta = inputs["beta"]
     assert_allclose(
-        loglike_cost_params(
+        derivative_loglike_cost_params(
             outputs["params_base"],
             lin_cost,
             num_states,

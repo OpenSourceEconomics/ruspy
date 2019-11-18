@@ -1,6 +1,7 @@
 import numpy as np
 
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
+from ruspy.model_code.cost_functions import lin_cost_dev
 
 
 def calc_fixp(
@@ -69,20 +70,27 @@ def contraction_iteration(ev, trans_mat, costs, beta):
 
 
 def kantevorich_step(ev, trans_mat, costs, beta):
-    state_size = ev.shape[0]
-    t_prime = fixp_point_dev(ev, trans_mat, costs, beta)
+    num_states = ev.shape[0]
+    t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta)
     iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
     ev_new = (
         ev
         - np.linalg.lstsq(
-            np.eye(state_size) - t_prime, (ev - iteration_step), rcond=None
+            np.eye(num_states) - t_prime, (ev - iteration_step), rcond=None
         )[0]
     )
     return ev_new
 
 
-def fixp_point_dev(ev, trans_mat, costs, beta):
+def cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta):
     choice_probs = choice_prob_gumbel(ev, costs, beta)
     t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
     t_prime = beta * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
     return t_prime
+
+
+def contr_op_dev_wrt_params(trans_mat, maint_choice_prob, scale=0.001):
+    num_states = trans_mat.shape[0]
+    cost_dev = lin_cost_dev(num_states, scale=scale)
+    dev = np.dot(trans_mat, np.multiply(-cost_dev, maint_choice_prob))
+    return dev
