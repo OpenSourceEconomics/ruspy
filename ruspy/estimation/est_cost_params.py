@@ -59,20 +59,19 @@ def derivative_loglike_cost_params(
 
 
 @numba.jit(nopython=True)
-def create_state_matrix(states, num_states, num_obs):
+def create_state_matrix(states, num_states):
     """
     This function constructs a auxiliary matrix for the likelihood.
 
     :param states:      A numpy array containing the observed states.
     :param num_states:  The size of the state space s.
     :type num_states:   int
-    :param num_obs:     The total number of observations n.
-    :type num_obs:      int
 
     :return:            A two dimensional numpy array containing n x s matrix
                         with TRUE in each row at the column in which the bus was in
                         that observation.
     """
+    num_obs = states.shape[0]
     state_mat = np.full((num_states, num_obs), 0.0)
     for i, value in enumerate(states):
         state_mat[value, i] = 1.0
