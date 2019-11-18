@@ -56,3 +56,24 @@ def test_unit_ll_params(inputs, outputs):
         ),
         outputs["cost_ll"],
     )
+
+
+def test_ll_params_derivative(inputs, outputs):
+    num_states = inputs["num_states"]
+    trans_mat = create_transition_matrix(num_states, outputs["trans_base"])
+    state_mat = create_state_matrix(inputs["states"], num_states)
+    endog = inputs["decisions"]
+    decision_mat = np.vstack(((1 - endog), endog))
+    beta = inputs["beta"]
+    assert_allclose(
+        loglike_cost_params(
+            outputs["params_base"],
+            lin_cost,
+            num_states,
+            trans_mat,
+            state_mat,
+            decision_mat,
+            beta,
+        ),
+        0,
+    )
