@@ -51,6 +51,7 @@ def estimate(init_dict, df, repl_4=False):
         args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
         x0=np.array([5, 5]),
         bounds=[(1e-6, None), (1e-6, None)],
-        method="L-BFGS-B",
+        # jac=derivative_loglike_cost_params,
+        method="BFGS",
     )
     return transition_results, result

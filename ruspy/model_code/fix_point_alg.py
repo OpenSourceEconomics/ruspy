@@ -94,3 +94,7 @@ def contr_op_dev_wrt_params(trans_mat, maint_choice_prob, scale=0.001):
     cost_dev = lin_cost_dev(num_states, scale=scale)
     dev = np.dot(trans_mat, np.multiply(-cost_dev, maint_choice_prob))
     return dev
+
+
+def contr_op_dev_wrt_rc(trans_mat, maint_choice_prob):
+    return np.dot(trans_mat, maint_choice_prob - 1)

@@ -12,6 +12,7 @@ from ruspy.model_code.cost_functions import lin_cost_dev
 from ruspy.model_code.fix_point_alg import calc_fixp
 from ruspy.model_code.fix_point_alg import cont_op_dev_wrt_fixp
 from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_params
+from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_rc
 
 
 def loglike_cost_params(
@@ -51,22 +52,36 @@ def derivative_loglike_cost_params(
 ):
     costs = calc_obs_costs(num_states, maint_func, params)
     ev = calc_fixp(trans_mat, costs, beta)
-    cost_dev = -lin_cost_dev(num_states)
+    cost_dev = lin_cost_dev(num_states)
     t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta)
+
     p_choice = choice_prob_gumbel(ev, costs, beta)
-    part_ev_part_params = contr_op_dev_wrt_params(trans_mat, p_choice[:, 0])
-    ev_dev_wrt_params = np.linalg.lstsq(
-        np.eye(num_states) - t_prime, part_ev_part_params, rcond=None
+
+    partial_fixp_wrt_params = contr_op_dev_wrt_params(trans_mat, p_choice[:, 0])
+    partial_fixp_wrt_rc = contr_op_dev_wrt_rc(trans_mat, p_choice[:, 0])
+
+    partial_ev_wrt_params = np.linalg.lstsq(
+        np.eye(num_states) - t_prime, partial_fixp_wrt_params, rcond=None
+    )[0]
+    partial_ev_wrt_rc = np.linalg.lstsq(
+        np.eye(num_states) - t_prime, partial_fixp_wrt_rc, rcond=None
     )[0]
 
-    ll_values = (1 - p_choice) * (
-        cost_dev + beta * (ev_dev_wrt_params - ev_dev_wrt_params[0])
+    ll_values_params = (1 - p_choice) * (
+        -cost_dev[0]
+        + beta * partial_ev_wrt_params[0]
+        - beta * partial_ev_wrt_params
+        + cost_dev
     )[:, np.newaxis]
-    import pdb
 
-    pdb.set_trace()
-    ll_dev = np.dot(ll_values.T, state_mat)
-    return np.sum(decision_mat * ll_dev)
+    ll_values_rc = (1 - p_choice) * (
+        beta * partial_ev_wrt_rc[0] - beta * partial_ev_wrt_rc
+    )[:, np.newaxis]
+
+    ll_dev_params = np.sum(decision_mat * np.dot(ll_values_params.T, state_mat))
+    ll_dev_rc = np.sum(decision_mat * np.dot(ll_values_rc.T, state_mat))
+
+    return np.array([ll_dev_rc, ll_dev_params])
 
 
 @numba.jit(nopython=True)

@@ -3,6 +3,7 @@ import pickle as pkl
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
+from numpy.testing import assert_array_almost_equal
 
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
@@ -66,7 +67,7 @@ def test_ll_params_derivative(inputs, outputs):
     endog = inputs["decisions"]
     decision_mat = np.vstack(((1 - endog), endog))
     beta = inputs["beta"]
-    assert_allclose(
+    assert_array_almost_equal(
         derivative_loglike_cost_params(
             outputs["params_base"],
             lin_cost,
@@ -76,5 +77,5 @@ def test_ll_params_derivative(inputs, outputs):
             decision_mat,
             beta,
         ),
-        0,
+        np.array([0, 0]),
     )
