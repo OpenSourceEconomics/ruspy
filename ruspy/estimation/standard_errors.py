@@ -22,16 +22,13 @@ def cov_multinomial(n, p):
     return cov / n
 
 
-def params_hess(params, df, beta, maint_func, repl_4=False):
+def params_hess(params, df, beta, maint_func):
     """Calculates the hessian of the cost parameters."""
-    transition_results = estimate_transitions(df, repl_4=repl_4)
+    transition_results = estimate_transitions(df)
     ll_trans = transition_results["fun"]
     states = df.loc[:, "state"].to_numpy()
     num_obs = df.shape[0]
-    if repl_4:
-        num_states = 90
-    else:
-        num_states = int(1.2 * np.max(states))
+    num_states = 90
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states, num_obs)
     endog = df.loc[:, "decision"].to_numpy()

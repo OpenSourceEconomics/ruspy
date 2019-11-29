@@ -26,7 +26,7 @@ def inputs():
     out = {}
     init_dict = {"groups": "group_4", "binsize": 5000, "beta": 0.9999, "states": 90}
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
-    result_trans, result_fixp = estimate(init_dict, df, repl_4=True)
+    result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]

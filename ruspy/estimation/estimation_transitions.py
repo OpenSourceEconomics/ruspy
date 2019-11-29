@@ -6,7 +6,7 @@ import numba
 import numpy as np
 
 
-def estimate_transitions(df, repl_4=False):
+def estimate_transitions(df):
     """
     The sub function for estimating the transition probabilities. This function
     manages the estimation process of the transition probaiblities and calls the
@@ -15,10 +15,6 @@ def estimate_transitions(df, repl_4=False):
     :param df: A pandas dataframe, which contains for each observation the Bus ID,
     the current state of the bus, the current period and the decision made in this
     period.
-
-    :param repl_4: Auxiliary variable indicating the transition estimation as in Rust
-        (1987). The treatment of the engine replacement decision for the state
-        transitions is hardcoded below.
 
     :return: The optimization result of the transition probabilities estimation as a
              dictionary.

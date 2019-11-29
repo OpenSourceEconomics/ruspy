@@ -11,7 +11,7 @@ from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.model_code.cost_functions import lin_cost
 
 
-def estimate(init_dict, df, repl_4=False):
+def estimate(init_dict, df):
     """
     This function calls the auxiliary functions to estimate the decision parameters.
     Therefore it manages the estimation process. As mentioned in the model theory
@@ -30,15 +30,12 @@ def estimate(init_dict, df, repl_4=False):
                       ID, the current state of the bus, the current period and the
                       decision made in this period.
 
-    :param repl_4: Auxiliary variable indicating the complete setting of the
-                   replication of the paper with group 4.
-
     :return: The function returns the optimization result of the transition
              probabilities and of the cost parameters as separate dictionaries.
 
     """
     beta = init_dict["beta"]
-    transition_results = estimate_transitions(df, repl_4=repl_4)
+    transition_results = estimate_transitions(df)
     endog = df.loc[:, "decision"].to_numpy()
     states = df.loc[:, "state"].to_numpy()
     num_states = init_dict["states"]
