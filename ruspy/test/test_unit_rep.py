@@ -20,7 +20,7 @@ TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 def inputs():
     out = {}
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
-    out["num_bus"] = len(df["Bus_ID"].unique())
+    out["num_bus"] = len(df.index.unique("Bus_ID"))
     out["num_periods"] = int(df.shape[0] / out["num_bus"])
     out["states"] = df["state"].to_numpy()
     out["decisions"] = df["decision"].to_numpy()

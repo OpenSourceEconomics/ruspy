@@ -7,14 +7,15 @@ they are compared to the results, from the paper. As this test runs the complete
 data_reading, data processing and runs several times the NFXP it is the one with the
 longest test time.
 """
-
-import pytest
-import numpy as np
 import pickle as pkl
-from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_allclose
+
+import numpy as np
+import pytest
+from numpy.testing import assert_allclose
+from numpy.testing import assert_array_almost_equal
+
 from ruspy.estimation.estimation import estimate
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
-from ruspy.estimation.estimation_transitions import create_increases
 
 
 TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
@@ -22,7 +23,7 @@ TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 
 @pytest.fixture(scope="module")
 def inputs():
-    out = dict()
+    out = {}
     init_dict = {"groups": "group_4", "binsize": 5000, "beta": 0.9999, "states": 90}
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df, repl_4=True)
@@ -30,7 +31,7 @@ def inputs():
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
     out["cost_ll"] = result_fixp["fun"]
-    out["num_bus"] = len(df["Bus_ID"].unique())
+    out["num_bus"] = len(df.index.unique("Bus_ID"))
     out["num_periods"] = int(df.shape[0] / out["num_bus"])
     out["states"] = df["state"]
     out["decisions"] = df["decision"]
@@ -39,7 +40,7 @@ def inputs():
 
 @pytest.fixture(scope="module")
 def outputs():
-    out = dict()
+    out = {}
     out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
     out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
@@ -62,19 +63,3 @@ def test_trans_ll(inputs, outputs):
 
 def test_cost_ll(inputs, outputs):
     assert_allclose(inputs["cost_ll"], outputs["cost_ll"])
-
-
-def test_transition_count(inputs, outputs):
-    num_bus = inputs["num_bus"]
-    num_periods = inputs["num_periods"]
-    states = inputs["states"].values.reshape(num_bus, num_periods)
-    decisions = inputs["decisions"].values.reshape(num_bus, num_periods)
-    space_state = states.max() + 1
-    state_count = np.zeros(shape=(space_state, space_state), dtype=int)
-    increases = np.zeros(shape=(num_bus, num_periods - 1), dtype=int)
-    increases, state_count = np.array(
-        create_increases(
-            increases, state_count, num_bus, num_periods, states, decisions, repl_4=True
-        )
-    )
-    assert_array_equal(np.bincount(increases.flatten()), outputs["transition_count"])
