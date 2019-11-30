@@ -63,6 +63,11 @@ def sqrt_costs(num_states, params_scaled):
     return np.sqrt(states) * params_scaled[0]
 
 
+def hyperbolic_costs(num_states, params_scaled):
+    states = np.arange(num_states)
+    return params_scaled[0] / ((num_states + 1) - states)
+
+
 def cubic_costs_dev(num_states, params_scaled):
     states = np.arange(num_states)
     dev = np.array(

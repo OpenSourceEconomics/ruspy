@@ -9,6 +9,7 @@ from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.model_code.cost_functions import cubic_costs
+from ruspy.model_code.cost_functions import hyperbolic_costs
 from ruspy.model_code.cost_functions import lin_cost
 from ruspy.model_code.cost_functions import quadratic_costs
 from ruspy.model_code.cost_functions import sqrt_costs
@@ -50,6 +51,9 @@ def estimate(init_dict, df):
         num_params = 3
     elif init_dict["maint_cost_func"] == "square_root":
         maint_func = sqrt_costs
+        num_params = 2
+    elif init_dict["maint_cost_func"] == "hyperbolic":
+        maint_func = hyperbolic_costs
         num_params = 2
     # Linear is the standard
     else:
