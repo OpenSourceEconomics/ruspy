@@ -58,6 +58,11 @@ def quadratic_costs(num_states, params_scaled):
     return params_scaled[0] * states + params_scaled[1] * (states ** 2)
 
 
+def sqrt_costs(num_states, params_scaled):
+    states = np.arange(num_states)
+    return np.sqrt(states) * params_scaled[0]
+
+
 def cubic_costs_dev(num_states, params_scaled):
     states = np.arange(num_states)
     dev = np.array(

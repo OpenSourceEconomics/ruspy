@@ -11,6 +11,7 @@ from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import lin_cost
 from ruspy.model_code.cost_functions import quadratic_costs
+from ruspy.model_code.cost_functions import sqrt_costs
 
 
 def estimate(init_dict, df):
@@ -47,6 +48,10 @@ def estimate(init_dict, df):
     elif init_dict["maint_cost_func"] == "quadratic":
         maint_func = quadratic_costs
         num_params = 3
+    elif init_dict["maint_cost_func"] == "square_root":
+        maint_func = sqrt_costs
+        num_params = 2
+    # Linear is the standard
     else:
         maint_func = lin_cost
         num_params = 2
