@@ -42,19 +42,23 @@ def estimate(init_dict, df):
     num_states = init_dict["states"]
     if init_dict["maint_cost_func"] == "cubic":
         maint_func = cubic_costs
-        num_params = 3
+        num_params = 4
     else:
         maint_func = lin_cost
-        num_params = 1
+        num_params = 2
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states)
-    x_0 = np.full(num_params + 1, 5)
+    x_0 = np.power(
+        np.full(num_params, 10, dtype=float), np.arange(1, -num_params + 1, -1)
+    )
+    eps = np.finfo(float).eps
     result = opt.minimize(
         loglike_cost_params,
         args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
         x0=x_0,
+        bounds=[(eps, None)] * num_params,
         # jac=derivative_loglike_cost_params,
-        method="BFGS",
+        method="L-BFGS-B",
     )
     return transition_results, result

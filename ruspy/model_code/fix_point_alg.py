@@ -61,7 +61,7 @@ def contraction_iteration(ev, trans_mat, costs, beta):
 
     # Select the minimal absolute value to rescale the value vector for the
     # exponential function.
-    ev_min = maint_value[0]
+    ev_min = np.max(maint_value)
 
     log_sum = ev_min + np.log(
         np.exp(maint_value - ev_min) + np.exp(repl_value - ev_min)
