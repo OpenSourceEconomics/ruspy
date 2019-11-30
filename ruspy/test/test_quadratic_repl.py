@@ -19,10 +19,13 @@ def inputs():
         "binsize": 5000,
         "beta": 0.9999,
         "states": 90,
-        "maint_cost_func": "cubic",
+        "maint_cost_func": "quadratic",
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)
+    import pdb
+
+    pdb.set_trace()
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
@@ -41,7 +44,7 @@ def outputs():
     # out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.58584  # 162.885, Need derivative!
+    out["cost_ll"] = 163.58584  # 163.402, Need derivative!
     return out
 
 
