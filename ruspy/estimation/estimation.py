@@ -8,6 +8,7 @@ from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
+from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import lin_cost
 
 
@@ -39,14 +40,20 @@ def estimate(init_dict, df):
     endog = df.loc[:, "decision"].to_numpy()
     states = df.loc[:, "state"].to_numpy()
     num_states = init_dict["states"]
-    maint_func = lin_cost  # For now just set this to a linear cost function
+    if init_dict["maint_cost_func"] == "cubic":
+        maint_func = cubic_costs
+        num_params = 3
+    else:
+        maint_func = lin_cost
+        num_params = 1
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states)
+    x_0 = np.full(num_params + 1, 5)
     result = opt.minimize(
         loglike_cost_params,
         args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
-        x0=np.array([5, 5]),
+        x0=x_0,
         # jac=derivative_loglike_cost_params,
         method="BFGS",
     )

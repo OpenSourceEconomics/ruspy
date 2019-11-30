@@ -24,7 +24,13 @@ TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 @pytest.fixture(scope="module")
 def inputs():
     out = {}
-    init_dict = {"groups": "group_4", "binsize": 5000, "beta": 0.9999, "states": 90}
+    init_dict = {
+        "groups": "group_4",
+        "binsize": 5000,
+        "beta": 0.9999,
+        "states": 90,
+        "maint_cost_func": "linear",
+    }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]

@@ -16,7 +16,14 @@ from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_rc
 
 
 def loglike_cost_params(
-    params, maint_func, num_states, trans_mat, state_mat, decision_mat, beta,
+    params,
+    maint_func,
+    num_states,
+    trans_mat,
+    state_mat,
+    decision_mat,
+    beta,
+    scale=0.001,
 ):
     """
     This is the logliklihood function for the estimation of the cost parameters.
@@ -40,7 +47,7 @@ def loglike_cost_params(
 
     :return: The negative loglikelihood value for minimizing the objective function.
     """
-    costs = calc_obs_costs(num_states, maint_func, params)
+    costs = calc_obs_costs(num_states, maint_func, params, scale=scale)
     ev = calc_fixp(trans_mat, costs, beta)
     p_choice = choice_prob_gumbel(ev, costs, beta)
     ll_prob = np.log(np.dot(p_choice.T, state_mat))
