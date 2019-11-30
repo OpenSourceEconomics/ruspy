@@ -56,6 +56,7 @@ def outputs():
 
 
 def test_repl_params(inputs, outputs):
+    # Need derivative for optimum
     assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=2)
 
 

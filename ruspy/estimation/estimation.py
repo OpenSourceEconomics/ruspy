@@ -58,6 +58,7 @@ def estimate(init_dict, df):
         args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
         x0=x_0,
         bounds=[(eps, None)] * num_params,
+        # Without derivative I am only close to the results.
         # jac=derivative_loglike_cost_params,
         method="L-BFGS-B",
     )
