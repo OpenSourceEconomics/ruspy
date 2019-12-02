@@ -47,6 +47,7 @@ def loglike_cost_params(
 
     :return: The negative loglikelihood value for minimizing the objective function.
     """
+    print(params)
     costs = calc_obs_costs(num_states, maint_func, params, scale=scale)
     ev = calc_fixp(trans_mat, costs, beta)
     p_choice = choice_prob_gumbel(ev, costs, beta)
@@ -59,7 +60,7 @@ def derivative_loglike_cost_params(
 ):
     costs = calc_obs_costs(num_states, maint_func, params)
     ev = calc_fixp(trans_mat, costs, beta)
-    cost_dev = lin_cost_dev(num_states)
+    cost_dev = lin_cost_dev(num_states, 0)
     t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta)
 
     p_choice = choice_prob_gumbel(ev, costs, beta)
@@ -74,21 +75,31 @@ def derivative_loglike_cost_params(
         np.eye(num_states) - t_prime, partial_fixp_wrt_rc, rcond=None
     )[0]
 
-    ll_values_params = (1 - p_choice) * (
-        -cost_dev[0]
-        + beta * partial_ev_wrt_params[0]
-        - beta * partial_ev_wrt_params
-        + cost_dev
-    )[:, np.newaxis]
+    dev_value_maint_params = (
+        cost_dev[0]
+        - beta * partial_ev_wrt_params[0]
+        + beta * partial_ev_wrt_params
+        - cost_dev
+    )
 
-    ll_values_rc = (1 - p_choice) * (
-        beta * partial_ev_wrt_rc[0] - beta * partial_ev_wrt_rc
-    )[:, np.newaxis]
+    ll_values_params = np.empty_like(p_choice)
 
-    ll_dev_params = np.sum(decision_mat * np.dot(ll_values_params.T, state_mat))
-    ll_dev_rc = np.sum(decision_mat * np.dot(ll_values_rc.T, state_mat))
+    ll_values_params[:, 0] = np.multiply(1 - p_choice[:, 0], dev_value_maint_params)
+    ll_values_params[:, 1] = np.multiply(1 - p_choice[:, 1], -dev_value_maint_params)
 
-    return np.array([ll_dev_rc, ll_dev_params])
+    dev_value_maint_rc = 1 + beta * partial_ev_wrt_rc - beta * partial_ev_wrt_rc[0]
+
+    ll_values_rc = np.empty_like(p_choice)
+
+    ll_values_rc[:, 0] = np.multiply(1 - p_choice[:, 0], dev_value_maint_rc)
+    ll_values_rc[:, 1] = np.multiply(1 - p_choice[:, 1], -dev_value_maint_rc)
+
+    ll_dev_params = -np.sum(decision_mat * np.dot(ll_values_params.T, state_mat))
+    ll_dev_rc = -np.sum(decision_mat * np.dot(ll_values_rc.T, state_mat))
+
+    dev = np.array([ll_dev_rc, ll_dev_params])
+    print(dev)
+    return dev
 
 
 @numba.jit(nopython=True)

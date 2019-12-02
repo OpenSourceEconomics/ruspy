@@ -3,15 +3,14 @@ import pickle as pkl
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
+from numpy.testing import assert_array_almost_equal
 
 from ruspy.estimation.est_cost_params import create_state_matrix
+from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import lin_cost
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
-
-# from numpy.testing import assert_array_almost_equal
-# from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 
 TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 
@@ -36,7 +35,7 @@ def outputs():
     out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.585839
+    out["cost_ll"] = 163.584
     return out
 
 
@@ -61,22 +60,22 @@ def test_unit_ll_params(inputs, outputs):
     )
 
 
-# def test_ll_params_derivative(inputs, outputs):
-#     num_states = inputs["num_states"]
-#     trans_mat = create_transition_matrix(num_states, outputs["trans_base"])
-#     state_mat = create_state_matrix(inputs["states"], num_states)
-#     endog = inputs["decisions"]
-#     decision_mat = np.vstack(((1 - endog), endog))
-#     beta = inputs["beta"]
-#     assert_array_almost_equal(
-#         derivative_loglike_cost_params(
-#             outputs["params_base"],
-#             lin_cost,
-#             num_states,
-#             trans_mat,
-#             state_mat,
-#             decision_mat,
-#             beta,
-#         ),
-#         np.array([0, 0]),
-#     )
+def test_ll_params_derivative(inputs, outputs):
+    num_states = inputs["num_states"]
+    trans_mat = create_transition_matrix(num_states, outputs["trans_base"])
+    state_mat = create_state_matrix(inputs["states"], num_states)
+    endog = inputs["decisions"]
+    decision_mat = np.vstack(((1 - endog), endog))
+    beta = inputs["beta"]
+    assert_array_almost_equal(
+        derivative_loglike_cost_params(
+            outputs["params_base"],
+            lin_cost,
+            num_states,
+            trans_mat,
+            state_mat,
+            decision_mat,
+            beta,
+        ),
+        np.array([0, 0]),
+    )

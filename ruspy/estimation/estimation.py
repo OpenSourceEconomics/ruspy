@@ -5,6 +5,7 @@ import numpy as np
 import scipy.optimize as opt
 
 from ruspy.estimation.est_cost_params import create_state_matrix
+from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
@@ -72,7 +73,7 @@ def estimate(init_dict, df):
         x0=x_0,
         bounds=[(eps, None)] * num_params,
         # Without derivative I am only close to the results.
-        # jac=derivative_loglike_cost_params,
-        method="L-BFGS-B",
+        jac=derivative_loglike_cost_params,
+        method="BFGS",
     )
     return transition_results, result
