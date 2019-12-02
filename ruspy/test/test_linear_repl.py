@@ -37,10 +37,6 @@ def inputs():
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
     out["cost_ll"] = result_fixp["fun"]
-    out["num_bus"] = len(df.index.unique("Bus_ID"))
-    out["num_periods"] = int(df.shape[0] / out["num_bus"])
-    out["states"] = df["state"]
-    out["decisions"] = df["decision"]
     return out
 
 
@@ -51,13 +47,13 @@ def outputs():
     out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.585839  # 163.584
+    out["cost_ll"] = 163.584284
     return out
 
 
 def test_repl_params(inputs, outputs):
     # Need derivative for optimum
-    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=2)
+    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=3)
 
 
 def test_repl_trans(inputs, outputs):

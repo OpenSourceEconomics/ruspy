@@ -20,9 +20,8 @@ def inputs():
     out = {}
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     out["num_bus"] = len(df.index.unique("Bus_ID"))
-    out["num_periods"] = int(df.shape[0] / out["num_bus"])
-    out["states"] = df["state"].to_numpy()
-    out["decisions"] = df["decision"].to_numpy()
+    out["states"] = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
+    out["decisions"] = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
     out["beta"] = 0.9999
     out["num_states"] = 90
     return out
@@ -35,7 +34,7 @@ def outputs():
     out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.584
+    out["cost_ll"] = 163.584284
     return out
 
 

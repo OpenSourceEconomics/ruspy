@@ -5,7 +5,6 @@ import numpy as np
 import scipy.optimize as opt
 
 from ruspy.estimation.est_cost_params import create_state_matrix
-from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
@@ -14,6 +13,8 @@ from ruspy.model_code.cost_functions import hyperbolic_costs
 from ruspy.model_code.cost_functions import lin_cost
 from ruspy.model_code.cost_functions import quadratic_costs
 from ruspy.model_code.cost_functions import sqrt_costs
+
+# from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 
 
 def estimate(init_dict, df):
@@ -41,8 +42,8 @@ def estimate(init_dict, df):
     """
     beta = init_dict["beta"]
     transition_results = estimate_transitions(df)
-    endog = df.loc[:, "decision"].to_numpy()
-    states = df.loc[:, "state"].to_numpy()
+    endog = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
+    states = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
     num_states = init_dict["states"]
     if init_dict["maint_cost_func"] == "cubic":
         maint_func = cubic_costs
@@ -73,7 +74,7 @@ def estimate(init_dict, df):
         x0=x_0,
         bounds=[(eps, None)] * num_params,
         # Without derivative I am only close to the results.
-        jac=derivative_loglike_cost_params,
-        method="BFGS",
+        # jac=derivative_loglike_cost_params,
+        method="L-BFGS-B",
     )
     return transition_results, result

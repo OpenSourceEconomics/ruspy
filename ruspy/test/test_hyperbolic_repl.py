@@ -27,10 +27,6 @@ def inputs():
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
     out["cost_ll"] = result_fixp["fun"]
-    out["num_bus"] = len(df.index.unique("Bus_ID"))
-    out["num_periods"] = int(df.shape[0] / out["num_bus"])
-    out["states"] = df["state"]
-    out["decisions"] = df["decision"]
     return out
 
 
