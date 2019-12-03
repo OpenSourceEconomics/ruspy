@@ -47,7 +47,6 @@ def loglike_cost_params(
 
     :return: The negative loglikelihood value for minimizing the objective function.
     """
-    print(params)
     costs = calc_obs_costs(num_states, maint_func, params, scale=scale)
     ev = calc_fixp(trans_mat, costs, beta)
     p_choice = choice_prob_gumbel(ev, costs, beta)
@@ -56,11 +55,19 @@ def loglike_cost_params(
 
 
 def derivative_loglike_cost_params(
-    params, maint_func, num_states, trans_mat, state_mat, decision_mat, beta,
+    params,
+    maint_func,
+    num_states,
+    trans_mat,
+    state_mat,
+    decision_mat,
+    beta,
+    scale=0.001,
 ):
+
     costs = calc_obs_costs(num_states, maint_func, params)
     ev = calc_fixp(trans_mat, costs, beta)
-    cost_dev = lin_cost_dev(num_states, 0)
+    cost_dev = lin_cost_dev(num_states, scale=scale)
     t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta)
 
     p_choice = choice_prob_gumbel(ev, costs, beta)
