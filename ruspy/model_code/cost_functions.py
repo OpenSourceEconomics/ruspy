@@ -69,7 +69,7 @@ def quadratic_costs(num_states, params, scale=0.001):
 
 def quadratic_costs_dev(num_states, scale=0.001):
     states = np.arange(num_states)
-    dev = scale * states + scale * (states ** 2)
+    dev = np.array([scale * states, scale * (states ** 2)]).T
     return dev
 
 

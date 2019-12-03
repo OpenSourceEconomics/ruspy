@@ -37,7 +37,7 @@ def outputs():
     # out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.58584  # 162.885, Need derivative!
+    out["cost_ll"] = 163.821327  # 162.885,
     return out
 
 

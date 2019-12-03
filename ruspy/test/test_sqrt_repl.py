@@ -84,5 +84,4 @@ def test_ll_params_derivative(inputs, outputs):
             beta,
         ),
         np.array([0, 0]),
-        decimal=4,
     )

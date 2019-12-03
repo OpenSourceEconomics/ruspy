@@ -89,9 +89,7 @@ def cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta):
     return t_prime
 
 
-def contr_op_dev_wrt_params(trans_mat, maint_choice_prob, maint_func_dev, scale=0.001):
-    num_states = trans_mat.shape[0]
-    cost_dev = maint_func_dev(num_states, scale=scale)
+def contr_op_dev_wrt_params(trans_mat, maint_choice_prob, cost_dev):
     dev = np.dot(trans_mat, np.multiply(-cost_dev, maint_choice_prob))
     return dev
 

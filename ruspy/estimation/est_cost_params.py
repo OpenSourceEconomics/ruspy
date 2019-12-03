@@ -9,9 +9,9 @@ import numpy as np
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.fix_point_alg import calc_fixp
-from ruspy.model_code.fix_point_alg import cont_op_dev_wrt_fixp
 from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_params
 from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_rc
+from ruspy.model_code.fix_point_alg import solve_equ_system_fixp
 
 
 def loglike_cost_params(
@@ -66,44 +66,51 @@ def derivative_loglike_cost_params(
     scale=0.001,
 ):
 
+    dev = np.zeros_like(params)
     costs = calc_obs_costs(num_states, maint_func, params)
     ev = calc_fixp(trans_mat, costs, beta)
-    cost_dev = maint_func_dev(num_states, scale=scale)
-    t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta)
-
     p_choice = choice_prob_gumbel(ev, costs, beta)
+    maint_cost_dev = maint_func_dev(num_states, scale=scale)
 
-    partial_fixp_wrt_params = contr_op_dev_wrt_params(
-        trans_mat, p_choice[:, 0], maint_func_dev
-    )
-    partial_fixp_wrt_rc = contr_op_dev_wrt_rc(trans_mat, p_choice[:, 0])
+    lh_values_rc = like_hood_vaules_rc(ev, costs, p_choice, trans_mat, beta)
+    like_dev_rc = like_hood_data(lh_values_rc, decision_mat, state_mat)
+    dev[0] = like_dev_rc
 
-    partial_ev_wrt_params = np.linalg.lstsq(
-        np.eye(num_states) - t_prime, partial_fixp_wrt_params, rcond=None
-    )[0]
-    partial_ev_wrt_rc = np.linalg.lstsq(
-        np.eye(num_states) - t_prime, partial_fixp_wrt_rc, rcond=None
-    )[0]
-
-    dev_value_maint_params = (
-        cost_dev[0]
-        - beta * partial_ev_wrt_params[0]
-        + beta * partial_ev_wrt_params
-        - cost_dev
-    )
-
-    ll_values_params = like_hood_dev_values(p_choice, dev_value_maint_params)
-
-    dev_value_maint_rc = 1 + beta * partial_ev_wrt_rc - beta * partial_ev_wrt_rc[0]
-
-    ll_values_rc = like_hood_dev_values(p_choice, dev_value_maint_rc)
-
-    ll_dev_params = like_hood_data(ll_values_params, decision_mat, state_mat)
-    ll_dev_rc = like_hood_data(ll_values_rc, decision_mat, state_mat)
-
-    dev = np.array([ll_dev_rc, ll_dev_params])
+    for i in range(len(params) - 1):
+        if len(params) == 2:
+            cost_dev_param = maint_cost_dev
+        else:
+            cost_dev_param = maint_cost_dev[:, i]
+        like_values_params = like_hood_values_param(
+            ev, costs, p_choice, trans_mat, cost_dev_param, beta
+        )
+        like_dev_params = like_hood_data(like_values_params, decision_mat, state_mat)
+        dev[i + 1] = like_dev_params
 
     return dev
+
+
+def like_hood_values_param(ev, costs, p_choice, trans_mat, cost_dev, beta):
+    dev_contr_op_params = contr_op_dev_wrt_params(trans_mat, p_choice[:, 0], cost_dev)
+    dev_ev_params = solve_equ_system_fixp(
+        dev_contr_op_params, ev, trans_mat, costs, beta
+    )
+    dev_value_maint_params = chain_rule_param(cost_dev, dev_ev_params, beta)
+    lh_values_param = like_hood_dev_values(p_choice, dev_value_maint_params)
+    return lh_values_param
+
+
+def like_hood_vaules_rc(ev, costs, p_choice, trans_mat, beta):
+    dev_contr_op_rc = contr_op_dev_wrt_rc(trans_mat, p_choice[:, 0])
+    dev_ev_rc = solve_equ_system_fixp(dev_contr_op_rc, ev, trans_mat, costs, beta)
+    dev_value_maint_rc = 1 + beta * dev_ev_rc - beta * dev_ev_rc[0]
+    lh_values_rc = like_hood_dev_values(p_choice, dev_value_maint_rc)
+    return lh_values_rc
+
+
+def chain_rule_param(cost_dev, dev_ev_param, beta):
+    chain_value = cost_dev[0] - beta * dev_ev_param[0] + beta * dev_ev_param - cost_dev
+    return chain_value
 
 
 def like_hood_data(l_values, decision_mat, state_mat):

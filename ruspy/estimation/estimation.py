@@ -92,6 +92,7 @@ def estimate(init_dict, df):
         bounds=[(eps, None)] * num_params,
         # Without derivative I am only close to the results.
         jac=derivative_loglike_cost_params,
+        options={"gtol": 1e-8},
         method="L-BFGS-B",
     )
     return transition_results, result
