@@ -73,16 +73,23 @@ def select_optimizer_options(init_dict, num_params_costs):
         )
 
     if "use_search_bounds" in optimizer_dict:
-        if "use_search_bounds" == "yes":
+        if optimizer_dict["use_search_bounds"] == "yes":
             optimizer_options["bounds"] = [(1e-6, None)] * num_params_costs
         else:
             pass
+    else:
+        pass
 
     if "search_bounds" in optimizer_dict:
         optimizer_options["bounds"] = np.array(optimizer_dict["search_bounds"])
+    else:
+        pass
 
-    if "use_gradient" == "yes":
-        optimizer_options["jac"] = derivative_loglike_cost_params
+    if "use_gradient" in optimizer_dict:
+        if optimizer_dict["use_gradient"] == "yes":
+            optimizer_options["jac"] = derivative_loglike_cost_params
+        else:
+            pass
     else:
         pass
 
