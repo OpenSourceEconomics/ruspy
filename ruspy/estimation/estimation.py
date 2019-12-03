@@ -10,10 +10,15 @@ from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.model_code.cost_functions import cubic_costs
+from ruspy.model_code.cost_functions import cubic_costs_dev
 from ruspy.model_code.cost_functions import hyperbolic_costs
+from ruspy.model_code.cost_functions import hyperbolic_costs_dev
 from ruspy.model_code.cost_functions import lin_cost
+from ruspy.model_code.cost_functions import lin_cost_dev
 from ruspy.model_code.cost_functions import quadratic_costs
+from ruspy.model_code.cost_functions import quadratic_costs_dev
 from ruspy.model_code.cost_functions import sqrt_costs
+from ruspy.model_code.cost_functions import sqrt_costs_dev
 
 
 def estimate(init_dict, df):
@@ -46,19 +51,24 @@ def estimate(init_dict, df):
     num_states = init_dict["states"]
     if init_dict["maint_cost_func"] == "cubic":
         maint_func = cubic_costs
+        maint_func_dev = cubic_costs_dev
         num_params = 4
     elif init_dict["maint_cost_func"] == "quadratic":
         maint_func = quadratic_costs
+        maint_func_dev = quadratic_costs_dev
         num_params = 3
     elif init_dict["maint_cost_func"] == "square_root":
         maint_func = sqrt_costs
+        maint_func_dev = sqrt_costs_dev
         num_params = 2
     elif init_dict["maint_cost_func"] == "hyperbolic":
         maint_func = hyperbolic_costs
+        maint_func_dev = hyperbolic_costs_dev
         num_params = 2
     # Linear is the standard
     else:
         maint_func = lin_cost
+        maint_func_dev = lin_cost_dev
         num_params = 2
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
@@ -69,7 +79,15 @@ def estimate(init_dict, df):
     eps = np.finfo(float).eps
     result = opt.minimize(
         loglike_cost_params,
-        args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
+        args=(
+            maint_func,
+            maint_func_dev,
+            num_states,
+            trans_mat,
+            state_mat,
+            decision_mat,
+            beta,
+        ),
         x0=x_0,
         bounds=[(eps, None)] * num_params,
         # Without derivative I am only close to the results.

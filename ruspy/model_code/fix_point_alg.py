@@ -1,7 +1,6 @@
 import numpy as np
 
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
-from ruspy.model_code.cost_functions import lin_cost_dev
 
 
 def calc_fixp(
@@ -89,9 +88,9 @@ def cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta):
     return t_prime
 
 
-def contr_op_dev_wrt_params(trans_mat, maint_choice_prob, scale=0.001):
+def contr_op_dev_wrt_params(trans_mat, maint_choice_prob, maint_func_dev, scale=0.001):
     num_states = trans_mat.shape[0]
-    cost_dev = lin_cost_dev(num_states, scale=scale)
+    cost_dev = maint_func_dev(num_states, scale=scale)
     dev = np.dot(trans_mat, np.multiply(-cost_dev, maint_choice_prob))
     return dev
 

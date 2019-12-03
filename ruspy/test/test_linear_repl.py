@@ -19,6 +19,7 @@ from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.estimation import estimate
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import lin_cost
+from ruspy.model_code.cost_functions import lin_cost_dev
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
 
@@ -89,6 +90,7 @@ def test_ll_params_derivative(inputs, outputs):
         derivative_loglike_cost_params(
             inputs["params_est"],
             lin_cost,
+            lin_cost_dev,
             num_states,
             trans_mat,
             state_mat,
