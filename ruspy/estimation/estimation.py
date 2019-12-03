@@ -66,6 +66,7 @@ def estimate(init_dict, df):
             state_mat,
             decision_mat,
             beta,
+            scale,
         ),
         **optimizer_options
     )

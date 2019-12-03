@@ -40,7 +40,11 @@ def inputs():
             "maint_cost_func": "linear",
             "cost_scale": 0.001,
         },
-        "optimizer": {"optimizer_name": "L-BFGS-B", "use_gradient": "yes"},
+        "optimizer": {
+            "optimizer_name": "L-BFGS-B",
+            "use_gradient": "yes",
+            "use_search_bounds": "yes",
+        },
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)

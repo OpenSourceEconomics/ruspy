@@ -25,9 +25,12 @@ def inputs():
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
-        "beta": beta,
-        "states": num_states,
-        "maint_cost_func": "quadratic",
+        "model_specifications": {
+            "discount_factor": beta,
+            "number_states": num_states,
+            "maint_cost_func": "quadratic",
+            "cost_scale": 0.001,
+        },
         "optimizer": {"optimizer_name": "Nelder-Mead", "use_gradient": "no"},
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))

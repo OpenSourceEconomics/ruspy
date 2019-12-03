@@ -80,8 +80,6 @@ def select_optimizer_options(init_dict, num_params_costs):
         else:
             pass
 
-    else:
-        optimizer_options["bounds"] = [(np.finfo(float).eps, None)] * num_params_costs
     if "search_bounds" in optimizer_dict:
         optimizer_options["bounds"] = np.array(optimizer_dict["search_bounds"])
 
