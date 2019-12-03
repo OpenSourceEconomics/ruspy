@@ -23,7 +23,7 @@ def loglike_cost_params(
     state_mat,
     decision_mat,
     beta,
-    scale=0.001,
+    scale,
 ):
     """
     This is the logliklihood function for the estimation of the cost parameters.
@@ -47,7 +47,7 @@ def loglike_cost_params(
 
     :return: The negative loglikelihood value for minimizing the objective function.
     """
-    costs = calc_obs_costs(num_states, maint_func, params, scale=scale)
+    costs = calc_obs_costs(num_states, maint_func, params, scale)
     ev = calc_fixp(trans_mat, costs, beta)
     p_choice = choice_prob_gumbel(ev, costs, beta)
     ll = like_hood_data(np.log(p_choice), decision_mat, state_mat)
@@ -63,14 +63,14 @@ def derivative_loglike_cost_params(
     state_mat,
     decision_mat,
     beta,
-    scale=0.001,
+    scale,
 ):
 
     dev = np.zeros_like(params)
-    costs = calc_obs_costs(num_states, maint_func, params)
+    costs = calc_obs_costs(num_states, maint_func, params, scale)
     ev = calc_fixp(trans_mat, costs, beta)
     p_choice = choice_prob_gumbel(ev, costs, beta)
-    maint_cost_dev = maint_func_dev(num_states, scale=scale)
+    maint_cost_dev = maint_func_dev(num_states, scale)
 
     lh_values_rc = like_hood_vaules_rc(ev, costs, p_choice, trans_mat, beta)
     like_dev_rc = like_hood_data(lh_values_rc, decision_mat, state_mat)

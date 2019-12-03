@@ -74,9 +74,7 @@ def select_optimizer_options(init_dict, num_params_costs):
 
     if "use_search_bounds" in optimizer_dict:
         if "use_search_bounds" == "yes":
-            optimizer_options["bounds"] = [
-                (np.finfo(float).eps, None)
-            ] * num_params_costs
+            optimizer_options["bounds"] = [(1e-6, None)] * num_params_costs
         else:
             pass
 

@@ -62,7 +62,7 @@ def simulate(init_dict, ev_known, trans_mat, shock=None):
             "need to have the same size."
         )
     num_states = ev_known.shape[0]
-    costs = calc_obs_costs(num_states, maint_func, params)
+    costs = calc_obs_costs(num_states, maint_func, params, 0.001)
     maint_shock_dist_name, repl_shock_dist_name, loc_scale = get_unobs_data(shock)
     states, decisions, utilities = simulate_strategy(
         num_periods,

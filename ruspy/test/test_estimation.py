@@ -42,7 +42,7 @@ def outputs():
 
 def test_cost_func(inputs, outputs):
     assert_array_almost_equal(
-        calc_obs_costs(inputs["nstates"], inputs["cost_fct"], inputs["params"]),
+        calc_obs_costs(inputs["nstates"], inputs["cost_fct"], inputs["params"], 0.001),
         outputs["costs"],
     )
 

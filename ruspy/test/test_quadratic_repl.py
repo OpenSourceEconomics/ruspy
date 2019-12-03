@@ -22,6 +22,7 @@ def inputs():
     out = {}
     beta = 0.9999
     num_states = 90
+    scale = 0.001
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
@@ -29,9 +30,13 @@ def inputs():
             "discount_factor": beta,
             "number_states": num_states,
             "maint_cost_func": "quadratic",
-            "cost_scale": 0.001,
+            "cost_scale": scale,
         },
-        "optimizer": {"optimizer_name": "Nelder-Mead", "use_gradient": "no"},
+        "optimizer": {
+            "optimizer_name": "BFGS",
+            "use_gradient": "yes",
+            "use_search_bounds": "yes",
+        },
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)
@@ -43,6 +48,7 @@ def inputs():
     out["decisions"] = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
     out["beta"] = beta
     out["num_states"] = num_states
+    out["scale"] = scale
     return out
 
 
@@ -66,7 +72,7 @@ def test_trans_ll(inputs, outputs):
 
 def test_cost_ll(inputs, outputs):
     # This is as precise as the paper gets
-    assert_allclose(inputs["cost_ll"], outputs["cost_ll"], atol=1e-3)
+    assert_allclose(np.round(inputs["cost_ll"], 3), outputs["cost_ll"])
 
 
 def test_ll_params_derivative(inputs, outputs):
@@ -86,6 +92,7 @@ def test_ll_params_derivative(inputs, outputs):
             state_mat,
             decision_mat,
             beta,
+            inputs["scale"],
         ),
         np.array([0, 0, 0]),
         decimal=2,

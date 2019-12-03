@@ -31,6 +31,7 @@ def inputs():
     out = {}
     beta = 0.9999
     num_states = 90
+    scale = 0.001
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
@@ -38,10 +39,10 @@ def inputs():
             "discount_factor": beta,
             "number_states": num_states,
             "maint_cost_func": "linear",
-            "cost_scale": 0.001,
+            "cost_scale": scale,
         },
         "optimizer": {
-            "optimizer_name": "L-BFGS-B",
+            "optimizer_name": "BFGS",
             "use_gradient": "yes",
             "use_search_bounds": "yes",
         },
@@ -56,6 +57,7 @@ def inputs():
     out["decisions"] = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
     out["beta"] = beta
     out["num_states"] = num_states
+    out["scale"] = scale
     return out
 
 
@@ -72,7 +74,7 @@ def outputs():
 
 def test_repl_params(inputs, outputs):
     # This is as precise as the paper gets
-    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=3)
+    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=4)
 
 
 def test_repl_trans(inputs, outputs):
@@ -105,6 +107,7 @@ def test_ll_params_derivative(inputs, outputs):
             state_mat,
             decision_mat,
             beta,
+            inputs["scale"],
         ),
         np.array([0, 0]),
         decimal=3,

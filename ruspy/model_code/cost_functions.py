@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def calc_obs_costs(num_states, maint_func, params, scale=0.001):
+def calc_obs_costs(num_states, maint_func, params, scale):
     """
     This function calculates a vector containing the costs for maintenance and
     replacement, without recognizing the future.
@@ -40,7 +40,7 @@ def lin_cost(num_states, params, scale):
     return costs
 
 
-def lin_cost_dev(num_states, scale=0.001):
+def lin_cost_dev(num_states, scale):
     dev = np.arange(num_states) * scale
     return dev
 
@@ -55,43 +55,43 @@ def cubic_costs(num_states, params, scale):
     return costs
 
 
-def cubic_costs_dev(num_states, scale=0.001):
+def cubic_costs_dev(num_states, scale):
     states = np.arange(num_states)
     dev = np.array([states * scale, scale * (states ** 2), scale * (states ** 3)]).T
     return dev
 
 
-def quadratic_costs(num_states, params, scale=0.001):
+def quadratic_costs(num_states, params, scale):
     states = np.arange(num_states)
     costs = params[0] * scale * states + params[1] * scale * (states ** 2)
     return costs
 
 
-def quadratic_costs_dev(num_states, scale=0.001):
+def quadratic_costs_dev(num_states, scale):
     states = np.arange(num_states)
     dev = np.array([scale * states, scale * (states ** 2)]).T
     return dev
 
 
-def sqrt_costs(num_states, params, scale=0.001):
+def sqrt_costs(num_states, params, scale):
     states = np.arange(num_states)
     costs = params[0] * scale * np.sqrt(states)
     return costs
 
 
-def sqrt_costs_dev(num_states, scale=0.001):
+def sqrt_costs_dev(num_states, scale):
     states = np.arange(num_states)
     dev = scale * np.sqrt(states)
     return dev
 
 
-def hyperbolic_costs(num_states, params, scale=0.001):
+def hyperbolic_costs(num_states, params, scale):
     states = np.arange(num_states)
     costs = params[0] * scale / ((num_states + 1) - states)
     return costs
 
 
-def hyperbolic_costs_dev(num_states, scale=0.001):
+def hyperbolic_costs_dev(num_states, scale):
     states = np.arange(num_states)
     dev = scale / ((num_states + 1) - states)
     return dev
