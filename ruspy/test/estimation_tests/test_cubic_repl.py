@@ -32,27 +32,24 @@ def inputs():
             "cost_scale": scale,
         },
         "optimizer": {
-            "optimizer_name": "L-BFGS-B",
+            "optimizer_name": "BFGS",
             "use_gradient": "yes",
-            "use_search_bounds": "yes",
+            "use_search_bounds": "no",
             "additional_options": {"gtol": 1e-8},
         },
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)
-    import pdb
-
-    pdb.set_trace()
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
     out["cost_ll"] = result_fixp["fun"]
-    out["states"] = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
-    out["decisions"] = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
+    out["states"] = df.loc[:, "state"].to_numpy()
+    out["decisions"] = df.loc[:, "decision"].to_numpy()
     out["beta"] = beta
     out["num_states"] = num_states
     out["scale"] = scale
-    out["success"] = result_fixp["success"]
+    out["message"] = result_fixp["message"]
     return out
 
 
@@ -98,9 +95,9 @@ def test_ll_params_derivative(inputs, outputs):
             inputs["scale"],
         ),
         np.array([0, 0, 0, 0]),
-        decimal=2,
+        decimal=4,
     )
 
 
 def test_success(inputs):
-    assert inputs["success"]
+    assert inputs["message"] == "Optimization terminated successfully."
