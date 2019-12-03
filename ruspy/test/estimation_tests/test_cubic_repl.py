@@ -21,7 +21,7 @@ def inputs():
     out = {}
     beta = 0.9999
     num_states = 90
-    scale = 0.0001
+    scale = 0.00001
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
@@ -32,13 +32,17 @@ def inputs():
             "cost_scale": scale,
         },
         "optimizer": {
-            "optimizer_name": "Nelder-Mead",
-            "use_gradient": "no",
+            "optimizer_name": "L-BFGS-B",
+            "use_gradient": "yes",
             "use_search_bounds": "yes",
+            "additional_options": {"gtol": 1e-8},
         },
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)
+    import pdb
+
+    pdb.set_trace()
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
@@ -48,6 +52,7 @@ def inputs():
     out["beta"] = beta
     out["num_states"] = num_states
     out["scale"] = scale
+    out["success"] = result_fixp["success"]
     return out
 
 
@@ -95,3 +100,7 @@ def test_ll_params_derivative(inputs, outputs):
         np.array([0, 0, 0, 0]),
         decimal=2,
     )
+
+
+def test_success(inputs):
+    assert inputs["success"]

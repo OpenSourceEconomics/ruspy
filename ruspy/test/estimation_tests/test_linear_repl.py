@@ -42,10 +42,9 @@ def inputs():
             "cost_scale": scale,
         },
         "optimizer": {
-            "optimizer_name": "L-BFGS-B",
+            "optimizer_name": "BFGS",
             "use_gradient": "yes",
-            "use_search_bounds": "yes",
-            "additional_options": {"gtol": 1e-8},
+            "use_search_bounds": "no",
         },
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
@@ -59,7 +58,7 @@ def inputs():
     out["beta"] = beta
     out["num_states"] = num_states
     out["scale"] = scale
-    out["success"] = result_fixp["success"]
+    out["message"] = result_fixp["message"]
     return out
 
 
@@ -117,4 +116,4 @@ def test_ll_params_derivative(inputs, outputs):
 
 
 def test_success(inputs):
-    assert inputs["success"]
+    assert inputs["message"] == "Optimization terminated successfully."
