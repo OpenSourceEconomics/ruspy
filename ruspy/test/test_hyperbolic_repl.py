@@ -20,6 +20,7 @@ def inputs():
         "beta": 0.9999,
         "states": 90,
         "maint_cost_func": "hyperbolic",
+        "optimizer": {"optimizer_name": "BFGS", "use_gradient": "yes"},
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)

@@ -20,6 +20,7 @@ def inputs():
         "beta": 0.9999,
         "states": 90,
         "maint_cost_func": "cubic",
+        "optimizer": {"optimizer_name": "Nelder-Mead", "use_gradient": "no"},
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)
@@ -34,10 +35,9 @@ def inputs():
 def outputs():
     out = {}
     out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
-    # out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.821327  # 162.885,
+    out["cost_ll"] = (162.885,)
     return out
 
 
