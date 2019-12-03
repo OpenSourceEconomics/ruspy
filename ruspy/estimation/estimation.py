@@ -49,27 +49,10 @@ def estimate(init_dict, df):
     endog = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
     states = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
     num_states = init_dict["states"]
-    if init_dict["maint_cost_func"] == "cubic":
-        maint_func = cubic_costs
-        maint_func_dev = cubic_costs_dev
-        num_params = 4
-    elif init_dict["maint_cost_func"] == "quadratic":
-        maint_func = quadratic_costs
-        maint_func_dev = quadratic_costs_dev
-        num_params = 3
-    elif init_dict["maint_cost_func"] == "square_root":
-        maint_func = sqrt_costs
-        maint_func_dev = sqrt_costs_dev
-        num_params = 2
-    elif init_dict["maint_cost_func"] == "hyperbolic":
-        maint_func = hyperbolic_costs
-        maint_func_dev = hyperbolic_costs_dev
-        num_params = 2
-    # Linear is the standard
-    else:
-        maint_func = lin_cost
-        maint_func_dev = lin_cost_dev
-        num_params = 2
+
+    maint_func, maint_func_dev, num_params = select_cost_function(
+        maint_cost_func_name=init_dict["maint_cost_func"]
+    )
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states)
@@ -96,3 +79,28 @@ def estimate(init_dict, df):
         method="L-BFGS-B",
     )
     return transition_results, result
+
+
+def select_cost_function(maint_cost_func_name):
+    if maint_cost_func_name == "cubic":
+        maint_func = cubic_costs
+        maint_func_dev = cubic_costs_dev
+        num_params = 4
+    elif maint_cost_func_name == "quadratic":
+        maint_func = quadratic_costs
+        maint_func_dev = quadratic_costs_dev
+        num_params = 3
+    elif maint_cost_func_name == "square_root":
+        maint_func = sqrt_costs
+        maint_func_dev = sqrt_costs_dev
+        num_params = 2
+    elif maint_cost_func_name == "hyperbolic":
+        maint_func = hyperbolic_costs
+        maint_func_dev = hyperbolic_costs_dev
+        num_params = 2
+    # Linear is the standard
+    else:
+        maint_func = lin_cost
+        maint_func_dev = lin_cost_dev
+        num_params = 2
+    return maint_func, maint_func_dev, num_params

@@ -34,7 +34,6 @@ def inputs():
 def outputs():
     out = {}
     out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
-    # out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
     out["cost_ll"] = 163.584284  # 163.402,
