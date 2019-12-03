@@ -69,16 +69,17 @@ def contraction_iteration(ev, trans_mat, costs, beta):
 
 
 def kantevorich_step(ev, trans_mat, costs, beta):
+    iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
+    ev_diff = solve_equ_system_fixp(ev - iteration_step, ev, trans_mat, costs, beta)
+    ev_new = ev - ev_diff
+    return ev_new
+
+
+def solve_equ_system_fixp(fixp_vector, ev, trans_mat, costs, beta):
     num_states = ev.shape[0]
     t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta)
-    iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
-    ev_new = (
-        ev
-        - np.linalg.lstsq(
-            np.eye(num_states) - t_prime, (ev - iteration_step), rcond=None
-        )[0]
-    )
-    return ev_new
+    sol = np.linalg.lstsq(np.eye(num_states) - t_prime, fixp_vector, rcond=None)[0]
+    return sol
 
 
 def cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta):

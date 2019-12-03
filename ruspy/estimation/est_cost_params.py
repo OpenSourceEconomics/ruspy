@@ -50,8 +50,8 @@ def loglike_cost_params(
     costs = calc_obs_costs(num_states, maint_func, params, scale=scale)
     ev = calc_fixp(trans_mat, costs, beta)
     p_choice = choice_prob_gumbel(ev, costs, beta)
-    ll_prob = np.log(np.dot(p_choice.T, state_mat))
-    return -np.sum(decision_mat * ll_prob)
+    ll = like_hood_data(np.log(p_choice), decision_mat, state_mat)
+    return ll
 
 
 def derivative_loglike_cost_params(
@@ -92,24 +92,30 @@ def derivative_loglike_cost_params(
         - cost_dev
     )
 
-    ll_values_params = np.empty_like(p_choice)
-
-    ll_values_params[:, 0] = np.multiply(1 - p_choice[:, 0], dev_value_maint_params)
-    ll_values_params[:, 1] = np.multiply(1 - p_choice[:, 1], -dev_value_maint_params)
+    ll_values_params = like_hood_dev_values(p_choice, dev_value_maint_params)
 
     dev_value_maint_rc = 1 + beta * partial_ev_wrt_rc - beta * partial_ev_wrt_rc[0]
 
-    ll_values_rc = np.empty_like(p_choice)
+    ll_values_rc = like_hood_dev_values(p_choice, dev_value_maint_rc)
 
-    ll_values_rc[:, 0] = np.multiply(1 - p_choice[:, 0], dev_value_maint_rc)
-    ll_values_rc[:, 1] = np.multiply(1 - p_choice[:, 1], -dev_value_maint_rc)
-
-    ll_dev_params = -np.sum(decision_mat * np.dot(ll_values_params.T, state_mat))
-    ll_dev_rc = -np.sum(decision_mat * np.dot(ll_values_rc.T, state_mat))
+    ll_dev_params = like_hood_data(ll_values_params, decision_mat, state_mat)
+    ll_dev_rc = like_hood_data(ll_values_rc, decision_mat, state_mat)
 
     dev = np.array([ll_dev_rc, ll_dev_params])
-    print(dev)
+
     return dev
+
+
+def like_hood_data(l_values, decision_mat, state_mat):
+    return -np.sum(decision_mat * np.dot(l_values.T, state_mat))
+
+
+def like_hood_dev_values(p_choice, dev_values):
+    l_values = np.empty_like(p_choice)
+    l_values[:, 0] = np.multiply(1 - p_choice[:, 0], dev_values)
+    l_values[:, 1] = np.multiply(1 - p_choice[:, 1], -dev_values)
+
+    return l_values
 
 
 @numba.jit(nopython=True)
