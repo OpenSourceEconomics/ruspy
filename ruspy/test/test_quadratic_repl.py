@@ -5,8 +5,14 @@ import pytest
 from numpy.testing import assert_allclose
 from numpy.testing import assert_array_almost_equal
 
+from ruspy.estimation.est_cost_params import create_state_matrix
+from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.estimation import estimate
+from ruspy.estimation.estimation_transitions import create_transition_matrix
+from ruspy.model_code.cost_functions import quadratic_costs
+from ruspy.model_code.cost_functions import quadratic_costs_dev
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
+
 
 TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 
@@ -14,12 +20,15 @@ TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 @pytest.fixture(scope="module")
 def inputs():
     out = {}
+    beta = 0.9999
+    num_states = 90
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
-        "beta": 0.9999,
-        "states": 90,
+        "beta": beta,
+        "states": num_states,
         "maint_cost_func": "quadratic",
+        "optimizer": {"optimizer_name": "Nelder-Mead", "use_gradient": "no"},
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)
@@ -27,6 +36,10 @@ def inputs():
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
     out["cost_ll"] = result_fixp["fun"]
+    out["states"] = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
+    out["decisions"] = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
+    out["beta"] = beta
+    out["num_states"] = num_states
     return out
 
 
@@ -36,7 +49,7 @@ def outputs():
     out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.584284  # 163.402,
+    out["cost_ll"] = 163.402
     return out
 
 
@@ -49,4 +62,28 @@ def test_trans_ll(inputs, outputs):
 
 
 def test_cost_ll(inputs, outputs):
-    assert_allclose(inputs["cost_ll"], outputs["cost_ll"])
+    # This is as precise as the paper gets
+    assert_allclose(inputs["cost_ll"], outputs["cost_ll"], atol=1e-3)
+
+
+def test_ll_params_derivative(inputs, outputs):
+    num_states = inputs["num_states"]
+    trans_mat = create_transition_matrix(num_states, outputs["trans_base"])
+    state_mat = create_state_matrix(inputs["states"], num_states)
+    endog = inputs["decisions"]
+    decision_mat = np.vstack(((1 - endog), endog))
+    beta = inputs["beta"]
+    assert_array_almost_equal(
+        derivative_loglike_cost_params(
+            inputs["params_est"],
+            quadratic_costs,
+            quadratic_costs_dev,
+            num_states,
+            trans_mat,
+            state_mat,
+            decision_mat,
+            beta,
+        ),
+        np.array([0, 0, 0]),
+        decimal=2,
+    )

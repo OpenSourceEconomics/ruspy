@@ -56,10 +56,9 @@ def estimate(init_dict, df):
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states)
-    x_0 = np.power(
-        np.full(num_params, 10, dtype=float), np.arange(1, -num_params + 1, -1)
-    )
-    eps = np.finfo(float).eps
+
+    optimizer_options = select_optimizer_options(init_dict, num_params)
+
     result = opt.minimize(
         loglike_cost_params,
         args=(
@@ -71,12 +70,7 @@ def estimate(init_dict, df):
             decision_mat,
             beta,
         ),
-        x0=x_0,
-        bounds=[(eps, None)] * num_params,
-        # Without derivative I am only close to the results.
-        jac=derivative_loglike_cost_params,
-        options={"gtol": 1e-8},
-        method="L-BFGS-B",
+        **optimizer_options
     )
     return transition_results, result
 
@@ -104,3 +98,42 @@ def select_cost_function(maint_cost_func_name):
         maint_func_dev = lin_cost_dev
         num_params = 2
     return maint_func, maint_func_dev, num_params
+
+
+def select_optimizer_options(init_dict, num_params_costs):
+
+    optimizer_dict = {} if "optimizer" in init_dict else init_dict["optimizer"]
+    optimizer_options = {}
+
+    if "optimizer_name" in optimizer_dict:
+        optimizer_options["method"] = optimizer_dict["optimizer_name"]
+    else:
+        optimizer_options["method"] = "L-BFGS-B"
+
+    if "start_values" in optimizer_dict:
+        optimizer_options["x0"] = np.array(optimizer_dict["start_values"])
+    else:
+        optimizer_options["x0"] = np.power(
+            np.full(num_params_costs, 10, dtype=float),
+            np.arange(1, -num_params_costs + 1, -1),
+        )
+
+    if "search_bounds" in optimizer_dict:
+        if "search_bounds" == "yes":
+            optimizer_options["bounds"] = [
+                (np.finfo(float).eps, None)
+            ] * num_params_costs
+        else:
+            optimizer_options["bounds"] = np.array(optimizer_dict["search_bounds"])
+
+    if "use_gradient" == "yes":
+        optimizer_options["jac"] = derivative_loglike_cost_params
+    else:
+        pass
+
+    if "additional_options" in optimizer_dict:
+        optimizer_options["options"] = optimizer_dict["additional_options"]
+    else:
+        optimizer_options["options"] = {}
+
+    return optimizer_options
