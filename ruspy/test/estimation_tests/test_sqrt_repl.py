@@ -33,9 +33,9 @@ def inputs():
             "cost_scale": scale,
         },
         "optimizer": {
-            "optimizer_name": "Nelder-Mead",
-            "use_gradient": "no",
-            "use_search_bounds": "yes",
+            "optimizer_name": "BFGS",
+            "use_gradient": "yes",
+            "use_search_bounds": "no",
         },
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
@@ -49,6 +49,7 @@ def inputs():
     out["beta"] = beta
     out["num_states"] = num_states
     out["scale"] = scale
+    out["message"] = result_fixp["message"]
     return out
 
 
@@ -96,3 +97,7 @@ def test_ll_params_derivative(inputs, outputs):
         np.array([0, 0]),
         decimal=3,
     )
+
+
+def test_success(inputs):
+    assert inputs["message"] == "Optimization terminated successfully."

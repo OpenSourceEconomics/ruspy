@@ -35,7 +35,7 @@ def inputs():
         "optimizer": {
             "optimizer_name": "BFGS",
             "use_gradient": "yes",
-            "use_search_bounds": "yes",
+            "use_search_bounds": "no",
         },
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
