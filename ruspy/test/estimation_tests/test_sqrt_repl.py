@@ -56,7 +56,6 @@ def inputs():
 def outputs():
     out = {}
     out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
-    # out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_test_params.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
     out["cost_ll"] = 163.390  # 163.395. Why not correct?
@@ -95,4 +94,5 @@ def test_ll_params_derivative(inputs, outputs):
             inputs["scale"],
         ),
         np.array([0, 0]),
+        decimal=3,
     )
