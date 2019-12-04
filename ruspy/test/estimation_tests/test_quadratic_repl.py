@@ -22,7 +22,7 @@ def inputs():
     out = {}
     beta = 0.9999
     num_states = 90
-    scale = 0.001
+    scale = 0.0001
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
@@ -49,6 +49,7 @@ def inputs():
     out["beta"] = beta
     out["num_states"] = num_states
     out["scale"] = scale
+    out["message"] = result_fixp["message"]
     return out
 
 
@@ -97,3 +98,7 @@ def test_ll_params_derivative(inputs, outputs):
         np.array([0, 0, 0]),
         decimal=2,
     )
+
+
+def test_success(inputs):
+    assert inputs["message"] == "Optimization terminated successfully."
