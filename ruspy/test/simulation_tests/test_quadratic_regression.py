@@ -21,17 +21,19 @@ def test_regression_simulation(inputs):
     init_dict = random_init(inputs)
 
     # Draw parameter
-    param_1 = np.random.normal(11.0, 2)
-    param_2 = np.random.normal(2.3, 0.5)
-    param_3 = np.random.normal(-0.01, 0.005)
+    param_1 = np.random.normal(11.5, 0.2)
+    param_2 = np.random.normal(47, 0.5)
+    param_3 = np.random.normal(0.2, 0.02)
     params = np.array([param_1, param_2, param_3])
 
     beta = init_dict["simulation"]["beta"]
     probs = np.array(init_dict["simulation"]["known_trans"])
-    num_states = init_dict["simulation"]["states"]
+    num_states = 500
 
     trans_mat = create_transition_matrix(num_states, probs)
+
     costs = calc_obs_costs(num_states, quadratic_costs, params, 0.0001)
+
     ev = calc_fixp(trans_mat, costs, beta)
 
     df = simulate(init_dict["simulation"], ev, costs, trans_mat)

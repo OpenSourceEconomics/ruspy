@@ -63,9 +63,6 @@ def random_init(constr=None):
     p2 = np.random.uniform(0.55, 0.58)
     p3 = 1 - p1 - p2
     init_dict["simulation"]["known_trans"] = [p1, p2, p3]
-    # As we only draw from 3 dimensional transition probabilities as state space of
-    # 300 should be enough.
-    init_dict["simulation"]["states"] = 600
 
     return init_dict
 
