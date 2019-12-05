@@ -40,9 +40,6 @@ def inputs():
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
     result_trans, result_fixp = estimate(init_dict, df)
-    import pdb
-
-    pdb.set_trace()
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
@@ -60,10 +57,15 @@ def inputs():
 def outputs():
     out = {}
     out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
+    out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_params_cubic.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
     out["cost_ll"] = 162.9877998360683  # 162.885
     return out
+
+
+def test_repl_params(inputs, outputs):
+    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=5)
 
 
 def test_repl_trans(inputs, outputs):
