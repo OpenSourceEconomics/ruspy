@@ -6,7 +6,6 @@ discounted utility average over all buses, with the theoretical expected value
 calculated by the NFXP.
 """
 import numpy as np
-import pytest
 from numpy.testing import assert_allclose
 
 from ruspy.estimation.estimation_transitions import create_transition_matrix
@@ -15,18 +14,18 @@ from ruspy.model_code.cost_functions import lin_cost
 from ruspy.model_code.fix_point_alg import calc_fixp
 from ruspy.simulation.simulation import simulate
 from ruspy.test.ranodm_init import random_init
-
-
-@pytest.fixture
-def inputs():
-    constraints = {"PERIODS": 70000, "BUSES": 200, "BETA": 0.9999}
-    return constraints
+from ruspy.test.simulation_tests.regression_aux import discount_utility
 
 
 def test_regression_simulation(inputs):
     init_dict = random_init(inputs)
+
+    # Draw parameter
+    param1 = np.random.normal(10.0, 2)
+    param2 = np.random.normal(2.3, 0.5)
+    params = np.array([param1, param2])
+
     beta = init_dict["simulation"]["beta"]
-    params = np.array(init_dict["simulation"]["params"])
     probs = np.array(init_dict["simulation"]["known_trans"])
     num_states = init_dict["simulation"]["states"]
 
@@ -34,15 +33,8 @@ def test_regression_simulation(inputs):
     costs = calc_obs_costs(num_states, lin_cost, params, 0.001)
     ev = calc_fixp(trans_mat, costs, beta)
 
-    df = simulate(init_dict["simulation"], ev, trans_mat)
+    df = simulate(init_dict["simulation"], ev, costs, trans_mat)
 
     v_disc = discount_utility(df, beta)
 
     assert_allclose(v_disc / ev[0], 1, rtol=1e-02)
-
-
-def discount_utility(df, beta):
-    v = 0.0
-    for i in df.index.levels[0]:
-        v += np.sum(np.multiply(beta ** df.xs([i]).index, df.xs([i])["utilities"]))
-    return v / len(df.index.levels[0])

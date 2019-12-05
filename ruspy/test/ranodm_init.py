@@ -41,7 +41,7 @@ def random_init(constr=None):
     else:
         maint_func = "linear"
 
-    init_dict = dict()
+    init_dict = {}
 
     for key_ in ["simulation", "estimation"]:
         init_dict[key_] = {}
@@ -67,11 +67,6 @@ def random_init(constr=None):
     # 300 should be enough.
     init_dict["simulation"]["states"] = 300
 
-    # Draw parameter
-    param1 = np.random.normal(10.0, 2)
-    param2 = np.random.normal(2.3, 0.5)
-    init_dict["simulation"]["params"] = [param1, param2]
-
     return init_dict
 
 
@@ -84,5 +79,5 @@ def print_dict(init_dict, file_name="test"):
     for key_ in order:
         ordered_dict[key_] = init_dict[key_]
 
-    with open("{}.ruspy.yml".format(file_name), "w") as outfile:
+    with open(f"{file_name}.ruspy.yml", "w") as outfile:
         yaml.dump(ordered_dict, outfile, explicit_start=True, indent=4)

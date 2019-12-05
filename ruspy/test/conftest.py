@@ -1,6 +1,6 @@
 """This module provides the fixtures for the PYTEST runs."""
-import tempfile
 import os
+import tempfile
 
 import numpy as np
 import pytest
@@ -16,3 +16,9 @@ def set_seed():
 def fresh_directory():
     """Each test is executed in a fresh directory."""
     os.chdir(tempfile.mkdtemp())
+
+
+@pytest.fixture(scope="session")
+def inputs():
+    constraints = {"PERIODS": 70000, "BUSES": 200, "BETA": 0.9999}
+    return constraints
