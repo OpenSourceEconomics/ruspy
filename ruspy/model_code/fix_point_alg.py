@@ -7,7 +7,7 @@ def calc_fixp(
     trans_mat,
     costs,
     beta,
-    threshold=1e-16,
+    threshold=1e-12,
     switch_tol=1e-3,
     max_contr_steps=20,
     max_newt_kant_steps=20,
