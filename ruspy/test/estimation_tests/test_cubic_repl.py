@@ -35,7 +35,6 @@ def inputs():
             "optimizer_name": "BFGS",
             "use_gradient": "yes",
             "use_search_bounds": "no",
-            "additional_options": {"gtol": 1e-8},
         },
     }
     df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
@@ -65,7 +64,7 @@ def outputs():
 
 
 def test_repl_params(inputs, outputs):
-    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=5)
+    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=3)
 
 
 def test_repl_trans(inputs, outputs):
