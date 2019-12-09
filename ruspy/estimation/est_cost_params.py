@@ -14,6 +14,10 @@ from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_rc
 from ruspy.model_code.fix_point_alg import solve_equ_system_fixp
 
 
+ev_intermed = None
+current_params = None
+
+
 def loglike_cost_params(
     params,
     maint_func,
@@ -48,9 +52,9 @@ def loglike_cost_params(
     :return: The negative loglikelihood value for minimizing the objective function.
     """
     costs = calc_obs_costs(num_states, maint_func, params, scale)
-    ev = calc_fixp(trans_mat, costs, beta)
-    global ev_intermed
-    ev_intermed = ev
+
+    ev = get_ev(params, trans_mat, costs, beta)
+
     p_choice = choice_prob_gumbel(ev, costs, beta)
     ll = like_hood_data(np.log(p_choice), decision_mat, state_mat)
     return ll
@@ -67,13 +71,11 @@ def derivative_loglike_cost_params(
     beta,
     scale,
 ):
-
     dev = np.zeros_like(params)
     costs = calc_obs_costs(num_states, maint_func, params, scale)
-    try:
-        ev = ev_intermed
-    except NameError:
-        ev = calc_fixp(trans_mat, costs, beta)
+
+    ev = get_ev(params, trans_mat, costs, beta)
+
     p_choice = choice_prob_gumbel(ev, costs, beta)
     maint_cost_dev = maint_func_dev(num_states, scale)
 
@@ -86,6 +88,7 @@ def derivative_loglike_cost_params(
             cost_dev_param = maint_cost_dev
         else:
             cost_dev_param = maint_cost_dev[:, i]
+
         like_values_params = like_hood_values_param(
             ev, costs, p_choice, trans_mat, cost_dev_param, beta
         )
@@ -93,6 +96,19 @@ def derivative_loglike_cost_params(
         dev[i + 1] = like_dev_params
 
     return dev
+
+
+def get_ev(params, trans_mat, costs, beta):
+    global ev_intermed
+    global current_params
+    if (ev_intermed is not None) & np.array_equal(current_params, params):
+        ev = ev_intermed
+        ev_intermed = None
+    else:
+        ev = calc_fixp(trans_mat, costs, beta)
+        ev_intermed = ev
+        current_params = params
+    return ev
 
 
 def like_hood_values_param(ev, costs, p_choice, trans_mat, cost_dev, beta):
