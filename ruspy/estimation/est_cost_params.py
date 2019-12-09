@@ -49,6 +49,8 @@ def loglike_cost_params(
     """
     costs = calc_obs_costs(num_states, maint_func, params, scale)
     ev = calc_fixp(trans_mat, costs, beta)
+    global ev_intermed
+    ev_intermed = ev
     p_choice = choice_prob_gumbel(ev, costs, beta)
     ll = like_hood_data(np.log(p_choice), decision_mat, state_mat)
     return ll
@@ -68,7 +70,10 @@ def derivative_loglike_cost_params(
 
     dev = np.zeros_like(params)
     costs = calc_obs_costs(num_states, maint_func, params, scale)
-    ev = calc_fixp(trans_mat, costs, beta)
+    try:
+        ev = ev_intermed
+    except NameError:
+        ev = calc_fixp(trans_mat, costs, beta)
     p_choice = choice_prob_gumbel(ev, costs, beta)
     maint_cost_dev = maint_func_dev(num_states, scale)
 
