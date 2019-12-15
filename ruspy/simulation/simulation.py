@@ -58,7 +58,7 @@ def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
             "need to have the same size."
         )
     maint_shock_dist_name, repl_shock_dist_name, loc_scale = get_unobs_data(shock)
-    states, decisions, utilities = simulate_strategy(
+    states, decisions, utilities, usage = simulate_strategy(
         num_periods,
         num_buses,
         costs,
@@ -79,6 +79,7 @@ def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
             "state": states.flatten(),
             "decision": decisions.astype(np.uint8).flatten(),
             "utilities": utilities.flatten(),
+            "usage": usage.flatten(),
         },
     )
 

@@ -1,6 +1,6 @@
-import pandas as pd
-import numpy as np
 import numba
+import numpy as np
+import pandas as pd
 
 
 @numba.jit(nopython=True)
@@ -47,6 +47,7 @@ def simulate_strategy(
     states = np.zeros((num_buses, num_periods), dtype=numba.u2)
     decisions = np.zeros((num_buses, num_periods), dtype=numba.b1)
     utilities = np.zeros((num_buses, num_periods), dtype=numba.float32)
+    usage = np.zeros((num_buses, num_periods), dtype=numba.u1)
     for bus in range(num_buses):
         for period in range(num_periods):
             old_state = states[bus, period]
@@ -61,16 +62,16 @@ def simulate_strategy(
                 loc_scale,
             )
 
+            state_increase = draw_increment(intermediate_state, trans_mat)
             decisions[bus, period] = decision
             utilities[bus, period] = utility
-            new_state = intermediate_state + draw_increment(
-                intermediate_state, trans_mat
-            )
+            new_state = intermediate_state + state_increase
+            usage[bus, period] = state_increase
             if period < num_periods - 1:
                 states[bus, period + 1] = new_state
             if new_state > num_states - 10:
                 raise ValueError("State space is too small.")
-    return states, decisions, utilities
+    return states, decisions, utilities, usage
 
 
 @numba.jit(nopython=True)
