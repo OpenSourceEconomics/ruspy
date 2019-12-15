@@ -1,18 +1,14 @@
-import pickle as pkl
-
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
-from numpy.testing import assert_array_almost_equal
 
-from ruspy.estimation.est_cost_params import create_state_matrix
-from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.estimation import estimate
 from ruspy.estimation.estimation_transitions import create_transition_matrix
+from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import lin_cost
-from ruspy.model_code.cost_functions import lin_cost_dev
+from ruspy.model_code.fix_point_alg import calc_fixp
 from ruspy.ruspy_config import TEST_RESOURCES_DIR
-
+from ruspy.simulation.simulation import simulate
 
 TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 
@@ -22,6 +18,8 @@ def inputs():
     out = {}
     beta = 0.9999
     num_states = 300
+    num_buses = 200
+    num_periods = 1000
     scale = 0.001
     init_dict = {
         "groups": "group_4",
@@ -37,68 +35,33 @@ def inputs():
             "use_gradient": "yes",
             "use_search_bounds": "no",
         },
+        "simulation": {"beta": beta, "buses": num_buses, "periods": num_periods},
     }
-    df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
+    out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
+    out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_params_linear.txt")
+    trans_mat = create_transition_matrix(num_states, out["trans_base"])
+    costs = calc_obs_costs(num_states, lin_cost, out["params_base"], scale)
+    ev_known = calc_fixp(trans_mat, costs, beta)
+    df = simulate(init_dict["simulation"], ev_known, costs, trans_mat)
     result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
-    out["trans_ll"] = result_trans["fun"]
-    out["cost_ll"] = result_fixp["fun"]
-
+    out["message"] = result_fixp["message"]
     return out
 
 
-@pytest.fixture(scope="module")
-def outputs():
-    out = {}
-    out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
-    out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_params_linear.txt")
-    out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
-    out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.584
-    return out
-
-
-def test_repl_params(inputs, outputs):
+def test_repl_rc(inputs):
     # This is as precise as the paper gets
-    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=4)
+    assert_allclose(inputs["params_est"][0], inputs["params_base"][0], atol=0.5)
 
 
-def test_repl_trans(inputs, outputs):
-    assert_array_almost_equal(inputs["trans_est"], outputs["trans_base"])
-
-
-def test_trans_ll(inputs, outputs):
-    assert_allclose(inputs["trans_ll"], outputs["trans_ll"])
-
-
-def test_cost_ll(inputs, outputs):
+def test_repl_params(inputs):
     # This is as precise as the paper gets
-    assert_allclose(inputs["cost_ll"], outputs["cost_ll"], atol=1e-3)
+    assert_allclose(inputs["params_est"][1], inputs["params_base"][1], atol=0.25)
 
 
-def test_ll_params_derivative(inputs, outputs):
-    num_states = inputs["num_states"]
-    trans_mat = create_transition_matrix(num_states, outputs["trans_base"])
-    state_mat = create_state_matrix(inputs["states"], num_states)
-    endog = inputs["decisions"]
-    decision_mat = np.vstack(((1 - endog), endog))
-    beta = inputs["beta"]
-    assert_array_almost_equal(
-        derivative_loglike_cost_params(
-            inputs["params_est"],
-            lin_cost,
-            lin_cost_dev,
-            num_states,
-            trans_mat,
-            state_mat,
-            decision_mat,
-            beta,
-            inputs["scale"],
-        ),
-        np.array([0, 0]),
-        decimal=3,
-    )
+def test_repl_trans(inputs):
+    assert_allclose(inputs["trans_est"], inputs["trans_base"], atol=1e-2)
 
 
 def test_success(inputs):
