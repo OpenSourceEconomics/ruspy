@@ -22,6 +22,8 @@ def choice_prob_gumbel(ev, costs, beta):
     util_main = beta * ev - costs[:, 0]  # Utility to maintain the bus
     util_repl = np.full(util_main.shape, beta * ev[0] - costs[0, 0] - costs[0, 1])
     util = np.vstack((util_main, util_repl)).T
-    util = util - np.amin(util)
+
+    util = util - np.max(util)
+
     pchoice = np.exp(util) / (np.sum(np.exp(util), axis=1).reshape(s, -1))
     return pchoice

@@ -42,7 +42,7 @@ def calc_fixp(
             contr_step_count += 1
             if contr_step_count > max_contr_steps:
                 break
-            converge_crit = np.amax(np.abs(ev_new - ev))
+            converge_crit = np.max(np.abs(ev_new - ev))
         ev = ev_new
         ev_new = kantevorich_step(ev, trans_mat, costs, beta)
         newt_kante_step_count += 1
@@ -60,11 +60,13 @@ def contraction_iteration(ev, trans_mat, costs, beta):
 
     # Select the minimal absolute value to rescale the value vector for the
     # exponential function.
-    ev_min = np.max(maint_value)
 
-    log_sum = ev_min + np.log(
-        np.exp(maint_value - ev_min) + np.exp(repl_value - ev_min)
+    ev_max = np.max(np.array(maint_value, repl_value))
+
+    log_sum = ev_max + np.log(
+        np.exp(maint_value - ev_max) + np.exp(repl_value - ev_max)
     )
+
     return np.dot(trans_mat, log_sum)
 
 
