@@ -20,3 +20,4 @@ dependencies:
       - black
       - pre-commit
       - jupyter_contrib_nbextensions
+      - sphinx_rtd_theme
