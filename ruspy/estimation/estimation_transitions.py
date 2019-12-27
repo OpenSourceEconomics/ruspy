@@ -13,8 +13,8 @@ def estimate_transitions(df):
     necessary subfunctions.
 
     :param df: A pandas dataframe, which contains for each observation the Bus ID,
-    the current state of the bus, the current period and the decision made in this
-    period.
+               the current state of the bus, the current period and the decision made
+               in this period.
 
     :return: The optimization result of the transition probabilities estimation as a
              dictionary.
