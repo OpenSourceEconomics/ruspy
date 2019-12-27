@@ -1,0 +1,9 @@
+name: ruspy_rtd
+
+dependencies:
+  - python=3.7
+  - sphinx
+  - nbsphinx
+  - sphinx_rtd_theme
+  - jupyter
+  - seaborn

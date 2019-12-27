@@ -8,6 +8,7 @@ Welcome to ruspy's documentation!
 
 .. toctree::
    :maxdepth: 1
+   :caption: Contents:
 
-   ruspy.estimation
-   ruspy.simulation
+   estimation
+   simulation

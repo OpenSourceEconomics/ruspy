@@ -1,4 +1,4 @@
-ruspy.estimation package
+Estimation
 ========================
 
 Introduction
