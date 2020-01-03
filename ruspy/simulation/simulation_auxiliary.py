@@ -10,7 +10,7 @@ def simulate_strategy(
     costs,
     ev,
     trans_mat,
-    beta,
+    disc_fac,
     maint_shock_dist_name,
     repl_shock_dist_name,
     loc_scale,
@@ -28,8 +28,8 @@ def simulate_strategy(
                          fixed point.total
     :param num_periods:  The number of periods to be simulated.
     :type num_periods:   int
-    :param beta:         The discount factor.
-    :type beta:          float
+    :param disc_fac:         The discount factor.
+    :type disc_fac:          float
 
     :return: The function returns the following objects:
 
@@ -55,7 +55,7 @@ def simulate_strategy(
             intermediate_state, decision, utility = decide(
                 old_state,
                 costs,
-                beta,
+                disc_fac,
                 ev,
                 maint_shock_dist_name,
                 repl_shock_dist_name,
@@ -76,15 +76,21 @@ def simulate_strategy(
 
 @numba.jit(nopython=True)
 def decide(
-    old_state, costs, beta, ev, maint_shock_dist_name, repl_shock_dist_name, loc_scale
+    old_state,
+    costs,
+    disc_fac,
+    ev,
+    maint_shock_dist_name,
+    repl_shock_dist_name,
+    loc_scale,
 ):
     unobs = (
         draw_unob(maint_shock_dist_name, loc_scale[0, 0], loc_scale[0, 1]),
         draw_unob(repl_shock_dist_name, loc_scale[1, 0], loc_scale[1, 1]),
     )
 
-    value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + beta * ev[0]
-    value_maintain = -costs[old_state, 0] + unobs[0] + beta * ev[old_state]
+    value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + disc_fac * ev[0]
+    value_maintain = -costs[old_state, 0] + unobs[0] + disc_fac * ev[old_state]
     if value_maintain > value_replace:
         decision = False
         utility = -costs[old_state, 0] + unobs[0]

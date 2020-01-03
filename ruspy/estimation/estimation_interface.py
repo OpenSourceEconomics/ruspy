@@ -18,7 +18,7 @@ def select_model_parameters(init_dict):
         raise ValueError("Specify model parameters")
     model_specification = init_dict["model_specifications"]
 
-    beta = model_specification["discount_factor"]
+    disc_fac = model_specification["discount_factor"]
     num_states = model_specification["number_states"]
     scale = model_specification["cost_scale"]
 
@@ -26,7 +26,7 @@ def select_model_parameters(init_dict):
         model_specification["maint_cost_func"]
     )
 
-    return beta, num_states, maint_func, maint_func_dev, num_params, scale
+    return disc_fac, num_states, maint_func, maint_func_dev, num_params, scale
 
 
 def select_cost_function(maint_cost_func_name):

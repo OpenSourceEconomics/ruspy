@@ -16,7 +16,7 @@ TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 @pytest.fixture(scope="module")
 def inputs():
     out = {}
-    beta = 0.9999
+    disc_fac = 0.9999
     num_states = 300
     num_buses = 200
     num_periods = 1000
@@ -25,7 +25,7 @@ def inputs():
         "groups": "group_4",
         "binsize": 5000,
         "model_specifications": {
-            "discount_factor": beta,
+            "discount_factor": disc_fac,
             "number_states": num_states,
             "maint_cost_func": "linear",
             "cost_scale": scale,
@@ -35,13 +35,17 @@ def inputs():
             "use_gradient": "yes",
             "use_search_bounds": "no",
         },
-        "simulation": {"beta": beta, "buses": num_buses, "periods": num_periods},
+        "simulation": {
+            "disc_fac": disc_fac,
+            "buses": num_buses,
+            "periods": num_periods,
+        },
     }
     out["trans_base"] = np.loadtxt(TEST_FOLDER + "repl_test_trans.txt")
     out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_params_linear.txt")
     trans_mat = create_transition_matrix(num_states, out["trans_base"])
     costs = calc_obs_costs(num_states, lin_cost, out["params_base"], scale)
-    ev_known = calc_fixp(trans_mat, costs, beta)
+    ev_known = calc_fixp(trans_mat, costs, disc_fac)
     df = simulate(init_dict["simulation"], ev_known, costs, trans_mat)
     result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]

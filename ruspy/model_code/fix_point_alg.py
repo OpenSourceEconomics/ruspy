@@ -6,7 +6,7 @@ from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 def calc_fixp(
     trans_mat,
     costs,
-    beta,
+    disc_fac,
     threshold=1e-12,
     switch_tol=1e-3,
     max_contr_steps=20,
@@ -15,15 +15,15 @@ def calc_fixp(
     """
     The function to calculate the expected value fix point.
 
-    :param num_states:  The size of the state space.
-    :type num_states:   int
-    :param trans_mat:   A two dimensional numpy array containing a s x s markov
-                        transition matrix.
+
+    :param trans_mat:   A two dimensional numpy array containing the n_states x
+    n_states markov transition matrix.
+
     :param costs:       A two dimensional float numpy array containing for each
                         state the cost to maintain in the first and to replace the bus
                         engine in the second column.
-    :param beta:        The discount factor.
-    :type beta:         float
+    :param disc_fac:        The discount factor.
+    :type disc_fac:         float
     :param threshold:   A threshold for the convergence. By default set to 1e-6.
     :type threshold:    float
     :param max_it:      Maximum number of iterations. By default set to 1000000.
@@ -38,25 +38,25 @@ def calc_fixp(
     while converge_crit > threshold:
         while converge_crit > switch_tol:
             ev = ev_new
-            ev_new = contraction_iteration(ev, trans_mat, costs, beta)
+            ev_new = contraction_iteration(ev, trans_mat, costs, disc_fac)
             contr_step_count += 1
             if contr_step_count > max_contr_steps:
                 break
             converge_crit = np.max(np.abs(ev_new - ev))
         ev = ev_new
-        ev_new = kantevorich_step(ev, trans_mat, costs, beta)
+        ev_new = kantevorich_step(ev, trans_mat, costs, disc_fac)
         newt_kante_step_count += 1
         if newt_kante_step_count > max_newt_kant_steps:
             break
         converge_crit = np.max(
-            np.abs(ev - contraction_iteration(ev, trans_mat, costs, beta))
+            np.abs(ev - contraction_iteration(ev, trans_mat, costs, disc_fac))
         )
     return ev_new
 
 
-def contraction_iteration(ev, trans_mat, costs, beta):
-    maint_value = beta * ev - costs[:, 0]
-    repl_value = beta * ev[0] - costs[0, 1] - costs[0, 0]
+def contraction_iteration(ev, trans_mat, costs, disc_fac):
+    maint_value = disc_fac * ev - costs[:, 0]
+    repl_value = disc_fac * ev[0] - costs[0, 1] - costs[0, 0]
 
     # Select the minimal absolute value to rescale the value vector for the
     # exponential function.
@@ -70,24 +70,24 @@ def contraction_iteration(ev, trans_mat, costs, beta):
     return np.dot(trans_mat, log_sum)
 
 
-def kantevorich_step(ev, trans_mat, costs, beta):
-    iteration_step = contraction_iteration(ev, trans_mat, costs, beta)
-    ev_diff = solve_equ_system_fixp(ev - iteration_step, ev, trans_mat, costs, beta)
+def kantevorich_step(ev, trans_mat, costs, disc_fac):
+    iteration_step = contraction_iteration(ev, trans_mat, costs, disc_fac)
+    ev_diff = solve_equ_system_fixp(ev - iteration_step, ev, trans_mat, costs, disc_fac)
     ev_new = ev - ev_diff
     return ev_new
 
 
-def solve_equ_system_fixp(fixp_vector, ev, trans_mat, costs, beta):
+def solve_equ_system_fixp(fixp_vector, ev, trans_mat, costs, disc_fac):
     num_states = ev.shape[0]
-    t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta)
+    t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, disc_fac)
     sol = np.linalg.lstsq(np.eye(num_states) - t_prime, fixp_vector, rcond=None)[0]
     return sol
 
 
-def cont_op_dev_wrt_fixp(ev, trans_mat, costs, beta):
-    choice_probs = choice_prob_gumbel(ev, costs, beta)
+def cont_op_dev_wrt_fixp(ev, trans_mat, costs, disc_fac):
+    choice_probs = choice_prob_gumbel(ev, costs, disc_fac)
     t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
-    t_prime = beta * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
+    t_prime = disc_fac * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
     return t_prime
 
 

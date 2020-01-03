@@ -23,7 +23,7 @@ def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
 
         :seed: (Digits)      : The seed determines random draws.
         :buses: (int)        : Number of buses to be simulated.
-        :beta: (float)       : Discount factor.
+        :disc_fac: (float)       : Discount factor.
         :periods: (int)      : Number of periods to be simulated.
         :params:             : A list or array of the cost parameters shaping the cost
 
@@ -50,7 +50,7 @@ def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
     else:
         seed = np.random.randint(1, 100000)
     num_buses = init_dict["buses"]
-    beta = init_dict["beta"]
+    disc_fac = init_dict["disc_fac"]
     num_periods = init_dict["periods"]
     if ev_known.shape[0] != trans_mat.shape[0]:
         raise ValueError(
@@ -64,7 +64,7 @@ def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
         costs,
         ev_known,
         trans_mat,
-        beta,
+        disc_fac,
         maint_shock_dist_name,
         repl_shock_dist_name,
         loc_scale,

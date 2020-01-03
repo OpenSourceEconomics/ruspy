@@ -22,7 +22,7 @@ def estimate(init_dict, df):
 
     :param init_dict: A dictionary containing the following variables as keys:
 
-        :beta: (float)       : Discount factor.
+        :disc_fac: (float)       : Discount factor.
         :states: (int)       : The size of the statespace.
         :maint_func: (func)  : The maintenance cost function. Default is the linear
                                from the paper.
@@ -42,7 +42,7 @@ def estimate(init_dict, df):
     states = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
 
     (
-        beta,
+        disc_fac,
         num_states,
         maint_func,
         maint_func_dev,
@@ -65,7 +65,7 @@ def estimate(init_dict, df):
             trans_mat,
             state_mat,
             decision_mat,
-            beta,
+            disc_fac,
             scale,
         ),
         **optimizer_options

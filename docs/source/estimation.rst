@@ -17,19 +17,13 @@ Modules
 Estimate
 ----------------------------------
 
-.. automodule:: ruspy.estimation.estimation
-    :members:
+---------------
+Cost Parameters
+---------------
 
----------------------------------------------------
-ruspy.estimation.est\_cost\_params
----------------------------------------------------
+.. currentmodule:: ruspy.estimation.est_cost_params
 
-.. automodule:: ruspy.estimation.est_cost_params
-    :members:
+.. autosummary::
+  :toctree: _generated/
 
------------------------------------------------
-ruspy.estimation.estimation\_transitions
------------------------------------------------
-
-.. automodule:: ruspy.estimation.estimation_transitions
-    :members:
+  loglike_cost_params

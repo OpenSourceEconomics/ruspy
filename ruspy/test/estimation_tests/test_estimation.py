@@ -24,7 +24,7 @@ def inputs():
     out["cost_fct"] = lin_cost
     out["params"] = np.array([10, 2])
     out["trans_prob"] = np.array([0.2, 0.3, 0.15, 0.35])
-    out["beta"] = 0.9999
+    out["disc_fac"] = 0.9999
     return out
 
 
@@ -56,14 +56,14 @@ def test_create_trans_mat(inputs, outputs):
 
 def test_fixp(inputs, outputs):
     assert_array_almost_equal(
-        calc_fixp(outputs["trans_mat"], outputs["costs"], inputs["beta"]),
+        calc_fixp(outputs["trans_mat"], outputs["costs"], inputs["disc_fac"]),
         outputs["fixp"],
     )
 
 
 def test_choice_probs(inputs, outputs):
     assert_array_almost_equal(
-        choice_prob_gumbel(outputs["fixp"], outputs["costs"], inputs["beta"]),
+        choice_prob_gumbel(outputs["fixp"], outputs["costs"], inputs["disc_fac"]),
         outputs["choice_probs"],
     )
 

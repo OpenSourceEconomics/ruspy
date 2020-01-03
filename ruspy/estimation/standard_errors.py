@@ -22,7 +22,7 @@ def cov_multinomial(n, p):
     return cov / n
 
 
-def params_hess(params, df, beta, maint_func):
+def params_hess(params, df, disc_fac, maint_func):
     """Calculates the hessian of the cost parameters."""
     transition_results = estimate_transitions(df)
     ll_trans = transition_results["fun"]
@@ -35,18 +35,18 @@ def params_hess(params, df, beta, maint_func):
     decision_mat = np.vstack(((1 - endog), endog))
     params_df = pd.DataFrame(index=["RC", "theta_1_1"], columns=["value"], data=params)
     wrap_func = create_wrap_func(
-        maint_func, num_states, trans_mat, state_mat, decision_mat, beta, ll_trans
+        maint_func, num_states, trans_mat, state_mat, decision_mat, disc_fac, ll_trans
     )
     return hessian(wrap_func, params_df)
 
 
 def create_wrap_func(
-    maint_func, num_states, trans_mat, state_mat, decision_mat, beta, ll_trans
+    maint_func, num_states, trans_mat, state_mat, decision_mat, disc_fac, ll_trans
 ):
     def wrap_func(x):
         x_np = x["value"].to_numpy()
         return ll_trans + loglike_cost_params(
-            x_np, maint_func, num_states, trans_mat, state_mat, decision_mat, beta
+            x_np, maint_func, num_states, trans_mat, state_mat, decision_mat, disc_fac
         )
 
     return wrap_func

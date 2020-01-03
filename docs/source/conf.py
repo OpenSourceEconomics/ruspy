@@ -22,7 +22,7 @@ author = "Maximilian Blesch"
 
 # The short X.Y version
 version = ""
-# The full version, including alpha/beta/rc tags
+# The full version, including alpha/delta/rc tags
 release = ""
 
 
@@ -37,11 +37,21 @@ release = ""
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
     "sphinx.ext.mathjax",
     "sphinx.ext.githubpages",
+    "sphinx.ext.coverage",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
+    "nbsphinx",
+    "numpydoc",
 ]
 
 napoleon_google_docstring = True
@@ -183,7 +193,12 @@ epub_exclude_files = ["search.html"]
 
 
 # -- Extension configuration -------------------------------------------------
+# Configuration for numpydoc
+numpydoc_xref_param_type = True
+numpydoc_xref_ignore = {"type", "optional", "default"}
 
+# Configuration for autodoc
+autosummary_generate = True
 # -- Options for todo extension ----------------------------------------------
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.

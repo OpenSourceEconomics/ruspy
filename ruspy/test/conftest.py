@@ -20,5 +20,5 @@ def fresh_directory():
 
 @pytest.fixture(scope="session")
 def inputs():
-    constraints = {"PERIODS": 70000, "BUSES": 200, "BETA": 0.9999}
+    constraints = {"PERIODS": 70000, "BUSES": 200, "disc_fac": 0.9999}
     return constraints

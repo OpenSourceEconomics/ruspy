@@ -20,14 +20,14 @@ TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 @pytest.fixture(scope="module")
 def inputs():
     out = {}
-    beta = 0.9999
+    disc_fac = 0.9999
     num_states = 90
     scale = 0.0001
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
         "model_specifications": {
-            "discount_factor": beta,
+            "discount_factor": disc_fac,
             "number_states": num_states,
             "maint_cost_func": "quadratic",
             "cost_scale": scale,
@@ -46,7 +46,7 @@ def inputs():
     out["cost_ll"] = result_fixp["fun"]
     out["states"] = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
     out["decisions"] = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
-    out["beta"] = beta
+    out["disc_fac"] = disc_fac
     out["num_states"] = num_states
     out["scale"] = scale
     out["message"] = result_fixp["message"]
@@ -87,7 +87,7 @@ def test_ll_params_derivative(inputs, outputs):
     state_mat = create_state_matrix(inputs["states"], num_states)
     endog = inputs["decisions"]
     decision_mat = np.vstack(((1 - endog), endog))
-    beta = inputs["beta"]
+    disc_fac = inputs["disc_fac"]
     assert_array_almost_equal(
         derivative_loglike_cost_params(
             inputs["params_est"],
@@ -97,7 +97,7 @@ def test_ll_params_derivative(inputs, outputs):
             trans_mat,
             state_mat,
             decision_mat,
-            beta,
+            disc_fac,
             inputs["scale"],
         ),
         np.array([0, 0, 0]),

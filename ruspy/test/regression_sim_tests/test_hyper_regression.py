@@ -25,7 +25,7 @@ def test_regression_simulation(inputs):
     param_2 = np.random.normal(23, 2)
     params = np.array([param_1, param_2])
 
-    beta = init_dict["simulation"]["beta"]
+    disc_fac = init_dict["simulation"]["disc_fac"]
     probs = np.array(init_dict["simulation"]["known_trans"])
     num_states = 600
 
@@ -33,10 +33,10 @@ def test_regression_simulation(inputs):
 
     costs = calc_obs_costs(num_states, hyperbolic_costs, params, 0.1)
 
-    ev = calc_fixp(trans_mat, costs, beta)
+    ev = calc_fixp(trans_mat, costs, disc_fac)
 
     df = simulate(init_dict["simulation"], ev, costs, trans_mat)
 
-    v_disc = discount_utility(df, beta)
+    v_disc = discount_utility(df, disc_fac)
 
     assert_allclose(v_disc / ev[0], 1, rtol=1e-01)

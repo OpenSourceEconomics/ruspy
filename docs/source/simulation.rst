@@ -14,12 +14,21 @@ Modules
 ruspy.simulation.simulation
 ----------------------------------
 
-.. automodule:: ruspy.simulation.simulation
-    :members:
+.. currentmodule:: ruspy.simulation.simulation
 
----------------------------------------------
-ruspy.simulation.simulation\_auxiliary
----------------------------------------------
+.. autosummary::
+    :toctree: _generated/
 
-.. automodule:: ruspy.simulation.simulation_auxiliary
-    :members:
+    simulate
+
+
+-------------------------------------
+ruspy.model_code.choice_probabilities
+-------------------------------------
+
+.. currentmodule:: ruspy.model_code.choice_probabilities
+
+.. autosummary::
+    :toctree: _generated/
+
+    choice_prob_gumbel

@@ -21,10 +21,10 @@ def random_init(constr=None):
     else:
         agents = np.random.randint(20, 100)
 
-    if "BETA" in keys:
-        beta = constr["BETA"]
+    if "disc_fac" in keys:
+        disc_fac = constr["disc_fac"]
     else:
-        beta = np.random.uniform(0.9, 0.999)
+        disc_fac = np.random.uniform(0.9, 0.999)
 
     if "PERIODS" in keys:
         periods = constr["PERIODS"]
@@ -48,12 +48,12 @@ def random_init(constr=None):
 
     init_dict["simulation"]["periods"] = periods
     init_dict["simulation"]["buses"] = agents
-    init_dict["simulation"]["beta"] = beta
+    init_dict["simulation"]["disc_fac"] = disc_fac
     init_dict["simulation"]["seed"] = seed
     init_dict["simulation"]["maint_func"] = maint_func
 
     init_dict["estimation"]["states"] = np.random.randint(100, 150)
-    init_dict["estimation"]["beta"] = beta
+    init_dict["estimation"]["disc_fac"] = disc_fac
     init_dict["estimation"]["maint_func"] = maint_func
 
     # Generate random parameterization

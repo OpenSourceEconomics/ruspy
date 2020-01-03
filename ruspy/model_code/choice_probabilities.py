@@ -1,26 +1,32 @@
 import numpy as np
 
 
-def choice_prob_gumbel(ev, costs, beta):
+def choice_prob_gumbel(ev, obs_costs, disc_fac):
     """
     This function calculates the choice probabilities to maintain or replace the
     bus engine for each state.
 
-    :param ev:      A numpy array containing for each state the expected value
-                    fixed point.
-    :param costs:  A numpy array containing the parameters shaping the cost
-                    function.
+    Parameters
+    ----------
+    ev : numpy.array
+        see :ref:`ev`
+    costs : numpy.array
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
 
-    :param beta:    The discount factor.
-    :type beta:     float
+    Returns
+    -------
+    pchoice : numpy.array
+        see :ref:`pchoice`
 
-    :return: A two dimensional numpy array containing in each row the choice
-             probability for maintenance in the first and for replacement in second
-             column.
+
     """
     s = ev.shape[0]
-    util_main = beta * ev - costs[:, 0]  # Utility to maintain the bus
-    util_repl = np.full(util_main.shape, beta * ev[0] - costs[0, 0] - costs[0, 1])
+    util_main = disc_fac * ev - obs_costs[:, 0]  # Utility to maintain the bus
+    util_repl = np.full(
+        util_main.shape, disc_fac * ev[0] - obs_costs[0, 0] - obs_costs[0, 1]
+    )
     util = np.vstack((util_main, util_repl)).T
 
     util = util - np.max(util)
