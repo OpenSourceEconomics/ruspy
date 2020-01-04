@@ -10,7 +10,7 @@ def choice_prob_gumbel(ev, obs_costs, disc_fac):
     ----------
     ev : numpy.array
         see :ref:`ev`
-    costs : numpy.array
+    obs_costs : numpy.array
         see :ref:`costs`
     disc_fac : numpy.float
         see :ref:`disc_fac`

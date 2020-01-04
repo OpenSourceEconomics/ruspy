@@ -5,7 +5,7 @@ from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 
 def calc_fixp(
     trans_mat,
-    costs,
+    obs_costs,
     disc_fac,
     threshold=1e-12,
     switch_tol=1e-3,
@@ -13,50 +13,78 @@ def calc_fixp(
     max_newt_kant_steps=20,
 ):
     """
-    The function to calculate the expected value fix point.
+    Calculating the expected value of maintenance fix-point with the polyalgorithm
+    proposed by Rust (1987) and Rust (2000).
 
+    Parameters
+    ----------
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    obs_costs : numpy.array
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    threshold : numpy.float
+        see :ref:`alg_details`
+    switch_tol : numpy.float
+        see :ref:`alg_details`
+    max_contr_steps : int
+        see :ref:`alg_details`
+    max_newt_kant_steps : int
+        see :ref:`alg_details`
 
-    :param trans_mat:   A two dimensional numpy array containing the n_states x
-    n_states markov transition matrix.
-
-    :param costs:       A two dimensional float numpy array containing for each
-                        state the cost to maintain in the first and to replace the bus
-                        engine in the second column.
-    :param disc_fac:        The discount factor.
-    :type disc_fac:         float
-    :param threshold:   A threshold for the convergence. By default set to 1e-6.
-    :type threshold:    float
-    :param max_it:      Maximum number of iterations. By default set to 1000000.
-    :type max_it:       int
-
-    :return: A numpy array containing for each state the expected value fixed point.
+    Returns
+    -------
+    ev_new : numpy.array
+        see :ref:`ev`
     """
     contr_step_count = 0
     newt_kante_step_count = 0
-    ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-costs), axis=1)))
+    ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-obs_costs), axis=1)))
     converge_crit = threshold + 1  # Make sure that the loop starts
     while converge_crit > threshold:
         while converge_crit > switch_tol:
             ev = ev_new
-            ev_new = contraction_iteration(ev, trans_mat, costs, disc_fac)
+            ev_new = contraction_iteration(ev, trans_mat, obs_costs, disc_fac)
             contr_step_count += 1
             if contr_step_count > max_contr_steps:
                 break
             converge_crit = np.max(np.abs(ev_new - ev))
         ev = ev_new
-        ev_new = kantevorich_step(ev, trans_mat, costs, disc_fac)
+        ev_new = kantevorich_step(ev, trans_mat, obs_costs, disc_fac)
         newt_kante_step_count += 1
         if newt_kante_step_count > max_newt_kant_steps:
             break
         converge_crit = np.max(
-            np.abs(ev - contraction_iteration(ev, trans_mat, costs, disc_fac))
+            np.abs(ev - contraction_iteration(ev, trans_mat, obs_costs, disc_fac))
         )
     return ev_new
 
 
-def contraction_iteration(ev, trans_mat, costs, disc_fac):
-    maint_value = disc_fac * ev - costs[:, 0]
-    repl_value = disc_fac * ev[0] - costs[0, 1] - costs[0, 0]
+def contraction_iteration(ev, trans_mat, obs_costs, disc_fac):
+    """
+    Calculating one iteration of the contraction mapping.
+
+    Parameters
+    ----------
+    ev : numpy.array
+        see :ref:`ev`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    obs_costs : numpy.array
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+
+    Returns
+    -------
+    ev_new : numpy.array
+        see :ref:`ev`
+
+
+    """
+    maint_value = disc_fac * ev - obs_costs[:, 0]
+    repl_value = disc_fac * ev[0] - obs_costs[0, 1] - obs_costs[0, 0]
 
     # Select the minimal absolute value to rescale the value vector for the
     # exponential function.
@@ -67,10 +95,32 @@ def contraction_iteration(ev, trans_mat, costs, disc_fac):
         np.exp(maint_value - ev_max) + np.exp(repl_value - ev_max)
     )
 
-    return np.dot(trans_mat, log_sum)
+    ev_new = np.dot(trans_mat, log_sum)
+    return ev_new
 
 
 def kantevorich_step(ev, trans_mat, costs, disc_fac):
+    """
+    Calculating one Newton-Kantevorich step for approximating the fix-point.
+
+    Parameters
+    ----------
+    ev : numpy.array
+        see :ref:`ev`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    obs_costs : numpy.array
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+
+    Returns
+    -------
+    ev_new : numpy.array
+        see :ref:`ev`
+
+
+    """
     iteration_step = contraction_iteration(ev, trans_mat, costs, disc_fac)
     ev_diff = solve_equ_system_fixp(ev - iteration_step, ev, trans_mat, costs, disc_fac)
     ev_new = ev - ev_diff

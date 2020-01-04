@@ -59,3 +59,10 @@ Decision Matrix
 ---------------
 A two dimensional numpy array contaning  a n x 2 vector with 1 in the first row for
 maintaining and 1 in the second for replacement.
+
+
+.. _scale:
+
+The scale parameter
+-------------------
+content....
