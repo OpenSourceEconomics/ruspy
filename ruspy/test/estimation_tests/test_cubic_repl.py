@@ -21,7 +21,7 @@ def inputs():
     out = {}
     disc_fac = 0.9999
     num_states = 90
-    scale = 0.00001
+    scale = 1e-8
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
@@ -59,7 +59,7 @@ def outputs():
     out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_params_cubic.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 162.9877998360683  # 162.885
+    out["cost_ll"] = 163.624044  # 162.885
     return out
 
 
@@ -99,7 +99,7 @@ def test_ll_params_derivative(inputs, outputs):
             inputs["scale"],
         ),
         np.array([0, 0, 0, 0]),
-        decimal=4,
+        decimal=2,
     )
 
 
