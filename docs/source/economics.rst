@@ -1,6 +1,12 @@
 Economic model
 ==============
 
+Here the economic model of Rust (1987) is documented. It is the theoretic background for
+the estimation modules of ruspy. In the simulation some features, like the distribution
+of the unobservables can be modified.
+
+The model
+---------
 The model is set up as an infinite horizon regenerative optimal stopping problem. It
 considers the dynamic decisions by a maintenance manger, Harold Zurcher, for a fleet of
 buses. As the buses are all identical and the decisions are assumed to be independent
