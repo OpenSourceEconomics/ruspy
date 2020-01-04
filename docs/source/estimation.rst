@@ -27,3 +27,5 @@ Cost Parameters
   :toctree: _generated/
 
   loglike_cost_params
+  derivative_loglike_cost_params
+

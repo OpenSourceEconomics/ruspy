@@ -78,27 +78,44 @@ def derivative_loglike_cost_params(
     scale,
 ):
     """
+    This is the derivative of logliklihood function of the cost
+    parameter estimation with respect to all cost parameters.
 
-    :param params:
-    :param maint_func:
-    :param maint_func_dev:
-    :param num_states:
-    :param trans_mat:
-    :param state_mat:
-    :param decision_mat:
-    :param disc_fac:
-    :param scale:
-    :return:
+
+    Parameters
+    ----------
+    params : numpy.array
+        see :ref:`params`
+    maint_func: :func:
+        see :ref: `maint_func`
+    num_states : int
+        The size of the state space.
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    state_mat : numpy.array
+        see :ref:`state_mat`
+    decision_mat : numpy.array
+        see :ref:`decision_mat`
+
+    Returns
+    -------
+    dev : numpy.array
+        A dim(params) one dimensional numpy array containing the derivative of the
+        cost log-likelihood function for every cost parameter.
+
+
     """
     dev = np.zeros_like(params)
-    costs = calc_obs_costs(num_states, maint_func, params, scale)
+    obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
 
-    ev = get_ev(params, trans_mat, costs, disc_fac)
+    ev = get_ev(params, trans_mat, obs_costs, disc_fac)
 
-    p_choice = choice_prob_gumbel(ev, costs, disc_fac)
+    p_choice = choice_prob_gumbel(ev, obs_costs, disc_fac)
     maint_cost_dev = maint_func_dev(num_states, scale)
 
-    lh_values_rc = like_hood_vaules_rc(ev, costs, p_choice, trans_mat, disc_fac)
+    lh_values_rc = like_hood_vaules_rc(ev, obs_costs, p_choice, trans_mat, disc_fac)
     like_dev_rc = like_hood_data(lh_values_rc, decision_mat, state_mat)
     dev[0] = like_dev_rc
 
@@ -108,29 +125,50 @@ def derivative_loglike_cost_params(
         else:
             cost_dev_param = maint_cost_dev[:, i]
 
-        like_values_params = like_hood_values_param(
-            ev, costs, p_choice, trans_mat, cost_dev_param, disc_fac
+        log_like_values_params = log_like_values_param(
+            ev, obs_costs, p_choice, trans_mat, cost_dev_param, disc_fac
         )
-        like_dev_params = like_hood_data(like_values_params, decision_mat, state_mat)
-        dev[i + 1] = like_dev_params
+        dev[i + 1] = like_hood_data(log_like_values_params, decision_mat, state_mat)
 
     return dev
 
 
-def get_ev(params, trans_mat, costs, disc_fac):
+def get_ev(params, trans_mat, obs_costs, disc_fac):
+    """
+    A auxiliary function, which allows the log-likelihood function as well as her
+    derivative to share the same fix point and to avoid the need to execute the
+    computation double.
+
+    Parameters
+    ----------
+    params : numpy.array
+        see :ref:`params`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    obs_costs : numpy.array
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+
+    Returns
+    -------
+    ev : numpy.array
+        see :ref:`ev`
+
+    """
     global ev_intermed
     global current_params
     if (ev_intermed is not None) & np.array_equal(current_params, params):
         ev = ev_intermed
         ev_intermed = None
     else:
-        ev = calc_fixp(trans_mat, costs, disc_fac)
+        ev = calc_fixp(trans_mat, obs_costs, disc_fac)
         ev_intermed = ev
         current_params = params
     return ev
 
 
-def like_hood_values_param(ev, costs, p_choice, trans_mat, cost_dev, disc_fac):
+def log_like_values_param(ev, costs, p_choice, trans_mat, cost_dev, disc_fac):
     dev_contr_op_params = contr_op_dev_wrt_params(trans_mat, p_choice[:, 0], cost_dev)
     dev_ev_params = solve_equ_system_fixp(
         dev_contr_op_params, ev, trans_mat, costs, disc_fac
@@ -170,15 +208,21 @@ def like_hood_dev_values(p_choice, dev_values):
 @numba.jit(nopython=True)
 def create_state_matrix(states, num_states):
     """
-    This function constructs a auxiliary matrix for the likelihood.
+    This function constructs a auxiliary matrix for the log-likelihood of the cost
+    parameters.
 
-    :param states:      A numpy array containing the observed states.
-    :param num_states:  The size of the state space s.
-    :type num_states:   int
+    Parameters
+    ----------
+    states : numpy.array
+        All mileage state observations.
+    num_states : int
+        The size of the state space.
 
-    :return:            A two dimensional numpy array containing n x s matrix
-                        with TRUE in each row at the column in which the bus was in
-                        that observation.
+    Returns
+    -------
+    state_mat : numpy.array
+        see :ref:`state_mat`
+
     """
     num_obs = states.shape[0]
     state_mat = np.full((num_states, num_obs), 0.0)
