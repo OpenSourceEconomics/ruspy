@@ -32,6 +32,7 @@ directory of the function APIs.
    :maxdepth: 2
    :caption: Contents:
 
+   economics
    estimation
    simulation
    objects
