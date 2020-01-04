@@ -11,16 +11,17 @@ from ruspy.estimation.standard_errors import calc_asymp_stds
 
 def estimate_transitions(df):
     """
-    The sub function for estimating the transition probabilities. This function
-    manages the estimation process of the transition probaiblities and calls the
-    necessary subfunctions.
+    The sub function for managing the estimation of the transition probabilities.
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        see :ref:`df`
 
-    :param df: A pandas dataframe, which contains for each observation the Bus ID,
-               the current state of the bus, the current period and the decision made
-               in this period.
+    Returns
+    -------
+    result_transitions : dictionary
+        see :ref:`result_dict`
 
-    :return: The optimization result of the transition probabilities estimation as a
-             dictionary.
     """
     result_transitions = {}
     usage = df["usage"].to_numpy(dtype=float)
@@ -48,31 +49,43 @@ def loglike_trans(p_raw, transition_count):
     """
     The loglikelihood function for estimating the transition probabilities.
 
-    :param trans_probs:      A numpy array containing transition probabilities.
-    :param transition_count: A list with the highest state increase as maximal index
-                             and the increase counts as entries.
+    Parameters
+    ----------
+    p_raw : numpy.array
+        The raw values before reparametrization, on which there are no constraints
+        or bounds.
+    transition_count : numpy
+        The pooled count of state increases per period in the data.
 
-    :return: The negative loglikelihood value for minimizing the second liklihood
-             function.
+    Returns
+    -------
+
+    log_like : numpy.float
+        The negative log-likelihood value of the transition probabilities
     """
     trans_probs = reparam_trans(p_raw)
-    ll = np.sum(np.multiply(transition_count, np.log(trans_probs)))
-    return -ll
+    log_like = -np.sum(np.multiply(transition_count, np.log(trans_probs)))
+    return log_like
 
 
 @numba.jit(nopython=True)
 def create_transition_matrix(num_states, trans_prob):
     """
-    This function creates a markov transition matrix. By the assumptions of the
-    underlying model, only the diagonal and elements to the right can have a non-zero
-    entry.
+    Creating the transition matrix with the assumption, that in every row the state
+    increases have the same probability.
 
-    :param num_states:  The size of the state space s.
-    :type num_states:   int
-    :param trans_prob:  A numpy array containing the transition probabilities for a
-                        state increase.
+    Parameters
+    ----------
+    num_states : int
+        The size of the state space.
+    trans_prob : numpy.array
+        The probabilities of an state increase.
 
-    :return: A two dimensional numpy array containing a s x s markov transition matrix.
+    Returns
+    -------
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+
     """
     trans_mat = np.zeros((num_states, num_states))
     for i in range(num_states):  # Loop over all states.
@@ -87,5 +100,20 @@ def create_transition_matrix(num_states, trans_prob):
 
 
 def reparam_trans(p_raw):
+    """
+    The reparametrization function for transition probabilities.
+
+    Parameters
+    ----------
+    p_raw : numpy.array
+        The raw values before reparametrization, on which there are no constraints
+        or bounds.
+
+    Returns
+    -------
+    trans_prob : numpy.array
+        The probabilities of an state increase.
+
+    """
     p = np.exp(p_raw) / np.sum(np.exp(p_raw))
     return p

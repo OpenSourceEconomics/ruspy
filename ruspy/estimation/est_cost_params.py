@@ -53,7 +53,7 @@ def loglike_cost_params(
     Returns
     -------
     log_like : numpy.float
-        The negative loglikelihood value for minimizing the objective function.
+        The negative log-likelihood value of the cost parameters.
 
 
     """
