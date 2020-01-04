@@ -152,3 +152,18 @@ and
     \begin{equation}
       l^2(a_1, ..., a_T, x_1, ...., x_T | \theta) = \prod_{t=1}^T P(a_t|x_t, \theta)
     \end{equation}
+
+
+References
+----------
+  McFadden, D. (1973). `Conditional logit analysis of qualitative choice behavior
+  <https://eml.berkeley.edu/reprints/mcfadden/zarembka.pdf>`_. In P. Zarembka (Ed.),
+  *Frontiers in Econometrics* (pp. 105–142). New York City, NY: Academic Press.
+
+
+  Rust, J.  (1987). `Optimal Replacement of GMC Bus Engines: An empirical model of Harold
+  Zurcher. <https://doi.org/10.2307/1911259>`_ *Econometrica, 55(5)*, 999-1033.
+
+  Rust, J. (1988). `Maximum likelihood estimation of discrete control processes.
+  <https://epubs.siam.org/doi/abs/10.1137/0326056>`_ *SIAM Journal on Control and
+  Optimization, 26 (5)*, 1006–1024.
