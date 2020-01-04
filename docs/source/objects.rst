@@ -66,3 +66,10 @@ maintaining and 1 in the second for replacement.
 The scale parameter
 -------------------
 content....
+
+
+.. _t_prime:
+
+Frechnet derivative
+-------------------
+content....

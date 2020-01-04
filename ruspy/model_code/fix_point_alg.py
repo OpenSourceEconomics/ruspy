@@ -99,7 +99,7 @@ def contraction_iteration(ev, trans_mat, obs_costs, disc_fac):
     return ev_new
 
 
-def kantevorich_step(ev, trans_mat, costs, disc_fac):
+def kantevorich_step(ev, trans_mat, obs_costs, disc_fac):
     """
     Calculating one Newton-Kantevorich step for approximating the fix-point.
 
@@ -121,30 +121,120 @@ def kantevorich_step(ev, trans_mat, costs, disc_fac):
 
 
     """
-    iteration_step = contraction_iteration(ev, trans_mat, costs, disc_fac)
-    ev_diff = solve_equ_system_fixp(ev - iteration_step, ev, trans_mat, costs, disc_fac)
+    iteration_step = contraction_iteration(ev, trans_mat, obs_costs, disc_fac)
+    ev_diff = solve_equ_system_fixp(
+        ev - iteration_step, ev, trans_mat, obs_costs, disc_fac
+    )
     ev_new = ev - ev_diff
     return ev_new
 
 
-def solve_equ_system_fixp(fixp_vector, ev, trans_mat, costs, disc_fac):
+def solve_equ_system_fixp(fixp_vector, ev, trans_mat, obs_costs, disc_fac):
+    """
+    Solving the multiple used equation system, deviated from the implicit
+    function theorem
+
+
+    Parameters
+    ----------
+    fixp_vector: numpy.array
+        A state space sized containing the right hand side of the euqation.
+    ev : numpy.array
+        see :ref:`ev`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    obs_costs : numpy.array
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+
+    Returns
+    -------
+    sol : numpy.array
+        The state space sized solution of the equation.
+
+    """
     num_states = ev.shape[0]
-    t_prime = cont_op_dev_wrt_fixp(ev, trans_mat, costs, disc_fac)
+    t_prime = frechnet_dev(ev, trans_mat, obs_costs, disc_fac)
     sol = np.linalg.lstsq(np.eye(num_states) - t_prime, fixp_vector, rcond=None)[0]
     return sol
 
 
-def cont_op_dev_wrt_fixp(ev, trans_mat, costs, disc_fac):
-    choice_probs = choice_prob_gumbel(ev, costs, disc_fac)
+def frechnet_dev(ev, trans_mat, obs_costs, disc_fac):
+    """
+    Calculating the Frechnet derivative of the contraction mapping.
+
+    Parameters
+    ----------
+    ev : numpy.array
+        see :ref:`ev`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    obs_costs : numpy.array
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+
+    Returns
+    -------
+    t_prime : numpy.array
+        see :ref:`t_prime`
+
+    """
+    choice_probs = choice_prob_gumbel(ev, obs_costs, disc_fac)
     t_prime_pre = trans_mat[:, 1:] * choice_probs[1:, 0]
     t_prime = disc_fac * np.column_stack((1 - np.sum(t_prime_pre, axis=1), t_prime_pre))
     return t_prime
 
 
 def contr_op_dev_wrt_params(trans_mat, maint_choice_prob, cost_dev):
+    """
+    Calculating the derivative of the contraction mapping with respect to one
+    particular maintenance cost parameter.
+
+    Parameters
+    ----------
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    maint_choice_prob : numpy.array
+        A num_states sized one dimensional numpy array containing the derivative of the
+        maintenance cost function with respect to one particular parameter.
+    cost_dev : numpy.array
+        A num_states sized one dimensional numpy array containing the derivative of the
+        maintenance cost function with respect to one particular parameter.
+
+
+    Returns
+    -------
+    dev : numpy.array
+        A num_states sized one dimensional numpy array containing the derivative of the
+        contraction mapping with respect to one particular maintenance cost parameter.
+
+    """
     dev = np.dot(trans_mat, np.multiply(-cost_dev, maint_choice_prob))
     return dev
 
 
 def contr_op_dev_wrt_rc(trans_mat, maint_choice_prob):
-    return np.dot(trans_mat, maint_choice_prob - 1)
+    """
+    Calculating the derivative of the contraction mapping with respect to the
+    replacement costs
+
+    Parameters
+    ----------
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    maint_choice_prob : numpy.array
+        A num_states sized one dimensional numpy array containing the derivative of the
+        maintenance cost function for one particular parameter.
+
+
+    Returns
+    -------
+    dev : numpy.array
+        A num_states sized one dimensional numpy array containing the derivative of the
+        contraction mapping with respect to the replacement cost parameter.
+
+    """
+    dev = np.dot(trans_mat, maint_choice_prob - 1)
+    return dev
