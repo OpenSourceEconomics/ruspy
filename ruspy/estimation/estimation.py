@@ -10,6 +10,7 @@ from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_interface import select_optimizer_options
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
+from ruspy.estimation.standard_errors import calc_asymp_stds
 
 
 def estimate(init_dict, df):
@@ -56,7 +57,7 @@ def estimate(init_dict, df):
 
     optimizer_options = select_optimizer_options(init_dict, num_params)
 
-    result = opt.minimize(
+    result_cost_params = opt.minimize(
         loglike_cost_params,
         args=(
             maint_func,
@@ -70,4 +71,8 @@ def estimate(init_dict, df):
         ),
         **optimizer_options
     )
-    return transition_results, result
+    if "hess_inv" in result_cost_params:
+        result_cost_params["std"] = calc_asymp_stds(
+            result_cost_params["x"], result_cost_params["hess_inv"]
+        )
+    return transition_results, result_cost_params

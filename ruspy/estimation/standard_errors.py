@@ -1,52 +1,26 @@
 import numpy as np
-import pandas as pd
-from estimagic.differentiation.differentiation import hessian
-
-from ruspy.estimation.est_cost_params import create_state_matrix
-from ruspy.estimation.est_cost_params import loglike_cost_params
-from ruspy.estimation.estimation_transitions import create_transition_matrix
-from ruspy.estimation.estimation_transitions import estimate_transitions
 
 
-def cov_multinomial(n, p):
-    """Calculates the covariance matrix of a multinominal distribution. We use this
-    function to calculate the standard errors of the transition probabilities"""
-    dim = len(p)
-    cov = np.zeros(shape=(dim, dim), dtype=float)
-    for i in range(dim):
-        for j in range(dim):
-            if i == j:
-                cov[i, i] = p[i] * (1 - p[i])
-            else:
-                cov[i, j] = -p[i] * p[j]
-    return cov / n
+def calc_asymp_stds(params_raw, hesse_inv_raw, reparam=None, runs=1000):
+
+    reparam = no_reparam if reparam is None else reparam
+    params = reparam(params_raw)
+
+    draws = draw_from_raw(reparam, params_raw, hesse_inv_raw, runs)
+    std_err = np.zeros((2, len(params_raw)), dtype=float)
+    for i in range(len(params_raw)):
+        std_err[0, i] = params[i] - np.percentile(draws[:, i], 2.5)
+        std_err[1, i] = np.percentile(draws[:, i], 97.5) - params[i]
+    return std_err
 
 
-def params_hess(params, df, disc_fac, maint_func):
-    """Calculates the hessian of the cost parameters."""
-    transition_results = estimate_transitions(df)
-    ll_trans = transition_results["fun"]
-    states = df.loc[:, "state"].to_numpy()
-    num_obs = df.shape[0]
-    num_states = 90
-    trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
-    state_mat = create_state_matrix(states, num_states, num_obs)
-    endog = df.loc[:, "decision"].to_numpy()
-    decision_mat = np.vstack(((1 - endog), endog))
-    params_df = pd.DataFrame(index=["RC", "theta_1_1"], columns=["value"], data=params)
-    wrap_func = create_wrap_func(
-        maint_func, num_states, trans_mat, state_mat, decision_mat, disc_fac, ll_trans
-    )
-    return hessian(wrap_func, params_df)
+def draw_from_raw(reparam, params_raw, hesse_inv_raw, runs):
+    draws = np.zeros((runs, len(params_raw)), dtype=np.float)
+    for i in range(runs):
+        draw = np.random.multivariate_normal(params_raw, hesse_inv_raw)
+        draws[i, :] = reparam(draw)
+    return draws
 
 
-def create_wrap_func(
-    maint_func, num_states, trans_mat, state_mat, decision_mat, disc_fac, ll_trans
-):
-    def wrap_func(x):
-        x_np = x["value"].to_numpy()
-        return ll_trans + loglike_cost_params(
-            x_np, maint_func, num_states, trans_mat, state_mat, decision_mat, disc_fac
-        )
-
-    return wrap_func
+def no_reparam(params_raw):
+    return params_raw

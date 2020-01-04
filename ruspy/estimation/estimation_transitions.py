@@ -4,6 +4,9 @@ probabilities.
 """
 import numba
 import numpy as np
+import scipy.optimize as opt
+
+from ruspy.estimation.standard_errors import calc_asymp_stds
 
 
 def estimate_transitions(df):
@@ -22,16 +25,26 @@ def estimate_transitions(df):
     result_transitions = {}
     usage = df["usage"].to_numpy(dtype=float)
     usage = usage[~np.isnan(usage)].astype(int)
-    transition_count = np.bincount(usage)
-    trans_probs = np.array(transition_count) / np.sum(transition_count)
-    ll = loglike(trans_probs, transition_count)
-    result_transitions.update(
-        {"x": trans_probs, "fun": ll, "trans_count": transition_count}
+    result_transitions["trans_count"] = transition_count = np.bincount(usage)
+    raw_result_trans = opt.minimize(
+        loglike_trans,
+        args=transition_count,
+        x0=np.full(len(transition_count), 0.1),
+        method="BFGS",
     )
+    p_raw = raw_result_trans["x"]
+    result_transitions["x"] = reparam_trans(p_raw)
+
+    result_transitions["std"] = calc_asymp_stds(
+        p_raw, raw_result_trans["hess_inv"], reparam=reparam_trans
+    )
+
+    result_transitions["fun"] = loglike_trans(p_raw, transition_count)
+
     return result_transitions
 
 
-def loglike(trans_probs, transition_count):
+def loglike_trans(p_raw, transition_count):
     """
     The loglikelihood function for estimating the transition probabilities.
 
@@ -42,6 +55,7 @@ def loglike(trans_probs, transition_count):
     :return: The negative loglikelihood value for minimizing the second liklihood
              function.
     """
+    trans_probs = reparam_trans(p_raw)
     ll = np.sum(np.multiply(transition_count, np.log(trans_probs)))
     return -ll
 
@@ -70,3 +84,8 @@ def create_transition_matrix(num_states, trans_prob):
             else:
                 pass
     return trans_mat
+
+
+def reparam_trans(p_raw):
+    p = np.exp(p_raw) / np.sum(np.exp(p_raw))
+    return p

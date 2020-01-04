@@ -22,7 +22,7 @@ def inputs():
     out = {}
     disc_fac = 0.9999
     num_states = 90
-    scale = 0.0001
+    scale = 1e-5
     init_dict = {
         "groups": "group_4",
         "binsize": 5000,
