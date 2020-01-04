@@ -8,8 +8,11 @@ documented and an introduction to the demonstration notebooks closes this part.
 Throughout this part, there are references to the functions in the ruspy package and in
 the end a summary of all APIs.
 
-Data
-----
+
+.. _df:
+
+The input data
+--------------
 
 The estimation package works with a `pandas.DataFrame
 <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_ as
@@ -34,15 +37,22 @@ If you want to replicate Rust (1987) you can download the raw data from John Rus
 the desired manner. Or you can use the functions in `zurcher-data
 <https://github.com/OpenSourceEconomics/zurcher-data>`_ which are provided by the
 `OpenSourceEconomics <https://github.com/OpenSourceEconomics>`_ community and tailored to
-the ruspy package. In the demonstration section these functions are used to replicate all
+the ruspy package. In the demonstration section these functions are used to replicate the
 results documented.
 
-Modules
--------
 
-----------------------------------
+The estimation function
+-----------------------
+
+
+
+---------
+Models123
+---------
+
+
 Estimate
-----------------------------------
+""""""""""
 
 ---------------
 Cost Parameters

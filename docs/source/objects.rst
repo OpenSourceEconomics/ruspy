@@ -75,12 +75,6 @@ Frechnet derivative
 content....
 
 
-.. _df:
-
-The observed data
------------------
-content....
-
 
 .. _result_dict:
 

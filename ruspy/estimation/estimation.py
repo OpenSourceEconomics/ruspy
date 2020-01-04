@@ -15,25 +15,24 @@ from ruspy.estimation.standard_errors import calc_asymp_stds
 
 def estimate(init_dict, df):
     """
-    This function calls the auxiliary functions to estimate the decision parameters.
-    Therefore it manages the estimation process. As mentioned in the model theory
-    chapter of the paper, the estimation of the transition probabilities and the
-    estimation of the parameters shaping the cost function
-    are completely separate.
+    This function coordinates the estimation process of the ruspy package.
 
-    :param init_dict: A dictionary containing the following variables as keys:
+    Parameters
+    ----------
+    init_dict : dictionary
+        see ref:`init_dict`
 
-        :disc_fac: (float)       : Discount factor.
-        :states: (int)       : The size of the statespace.
-        :maint_func: (func)  : The maintenance cost function. Default is the linear
-                               from the paper.
+    df : pandas.DataFrame
+        see :ref:`df`
 
-    :param df:        A pandas dataframe, which contains for each observation the Bus
-                      ID, the current state of the bus, the current period and the
-                      decision made in this period.
+    Returns
+    -------
+    transition_results : dictionary
+        see :ref:`result_trans`
+    result_cost_params : dictionary
+        see :ref:`result_costs
 
-    :return: The function returns the optimization result of the transition
-             probabilities and of the cost parameters as separate dictionaries.
+
 
     """
 
