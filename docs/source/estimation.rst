@@ -43,16 +43,106 @@ results documented.
 
 The estimation function
 -----------------------
+The estimation process is coordinated by the function estimate:
+
+.. currentmodule:: ruspy.estimation.estimation
+
+.. autosummary::
+    :toctree: _generated/
+
+    estimate
+
+Following equation :eq:`est_strategy` the `estimate` function first calls the estimation
+function for the transition probabilities.
+
+---------------------------------
+Transition probability estimation
+---------------------------------
+
+The funtions for estimating the transition probabilities can be found in
+``estimation.estimation_transitions``. The main function, which coordinates this process
+is:
+
+.. currentmodule:: ruspy.estimation.estimation_transitions
+
+.. autosummary::
+    :toctree: _generated/
+
+    estimate_transitions
+
+So far, there is only the pooled transition from Rust (1987) implemented. The function
+filters missing values from the usage data from the DataFrame and then counts, how often
+each increase occurs. With this transition count the log-likelihood function for the
+transition estimation can be constructed. Note that this is the log-likelihood function
+of a multinomial distribution:
+
+.. math::
+
+    \begin{align}
+     l^1 = - \sum a_i \log(p_i)
+    \end{align}
+
+where :math:`a_i` is the number of occurrences for an increase by :math:`i` states and
+:math:`p_i` their probability. Note that the minus is introduced, such that a
+maximization of the likelihood corresponds to a minimization of this function. The
+corresponding function in the code is:
+.. currentmodule:: ruspy.estimation.estimation_transitions
+
+.. autosummary::
+    :toctree: _generated/
+
+    loglike_trans
+
+
+The ``estimate_transitions`` function minimizes now the ``loglike_trans`` function by
+calling a minimize routine from the scipy library. Even though transition probabilities
+need to add up to 1 and have to be positive, there are no constraints on the minimized
+parameters. The constraints are applied inside ``loglike_trans`` by a reparametrization
+function:
+
+.. currentmodule:: ruspy.estimation.estimation_transitions
+
+.. autosummary::
+    :toctree: _generated/
+
+    reparam_trans
+
+This unconstrained minimization allows to create the 95\% interval of the estimated
+transition probabilities by bootstrapping from the asymptotic distribution provided by
+the scipy minimizer. The core function for this can be found in
+``ruspy.estimation.bootstrapping``:
+
+.. currentmodule:: ruspy.estimation.estimation_transitions
+
+.. autosummary::
+    :toctree: _generated/
+
+    calc_95_conf
 
 
 
----------
-Models123
----------
+
+The results of the estimation are two dictionaries each containing different labels:
+
+.. _result_trans:
+
+Transition results
+""""""""""""""""""
 
 
-Estimate
-""""""""""
+---------------------------------
+Transition probability estimation
+---------------------------------
+
+
+.. _result_costs:
+
+-----------------------
+Cost parameters results
+-----------------------
+
+
+
 
 ---------------
 Cost Parameters

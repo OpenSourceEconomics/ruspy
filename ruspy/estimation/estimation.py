@@ -4,17 +4,19 @@ This module contains the main function for the estimation process.
 import numpy as np
 import scipy.optimize as opt
 
+from ruspy.estimation.bootstrapping import calc_95_conf
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_interface import select_optimizer_options
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
-from ruspy.estimation.standard_errors import calc_asymp_stds
 
 
 def estimate(init_dict, df):
     """
+    Estimation function of ruspy.
+
     This function coordinates the estimation process of the ruspy package.
 
     Parameters
@@ -30,7 +32,7 @@ def estimate(init_dict, df):
     transition_results : dictionary
         see :ref:`result_trans`
     result_cost_params : dictionary
-        see :ref:`result_costs
+        see :ref:`result_costs`
 
 
 
@@ -71,7 +73,7 @@ def estimate(init_dict, df):
         **optimizer_options
     )
     if "hess_inv" in result_cost_params:
-        result_cost_params["std"] = calc_asymp_stds(
+        result_cost_params["std"] = calc_95_conf(
             result_cost_params["x"], result_cost_params["hess_inv"]
         )
     return transition_results, result_cost_params

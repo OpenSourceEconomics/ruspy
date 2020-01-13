@@ -135,11 +135,13 @@ proofs that this function has due to the conditional independence assumption a s
 form:
 
 .. math::
+     :label: est_strategy
 
     \begin{equation}
     l^f(a_1, ..., a_T, x_1, ...., x_T | a_0, x_0, \theta) = \prod_{t=1}^T P(a_t|x_t,
     \theta) p(x_t| x_{t-1}, a_{t-1}, \theta_3)
     \end{equation}
+
 
 Therefore the estimation can be split into two separate partial likelihood functions,
 given by:

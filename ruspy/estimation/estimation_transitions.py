@@ -6,12 +6,14 @@ import numba
 import numpy as np
 import scipy.optimize as opt
 
-from ruspy.estimation.standard_errors import calc_asymp_stds
+from ruspy.estimation.bootstrapping import calc_95_conf
 
 
 def estimate_transitions(df):
-    """
+    """Estimating the transition proabilities.
+
     The sub function for managing the estimation of the transition probabilities.
+
     Parameters
     ----------
     df : pandas.DataFrame
@@ -36,7 +38,7 @@ def estimate_transitions(df):
     p_raw = raw_result_trans["x"]
     result_transitions["x"] = reparam_trans(p_raw)
 
-    result_transitions["std"] = calc_asymp_stds(
+    result_transitions["std"] = calc_95_conf(
         p_raw, raw_result_trans["hess_inv"], reparam=reparam_trans
     )
 
@@ -68,6 +70,26 @@ def loglike_trans(p_raw, transition_count):
     return log_like
 
 
+def reparam_trans(p_raw):
+    """
+    The reparametrization function for transition probabilities.
+
+    Parameters
+    ----------
+    p_raw : numpy.array
+        The raw values before reparametrization, on which there are no constraints
+        or bounds.
+
+    Returns
+    -------
+    trans_prob : numpy.array
+        The probabilities of an state increase.
+
+    """
+    p = np.exp(p_raw) / np.sum(np.exp(p_raw))
+    return p
+
+
 @numba.jit(nopython=True)
 def create_transition_matrix(num_states, trans_prob):
     """
@@ -97,23 +119,3 @@ def create_transition_matrix(num_states, trans_prob):
             else:
                 pass
     return trans_mat
-
-
-def reparam_trans(p_raw):
-    """
-    The reparametrization function for transition probabilities.
-
-    Parameters
-    ----------
-    p_raw : numpy.array
-        The raw values before reparametrization, on which there are no constraints
-        or bounds.
-
-    Returns
-    -------
-    trans_prob : numpy.array
-        The probabilities of an state increase.
-
-    """
-    p = np.exp(p_raw) / np.sum(np.exp(p_raw))
-    return p
