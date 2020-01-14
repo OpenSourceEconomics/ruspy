@@ -20,7 +20,7 @@ def estimate_transitions(df):
         see :ref:`df`
 
     Returns
-    -------
+    --- ----
     result_transitions : dictionary
         see :ref:`result_trans`
 
@@ -38,7 +38,7 @@ def estimate_transitions(df):
     p_raw = raw_result_trans["x"]
     result_transitions["x"] = reparam_trans(p_raw)
 
-    result_transitions["std"] = calc_95_conf(
+    result_transitions["95_conf_interv"] = calc_95_conf(
         p_raw, raw_result_trans["hess_inv"], reparam=reparam_trans
     )
 
@@ -49,7 +49,7 @@ def estimate_transitions(df):
 
 def loglike_trans(p_raw, transition_count):
     """
-    The loglikelihood function for estimating the transition probabilities.
+    Log-likelihood function of transition probability estimation.
 
     Parameters
     ----------

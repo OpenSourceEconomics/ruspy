@@ -135,7 +135,6 @@ proofs that this function has due to the conditional independence assumption a s
 form:
 
 .. math::
-     :label: est_strategy
 
     \begin{equation}
     l^f(a_1, ..., a_T, x_1, ...., x_T | a_0, x_0, \theta) = \prod_{t=1}^T P(a_t|x_t,

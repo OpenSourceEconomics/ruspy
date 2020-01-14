@@ -52,8 +52,8 @@ The estimation process is coordinated by the function estimate:
 
     estimate
 
-Following equation :eq:`est_strategy` the `estimate` function first calls the estimation
-function for the transition probabilities.
+Following the separability of the estimation process the `estimate` function first calls
+the estimation function for the transition probabilities.
 
 ---------------------------------
 Transition probability estimation
@@ -107,46 +107,47 @@ function:
 
     reparam_trans
 
-This unconstrained minimization allows to create the 95\% interval of the estimated
-transition probabilities by bootstrapping from the asymptotic distribution provided by
+This allows to create the 95\% interval of the estimated to bootstrap transition
+probabilities from the asymptotic distribution provided by
 the scipy minimizer. The core function for this can be found in
 ``ruspy.estimation.bootstrapping``:
 
-.. currentmodule:: ruspy.estimation.estimation_transitions
+.. currentmodule:: ruspy.estimation.bootstrapping
 
 .. autosummary::
     :toctree: _generated/
 
     calc_95_conf
 
-
-
-
-The results of the estimation are two dictionaries each containing different labels:
+The collected results of the transition estimation are collected in a dictionary and
+returned to the ``estimate`` function.
 
 .. _result_trans:
 
 Transition results
 """"""""""""""""""
+The dictionary containing the transition estimation results has the following keys:
 
+**fun :** *(numpy.float)* Log-likelihood of transition estimation.
+
+**x :** *(numpy.array)* Estimated transition probabilities.
+
+**trans_count :** *(numpy.array)* Number of transitions for an increase of 0, 1, 2, ...
+
+**95_conf_interv :** *(numpy.array)*
+2 x dim(x) matrix containing in the 1st row the upper bound and in the 2nd row the lower
+bound of 95% confidence interval for each parameter.
 
 ---------------------------------
-Transition probability estimation
+Cost parameter estimation
 ---------------------------------
 
-
-.. _result_costs:
-
------------------------
-Cost parameters results
------------------------
+The
 
 
 
-
----------------
 Cost Parameters
----------------
+"""""""""""""""
 
 .. currentmodule:: ruspy.estimation.est_cost_params
 
@@ -155,3 +156,8 @@ Cost Parameters
 
   loglike_cost_params
   derivative_loglike_cost_params
+
+.. _result_costs:
+
+Cost parameters results
+"""""""""""""""""""""""

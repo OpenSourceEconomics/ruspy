@@ -58,7 +58,9 @@ def estimate(init_dict, df):
 
     optimizer_options = select_optimizer_options(init_dict, num_params)
 
-    result_cost_params = opt.minimize(
+    result_cost_params = {}
+
+    min_result = opt.minimize(
         loglike_cost_params,
         args=(
             maint_func,
@@ -72,8 +74,14 @@ def estimate(init_dict, df):
         ),
         **optimizer_options
     )
-    if "hess_inv" in result_cost_params:
-        result_cost_params["std"] = calc_95_conf(
-            result_cost_params["x"], result_cost_params["hess_inv"]
+    result_cost_params["x"] = min_result["x"]
+    result_cost_params["fun"] = min_result["fun"]
+    result_cost_params["message"] = min_result["message"]
+    result_cost_params["jac"] = min_result["jac"]
+
+    if "hess_inv" in min_result:
+        result_cost_params["95_conf_interv"] = calc_95_conf(
+            min_result["x"], min_result["hess_inv"]
         )
+
     return transition_results, result_cost_params

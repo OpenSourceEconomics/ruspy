@@ -3,11 +3,11 @@ import numpy as np
 
 def calc_95_conf(params_raw, hesse_inv_raw, reparam=None, runs=1000):
     """
-    Calculating the 95% interval by bootstrapping.
+    Bootstrapping the 95% interval.
 
     Parameters
     ----------
-    p_raw : numpy.array
+    params_raw : numpy.array
         The raw values before reparametrization as output from the scipy minimizer.
 
     hesse_inv_raw : numpy.array
