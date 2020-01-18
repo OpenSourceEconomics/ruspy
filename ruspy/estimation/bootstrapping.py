@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def calc_95_conf(params_raw, hesse_inv_raw, reparam=None, runs=1000):
+def bootstrapp(params_raw, hesse_inv_raw, reparam=None, runs=1000):
     """
     Bootstrapping the 95% interval.
 
@@ -26,17 +26,21 @@ def calc_95_conf(params_raw, hesse_inv_raw, reparam=None, runs=1000):
     conf_bounds : numpy.array
         Returns the 95% confidence bounds.
 
+    std_errors : numpy
+        Returns the bootstrapped standard errors
+
     """
 
     reparam = no_reparam if reparam is None else reparam
 
     draws = draw_from_raw(reparam, params_raw, hesse_inv_raw, runs)
     conf_bounds = np.zeros((2, len(params_raw)), dtype=float)
+    std_errors = np.zeros(len(params_raw), dtype=float)
     for i in range(len(params_raw)):
         conf_bounds[1, i] = np.percentile(draws[:, i], 2.5)
         conf_bounds[0, i] = np.percentile(draws[:, i], 97.5)
-
-    return conf_bounds
+        std_errors[i] = np.std(draws[:, i])
+    return conf_bounds, std_errors
 
 
 def draw_from_raw(reparam, params_raw, hesse_inv_raw, runs):

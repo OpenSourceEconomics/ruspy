@@ -135,8 +135,8 @@ The dictionary containing the transition estimation results has the following ke
 **trans_count :** *(numpy.array)* Number of transitions for an increase of 0, 1, 2, ...
 
 **95_conf_interv :** *(numpy.array)*
-2 x dim(x) matrix containing in the 1st row the upper bound and in the 2nd row the lower
-bound of 95% confidence interval for each parameter.
+2 x dim(x) matrix containing the bootstrapped (1000 replications) 95% confidence interval
+bounds.
 
 ---------------------------------
 Cost parameter estimation

@@ -6,7 +6,7 @@ import numba
 import numpy as np
 import scipy.optimize as opt
 
-from ruspy.estimation.bootstrapping import calc_95_conf
+from ruspy.estimation.bootstrapping import bootstrapp
 
 
 def estimate_transitions(df):
@@ -38,7 +38,7 @@ def estimate_transitions(df):
     p_raw = raw_result_trans["x"]
     result_transitions["x"] = reparam_trans(p_raw)
 
-    result_transitions["95_conf_interv"] = calc_95_conf(
+    result_transitions["95_conf_interv"], result_transitions["std_errors"] = bootstrapp(
         p_raw, raw_result_trans["hess_inv"], reparam=reparam_trans
     )
 

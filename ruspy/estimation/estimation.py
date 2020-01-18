@@ -4,7 +4,7 @@ This module contains the main function for the estimation process.
 import numpy as np
 import scipy.optimize as opt
 
-from ruspy.estimation.bootstrapping import calc_95_conf
+from ruspy.estimation.bootstrapping import bootstrapp
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_interface import select_model_parameters
@@ -80,8 +80,9 @@ def estimate(init_dict, df):
     result_cost_params["jac"] = min_result["jac"]
 
     if "hess_inv" in min_result:
-        result_cost_params["95_conf_interv"] = calc_95_conf(
-            min_result["x"], min_result["hess_inv"]
-        )
+        (
+            result_cost_params["95_conf_interv"],
+            result_cost_params["std_errors"],
+        ) = bootstrapp(min_result["x"], min_result["hess_inv"])
 
     return transition_results, result_cost_params
