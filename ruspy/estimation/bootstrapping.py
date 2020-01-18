@@ -29,13 +29,13 @@ def calc_95_conf(params_raw, hesse_inv_raw, reparam=None, runs=1000):
     """
 
     reparam = no_reparam if reparam is None else reparam
-    params = reparam(params_raw)
 
     draws = draw_from_raw(reparam, params_raw, hesse_inv_raw, runs)
     conf_bounds = np.zeros((2, len(params_raw)), dtype=float)
     for i in range(len(params_raw)):
-        conf_bounds[0, i] = params[i] - np.percentile(draws[:, i], 2.5)
-        conf_bounds[1, i] = np.percentile(draws[:, i], 97.5) - params[i]
+        conf_bounds[1, i] = np.percentile(draws[:, i], 2.5)
+        conf_bounds[0, i] = np.percentile(draws[:, i], 97.5)
+
     return conf_bounds
 
 
