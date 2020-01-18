@@ -39,7 +39,7 @@ def calc_fixp(
         see :ref:`ev`
     """
     contr_step_count = 0
-    newt_kante_step_count = 0
+    newt_kant_step_count = 0
     ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-obs_costs), axis=1)))
     converge_crit = threshold + 1  # Make sure that the loop starts
     while converge_crit > threshold:
@@ -51,9 +51,9 @@ def calc_fixp(
                 break
             converge_crit = np.max(np.abs(ev_new - ev))
         ev = ev_new
-        ev_new = kantevorich_step(ev, trans_mat, obs_costs, disc_fac)
-        newt_kante_step_count += 1
-        if newt_kante_step_count > max_newt_kant_steps:
+        ev_new = kantorovich_step(ev, trans_mat, obs_costs, disc_fac)
+        newt_kant_step_count += 1
+        if newt_kant_step_count > max_newt_kant_steps:
             break
         converge_crit = np.max(
             np.abs(ev - contraction_iteration(ev, trans_mat, obs_costs, disc_fac))
@@ -99,9 +99,9 @@ def contraction_iteration(ev, trans_mat, obs_costs, disc_fac):
     return ev_new
 
 
-def kantevorich_step(ev, trans_mat, obs_costs, disc_fac):
+def kantorovich_step(ev, trans_mat, obs_costs, disc_fac):
     """
-    Calculating one Newton-Kantevorich step for approximating the fix-point.
+    Calculating one Newton-Kantorovich step for approximating the fix-point.
 
     Parameters
     ----------
