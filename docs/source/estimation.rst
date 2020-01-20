@@ -52,6 +52,25 @@ The estimation process is coordinated by the function estimate:
 
     estimate
 
+Besides the :ref:`df`, the function needs the following initialization dictionary:
+
+
+------------------------------------
+Estimation initialization dictionary
+------------------------------------
+
+The initialization dictionary contains data and model specific information. Besides that it let allows to specify the optimizer from the `scipy library
+<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_. All inputs are either strings or numbers in any format:
+
+*groups :* Specify which groups are
+
+
+
+
+
+
+
+
 Following the separability of the estimation process the `estimate` function first calls
 the estimation function for the transition probabilities.
 
@@ -59,7 +78,7 @@ the estimation function for the transition probabilities.
 Transition probability estimation
 ---------------------------------
 
-The funtions for estimating the transition probabilities can be found in
+The functions for estimating the transition probabilities can be found in
 ``estimation.estimation_transitions``. The main function, which coordinates this process
 is:
 
@@ -95,10 +114,11 @@ corresponding function in the code is:
 
 
 The ``estimate_transitions`` function minimizes now the ``loglike_trans`` function by
-calling a minimize routine from the scipy library. Even though transition probabilities
-need to add up to 1 and have to be positive, there are no constraints on the minimized
-parameters. The constraints are applied inside ``loglike_trans`` by a reparametrization
-function:
+calling a minimize routine from the `scipy library
+<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_.
+Even though transition probabilities need to add up to 1 and have to be positive, there
+are no constraints on the minimized parameters. The constraints are applied inside
+``loglike_trans`` by a reparametrization function:
 
 .. currentmodule:: ruspy.estimation.estimation_transitions
 
@@ -117,12 +137,11 @@ the scipy minimizer. The core function for this can be found in
 .. autosummary::
     :toctree: _generated/
 
-    calc_95_conf
+    bootstrapp
+
 
 The collected results of the transition estimation are collected in a dictionary and
 returned to the ``estimate`` function.
-
-.. _result_trans:
 
 Transition results
 """"""""""""""""""
@@ -138,16 +157,32 @@ The dictionary containing the transition estimation results has the following ke
 2 x dim(x) matrix containing the bootstrapped (1000 replications) 95% confidence interval
 bounds.
 
+**std_errors :** *(numpy.array)*
+dim(X) numpy array with bootstrapped standard errors for each parameter.
+
+
+So far only a pooled estimation of the transitions is possible. Hence, ``ruspy``
+uses the estimated probabilities to construct a transition matrix with the same
+nonzero probabilities in each row. This function is:
+
+.. currentmodule:: ruspy.estimation.estimation_transitions
+
+.. autosummary::
+    :toctree: _generated/
+
+    create_transition_matrix
+
+
+The transition matrix is then used for the cost parameter estimation.
+
+.. _result_trans:
+
 ---------------------------------
 Cost parameter estimation
 ---------------------------------
 
-The
+The cost parameters are estimated directly by minimizing the log-likelihood and the corresponding jacobian function with a minimize function from the `scipy library <http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_ . The functions can be found in ``ruspy.estimation.est_cost_params``:
 
-
-
-Cost Parameters
-"""""""""""""""
 
 .. currentmodule:: ruspy.estimation.est_cost_params
 
@@ -157,7 +192,49 @@ Cost Parameters
   loglike_cost_params
   derivative_loglike_cost_params
 
+For the construction of the likelihood function, ruspy uses matrix algebra and
+therefore creates a :ref:`state_mat` with:
+
+.. currentmodule:: ruspy.estimation.est_cost_params
+
+.. autosummary::
+    :toctree: _generated/
+
+    create_state_matrix
+
+In the minimization the scipy optimizer calls the likelihood functions and its
+derivative with different cost parameters. Together with the constant held
+arguments, the expected value is calculated by fixed point algorithm. Double
+calculation of the same fixed point is avoided by the following function:
+
+.. currentmodule:: ruspy.estimation.est_cost_params
+
+.. autosummary::
+    :toctree: _generated/
+
+    get_ev
+
+After successful minimization, some results of the scipy result dictionary are used
+to construct ruspys cost parameter results:
+
+
 .. _result_costs:
 
 Cost parameters results
 """""""""""""""""""""""
+The dictionary containing the cost parameter results has the following keys:
+
+**fun :** *(numpy.float)* Log-likelihood of cost parameter estimation.
+
+**x :** *(numpy.array)* Estimated cost parameters.
+
+**message :** *(string)* The optimizer message of the scipy optimizer.
+
+**jac :** *(numpy.array)* The value of the estimates' jacobian.
+
+**95_conf_interv :** *(numpy.array)*
+2 x dim(x) matrix containing the bootstrapped (1000 replications) 95% confidence
+interval bounds.
+
+**std_errors :** *(numpy.array)*
+dim(X) numpy array with bootstrapped standard errors for each parameter.

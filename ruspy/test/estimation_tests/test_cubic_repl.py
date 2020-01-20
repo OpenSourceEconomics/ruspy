@@ -23,8 +23,6 @@ def inputs():
     num_states = 90
     scale = 1e-8
     init_dict = {
-        "groups": "group_4",
-        "binsize": 5000,
         "model_specifications": {
             "discount_factor": disc_fac,
             "number_states": num_states,
