@@ -14,7 +14,7 @@ def calc_obs_costs(num_states, maint_func, params, scale):
     params : numpy.array
         see :ref:`params`
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -42,7 +42,7 @@ def lin_cost(num_states, params, scale):
     params : numpy.array
         see :ref:`params`
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -65,7 +65,7 @@ def lin_cost_dev(num_states, scale):
     num_states : int
         The size of the state space.
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -90,7 +90,7 @@ def cubic_costs(num_states, params, scale):
     params : numpy.array
         see :ref:`params`
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -117,7 +117,7 @@ def cubic_costs_dev(num_states, scale):
     num_states : int
         The size of the state space.
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -143,7 +143,7 @@ def quadratic_costs(num_states, params, scale):
     params : numpy.array
         see :ref:`params`
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -167,7 +167,7 @@ def quadratic_costs_dev(num_states, scale):
     num_states : int
         The size of the state space.
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -193,7 +193,7 @@ def sqrt_costs(num_states, params, scale):
     params : numpy.array
         see :ref:`params`
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -217,7 +217,7 @@ def sqrt_costs_dev(num_states, scale):
     num_states : int
         The size of the state space.
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -243,7 +243,7 @@ def hyperbolic_costs(num_states, params, scale):
     params : numpy.array
         see :ref:`params`
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------
@@ -267,7 +267,7 @@ def hyperbolic_costs_dev(num_states, scale):
     num_states : int
         The size of the state space.
     scale : numpy.float
-        see :ref:`scale
+        see :ref:`scale`
 
     Returns
     -------

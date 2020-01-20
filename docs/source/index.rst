@@ -32,6 +32,6 @@ directory of the function APIs.
    :caption: Contents:
 
    economics
+   model_code
    estimation
    simulation
-   objects
