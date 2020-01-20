@@ -62,7 +62,7 @@ Estimation initialization dictionary
 The initialization dictionary contains data and model specific information. Besides that it let allows to specify the optimizer from the `scipy library
 <http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_. All inputs are either strings or numbers in any format:
 
-*groups :* Specify which groups are
+
 
 
 
@@ -238,3 +238,25 @@ interval bounds.
 
 **std_errors :** *(numpy.array)*
 dim(X) numpy array with bootstrapped standard errors for each parameter.
+
+
+-----------------
+Auxiliary objects
+-----------------
+
+.. _state_mat:
+
+State matrix
+""""""""""""
+
+A two dimensional numpy array containing n x s matrix with TRUE in each row at the column
+in which the bus was in that observation.
+
+
+.. _decision_mat:
+
+Decision Matrix
+"""""""""""""""
+
+A two dimensional numpy array containing  a n x 2 vector with 1 in the first row for
+maintaining and 1 in the second for replacement.
