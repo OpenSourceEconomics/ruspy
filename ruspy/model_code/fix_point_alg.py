@@ -178,7 +178,8 @@ def frechnet_dev(ev, trans_mat, obs_costs, disc_fac):
     Returns
     -------
     t_prime : numpy.array
-        see :ref:`t_prime`
+        A num_states x num_states matrix containing the frechnet derivative of the
+        contraction mapping. For details see Rust (2000).
 
     """
     choice_probs = choice_prob_gumbel(ev, obs_costs, disc_fac)

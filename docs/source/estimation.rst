@@ -55,7 +55,7 @@ The estimation process is coordinated by the function estimate:
 Besides the :ref:`df`, the function needs the following initialization dictionary:
 
 
-------------------------------------
+
 Estimation initialization dictionary
 ------------------------------------
 
@@ -74,7 +74,7 @@ The initialization dictionary contains data and model specific information. Besi
 Following the separability of the estimation process the `estimate` function first calls
 the estimation function for the transition probabilities.
 
----------------------------------
+
 Transition probability estimation
 ---------------------------------
 
@@ -177,7 +177,7 @@ The transition matrix is then used for the cost parameter estimation.
 
 .. _result_trans:
 
----------------------------------
+
 Cost parameter estimation
 ---------------------------------
 
@@ -240,12 +240,13 @@ interval bounds.
 dim(X) numpy array with bootstrapped standard errors for each parameter.
 
 
------------------
+
 Auxiliary objects
------------------
+"""""""""""""""""
 
 .. _state_mat:
 
+""""""""""""
 State matrix
 """"""""""""
 
@@ -255,8 +256,14 @@ in which the bus was in that observation.
 
 .. _decision_mat:
 
+"""""""""""""""
 Decision Matrix
 """""""""""""""
 
 A two dimensional numpy array containing  a n x 2 vector with 1 in the first row for
 maintaining and 1 in the second for replacement.
+
+.. _result_dict:
+
+The result dictionary
+---------------------

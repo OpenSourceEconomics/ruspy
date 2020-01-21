@@ -1,6 +1,8 @@
 Model code
 ==========
-This part documents the different functions for the calculation of the model objects determining the decision of Harold Zurcher. Following Rust (1987), the code does not estimate the discount factor and it needs to be externally set.
+This part documents the different functions for the calculation of the model objects
+determining the decision of Harold Zurcher. Following Rust (1987), the code does not
+estimate the discount factor and it needs to be externally set.
 
 .. _disc_fac:
 
@@ -21,7 +23,9 @@ The observed costs are saved in an The function to calculate the observed costs 
 
     calc_obs_costs
 
-The inputs are besides the size of the state space, the type of the maintenance cost function as well as the cost parameters and the scale. The inputs will be explained in the following:
+The inputs are besides the size of the state space, the type of the maintenance cost
+function as well as the cost parameters and the scale. The inputs will be explained in
+the following:
 
 .. _maint_func:
 
@@ -29,7 +33,9 @@ The inputs are besides the size of the state space, the type of the maintenance 
 Maintenance cost function
 -------------------------
 
-So far the code allows for five functional forms. The following table reports the different functional forms for an arbitrary state :math`x`. Afterwards I list the APIs of each function and their derivatives. :math:`states` is the size of the state space.
+So far the code allows for five functional forms. The following table reports the
+different functional forms for an arbitrary state :math`x`. Afterwards I list the APIs of
+each function and their derivatives. :math:`states` is the size of the state space.
 
 +-------------+----------------------------------------------------------------------------+
 | Name        | Functional form                                                            |
@@ -46,14 +52,14 @@ So far the code allows for five functional forms. The following table reports th
 +-------------+----------------------------------------------------------------------------+
 
 Linear cost function
-
+x
 .. currentmodule:: ruspy.model_code.cost_functions
 
 .. autosummary::
     :toctree: _generated/
 
     lin_cost
-		lin_cost_dev
+    lin_cost_dev
 
 Square root function
 
@@ -63,7 +69,7 @@ Square root function
     :toctree: _generated/
 
     sqrt_costs
-		sqrt_costs_dev
+    sqrt_costs_dev
 
 
 Cubic cost function
@@ -74,7 +80,7 @@ Cubic cost function
     :toctree: _generated/
 
     cubic_costs
-		cubic_costs_dev
+    cubic_costs_dev
 
 Quadratic cost function
 
@@ -84,7 +90,7 @@ Quadratic cost function
     :toctree: _generated/
 
     quadratic_costs
-		quadratic_costs_dev
+    quadratic_costs_dev
 
 hyperbolic cost function
 
@@ -94,7 +100,7 @@ hyperbolic cost function
     :toctree: _generated/
 
     hyperbolic_costs
-		hyperbolic_costs_dev
+    hyperbolic_costs_dev
 
 
 .. _params:
@@ -102,7 +108,10 @@ hyperbolic cost function
 ---------------
 Cost parameters
 ---------------
-The second in put are the cost parameters, which are sored as a one dimension *numpy.array*. At the first position always the replacement cost :math:`RC` is stored. The next positions are subsequently filled with :math:`theta_{11}, \theta_{12}, ...`. The exact number depends on the functional form.
+The second in put are the cost parameters, which are sored as a one dimension
+*numpy.array*. At the first position always the replacement cost :math:`RC` is stored.
+The next positions are subsequently filled with :math:`theta_{11}, \theta_{12}, ...`. The
+exact number depends on the functional form.
 
 .. _scale:
 
@@ -129,11 +138,14 @@ minimal scale needed for each form:
 +---------------+-----------------+
 
 
----------------------
+
 Fixed point algorithm
 ---------------------
 
-This part documents the core contribution to research of the Rust (1987) paper. The Fixed Point Algorithm (FXP). It allows to consequently calculate the log-likelihood value for each cost parameter and thus, to estimate the model. The computation of the fixed point is managed by:
+This part documents the core contribution to research of the Rust (1987) paper, the Fixed
+Point Algorithm (FXP). It allows to consequently calculate the log-likelihood value for
+each cost parameter and thus, to estimate the model. The computation of the fixed point
+is managed by:
 
 .. currentmodule:: ruspy.model_code.fix_point_alg
 
@@ -144,31 +156,50 @@ This part documents the core contribution to research of the Rust (1987) paper. 
 
 
 The algorithm is set up as a polyalgorithm combining contraction and Newton-Kantorovich
-(Kantorovich, 1948) iterations. It start by executing contraction iterations, until it reaches some convergence threshold and then switches to Newton-Kantorovich iterations. In the following I describe the conditions, for the algorithm to switch between those iterations.
+(Kantorovich, 1948) iterations. It starts by executing contraction iterations, until it
+reaches some convergence threshold and then switches to Newton-Kantorovich iterations.
+The exact mathematical deviation of the separate steps are very nicely illustrated in
+`Rust (2000) <https://editorialexpress.com/jrust/nfxp.pdf>`_. The function of these two
+steps are the following in ruspy:
 
+.. currentmodule:: ruspy.model_code.fix_point_alg
+
+.. autosummary::
+    :toctree: _generated/
+
+    contraction_iteration
+    kantorovich_step
+
+In the following I describe the conditions, for my algorithm when to switch between those
+iterations.
+
+.. _alg_details:
+
+-------------------
+Algorithmic details
+-------------------
 
 
 
 .. _ev:
 
+--------------
 Expected value
 --------------
 
 
 
 
-.. _pchoice:
-
-Choice probabilities
---------------------
 
 
--------------------
+
+
 Other model objects
 -------------------
 
 .. _trans_mat:
 
+-----------------
 Transition matrix
 -----------------
 
@@ -177,18 +208,8 @@ transition in the case of the replacement corresponds to a transition from state
 is only matrix with number of rows and columns equally to the size of the state space.
 
 
+.. _pchoice:
 
-
-.. _t_prime:
-
-Frechnet derivative
--------------------
-content....
-
-
-
-.. _result_dict:
-
-The result dictionary
----------------------
-content....
+--------------------
+Choice probabilities
+--------------------
