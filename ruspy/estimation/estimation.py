@@ -22,7 +22,7 @@ def estimate(init_dict, df):
     Parameters
     ----------
     init_dict : dictionary
-        see ref:`init_dict`
+        see ref:`_est_init_dict`
 
     df : pandas.DataFrame
         see :ref:`df`

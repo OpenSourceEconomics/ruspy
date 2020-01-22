@@ -12,38 +12,28 @@ from ruspy.simulation.simulation_auxiliary import simulate_strategy
 
 
 def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
-    """
+    """Simulating the decision process of Harold Zurcher.
+
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
     draws the random variables. It then calls the main subfunction with all the
     relevant parameters. So far, the feature of a agent's misbelief on the underlying
     transition probabilities is not implemented.
 
-    :param init_dict: A dictionary containing the following variables as keys:
+    Parameters
+    ----------
+    init_dict : dictionary
+        See :ref:`sim_init_dict`
+    ev_known
+    costs
+    trans_mat
+    shock
 
-        :seed: (Digits)      : The seed determines random draws.
-        :buses: (int)        : Number of buses to be simulated.
-        :disc_fac: (float)       : Discount factor.
-        :periods: (int)      : Number of periods to be simulated.
-        :params:             : A list or array of the cost parameters shaping the cost
+    Returns
+    -------
+        The simulated data, containing for each observation, state, decision,
+        utility, and mileage usage. It is indexed by a bus identifier and the period
 
-    :param ev_known         : A 1d array containing the agent's expectation of the
-                              value function in each state of dimension (num_states)
-    :param trans_mat        : The transition matrix governing the discrete space Markov
-                             decision process of dimension (num_states, num_states).
-    :param shock            : A tuple of pandas.Series, where each Series name is
-                             the scipy distribution function and the data is the loc
-                             and scale specification.
-
-    :return: The function returns the following objects:
-
-        :df:         : A pandas dataframe containing for each observation the period,
-                       state, decision and a Bus ID.
-        :unobs:      : A three dimensional numpy array containing for each bus,
-                       for each period random drawn utility for the decision to
-                       maintain or replace the bus engine.
-        :utilities:  : A two dimensional numpy array containing for each bus in each
-                       period the utility as a float.
     """
     if "seed" in init_dict.keys():
         seed = init_dict["seed"]

@@ -7,12 +7,21 @@ The simulation package contains the functions to simulate a single agent in a dy
 discrete choice model. It is structured into two modules. The simulation module with
 the main function and the simulation\_auxiliary with all supplementary functions
 
+.. _sim_init_dict:
+
+Simulation initialization dictionary
+------------------------------------
+
+
+
 Modules
 -------
 
 ----------------------------------
 ruspy.simulation.simulation
 ----------------------------------
+
+The main function for the simulation process is the following:
 
 .. currentmodule:: ruspy.simulation.simulation
 

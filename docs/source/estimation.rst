@@ -55,6 +55,7 @@ The estimation process is coordinated by the function estimate:
 Besides the :ref:`df`, the function needs the following initialization dictionary:
 
 
+.. _est_init_dict:
 
 Estimation initialization dictionary
 ------------------------------------
@@ -181,6 +182,8 @@ the scipy minimizer. The core function for this can be found in
 The collected results of the transition estimation are collected in a dictionary and
 returned to the ``estimate`` function.
 
+.. _result_trans:
+
 Transition results
 """"""""""""""""""
 The dictionary containing the transition estimation results has the following keys:
@@ -212,8 +215,6 @@ nonzero probabilities in each row. This function is:
 
 
 The transition matrix is then used for the cost parameter estimation.
-
-.. _result_trans:
 
 
 Cost parameter estimation
