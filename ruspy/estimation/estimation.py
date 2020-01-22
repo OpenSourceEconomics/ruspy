@@ -58,6 +58,8 @@ def estimate(init_dict, df):
 
     optimizer_options = select_optimizer_options(init_dict, num_params)
 
+    alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
+
     result_cost_params = {}
 
     min_result = opt.minimize(
@@ -71,6 +73,7 @@ def estimate(init_dict, df):
             decision_mat,
             disc_fac,
             scale,
+            alg_details,
         ),
         **optimizer_options
     )

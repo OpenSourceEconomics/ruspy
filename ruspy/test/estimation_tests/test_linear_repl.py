@@ -107,6 +107,7 @@ def test_ll_params_derivative(inputs, outputs):
             decision_mat,
             disc_fac,
             inputs["scale"],
+            {},
         ),
         np.array([0, 0]),
         decimal=3,

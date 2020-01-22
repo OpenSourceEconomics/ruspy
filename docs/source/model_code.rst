@@ -179,6 +179,11 @@ iterations.
 Algorithmic details
 -------------------
 
+There are several conditions to switch between contraction iterations to
+Newton-Kantorovich iterations. In the following the variable keys are presented, which
+allow to specify the algorithmic behavior:
+
+
 
 
 .. _ev:

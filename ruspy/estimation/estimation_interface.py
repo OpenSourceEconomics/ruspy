@@ -14,6 +14,13 @@ from ruspy.model_code.cost_functions import sqrt_costs_dev
 
 
 def select_model_parameters(init_dict):
+    """
+    Selecting the model specifications.
+
+    :param init_dict: The initizialization dictionary of the estimation process.
+    :return:
+        The model sepcification.
+    """
     if "model_specifications" not in init_dict:
         raise ValueError("Specify model parameters")
     model_specification = init_dict["model_specifications"]
@@ -30,6 +37,14 @@ def select_model_parameters(init_dict):
 
 
 def select_cost_function(maint_cost_func_name):
+    """
+    Selecting the maintenance cost function.
+
+    :param maint_cost_func_name: The name of the maintenance cost function.
+    :return:
+        The maintenance cost function, its derivative and the number of cost
+        parameters in this model.
+    """
     if maint_cost_func_name == "cubic":
         maint_func = cubic_costs
         maint_func_dev = cubic_costs_dev
@@ -55,6 +70,12 @@ def select_cost_function(maint_cost_func_name):
 
 
 def select_optimizer_options(init_dict, num_params_costs):
+    """
+    Creating the options for the scipy optimizer.
+    :param init_dict:
+    :param num_params_costs:
+    :return:
+    """
 
     optimizer_dict = {} if "optimizer" not in init_dict else init_dict["optimizer"]
     optimizer_options = {}

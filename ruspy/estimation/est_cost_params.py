@@ -28,6 +28,7 @@ def loglike_cost_params(
     decision_mat,
     disc_fac,
     scale,
+    alg_details,
 ):
     """
     This is the logliklihood function for the estimation of the cost parameters.
@@ -59,7 +60,7 @@ def loglike_cost_params(
     """
     costs = calc_obs_costs(num_states, maint_func, params, scale)
 
-    ev = get_ev(params, trans_mat, costs, disc_fac)
+    ev = get_ev(params, trans_mat, costs, disc_fac, alg_details)
 
     p_choice = choice_prob_gumbel(ev, costs, disc_fac)
     log_like = like_hood_data(np.log(p_choice), decision_mat, state_mat)
@@ -76,6 +77,7 @@ def derivative_loglike_cost_params(
     decision_mat,
     disc_fac,
     scale,
+    alg_details,
 ):
     """
     This is the derivative of logliklihood function of the cost
@@ -110,7 +112,7 @@ def derivative_loglike_cost_params(
     dev = np.zeros_like(params)
     obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
 
-    ev = get_ev(params, trans_mat, obs_costs, disc_fac)
+    ev = get_ev(params, trans_mat, obs_costs, disc_fac, alg_details)
 
     p_choice = choice_prob_gumbel(ev, obs_costs, disc_fac)
     maint_cost_dev = maint_func_dev(num_states, scale)
@@ -133,7 +135,7 @@ def derivative_loglike_cost_params(
     return dev
 
 
-def get_ev(params, trans_mat, obs_costs, disc_fac):
+def get_ev(params, trans_mat, obs_costs, disc_fac, alg_details):
     """
     A auxiliary function, which allows the log-likelihood function as well as her
     derivative to share the same fix point and to avoid the need to execute the
@@ -162,7 +164,7 @@ def get_ev(params, trans_mat, obs_costs, disc_fac):
         ev = ev_intermed
         ev_intermed = None
     else:
-        ev = calc_fixp(trans_mat, obs_costs, disc_fac)
+        ev = calc_fixp(trans_mat, obs_costs, disc_fac, **alg_details)
         ev_intermed = ev
         current_params = params
     return ev
