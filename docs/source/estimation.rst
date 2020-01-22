@@ -281,7 +281,7 @@ Auxiliary objects
 State matrix
 """"""""""""
 
-A :math:`num\_obs \times num\_states` dimensional **bool numpy array** containing a
+A :math:`num\_obs \times num\_states` dimensional *bool numpy.array* containing a
 single TRUE in each row at the column in which the bus was in that observation. It is
 used in the matrix multiplication of the likelihood function. It is created by
 
