@@ -7,18 +7,15 @@ relevant variables.
 import numpy as np
 import pandas as pd
 
-from ruspy.simulation.simulation_auxiliary import get_unobs_data
 from ruspy.simulation.simulation_auxiliary import simulate_strategy
 
 
-def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
+def simulate(init_dict, ev_known, costs, trans_mat):
     """Simulating the decision process of Harold Zurcher.
 
     The main function to simulate a decision process in the theoretical framework of
     John Rust's 1987 paper. It reads the inputs from the initiation dictionary and
-    draws the random variables. It then calls the main subfunction with all the
-    relevant parameters. So far, the feature of a agent's misbelief on the underlying
-    transition probabilities is not implemented.
+    then calls the main subfunction with all the relevant parameters.
 
     Parameters
     ----------
@@ -30,39 +27,26 @@ def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
         See ref:`costs`
     trans_mat : numpy.array
         See ref:`trans_mat`
-    shock : tuple
-        See ref:`shock`
 
     Returns
     -------
     df : pandas.DataFrame
-        See ref:`sim_results`
-
+        See :ref:`sim_results`
     """
     if "seed" in init_dict.keys():
         seed = init_dict["seed"]
     else:
         seed = np.random.randint(1, 100000)
     num_buses = init_dict["buses"]
-    disc_fac = init_dict["disc_fac"]
+    disc_fac = init_dict["discount_factor"]
     num_periods = init_dict["periods"]
     if ev_known.shape[0] != trans_mat.shape[0]:
         raise ValueError(
             "The transition matrix and the expected value of the agent "
             "need to have the same size."
         )
-    maint_shock_dist_name, repl_shock_dist_name, loc_scale = get_unobs_data(shock)
     states, decisions, utilities, usage = simulate_strategy(
-        num_periods,
-        num_buses,
-        costs,
-        ev_known,
-        trans_mat,
-        disc_fac,
-        maint_shock_dist_name,
-        repl_shock_dist_name,
-        loc_scale,
-        seed,
+        num_periods, num_buses, costs, ev_known, trans_mat, disc_fac, seed,
     )
     bus_ids = np.arange(num_buses) + 1
     periods = np.arange(num_periods)

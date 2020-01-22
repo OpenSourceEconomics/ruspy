@@ -25,7 +25,7 @@ def test_regression_simulation(inputs):
     param_2 = np.random.normal(23, 2)
     params = np.array([param_1, param_2])
 
-    disc_fac = init_dict["simulation"]["disc_fac"]
+    disc_fac = init_dict["simulation"]["discount_factor"]
     probs = np.array(init_dict["simulation"]["known_trans"])
     num_states = 600
 

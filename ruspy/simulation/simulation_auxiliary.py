@@ -1,46 +1,52 @@
 import numba
 import numpy as np
-import pandas as pd
 
 
 @numba.jit(nopython=True)
 def simulate_strategy(
-    num_periods,
-    num_buses,
-    costs,
-    ev,
-    trans_mat,
-    disc_fac,
-    maint_shock_dist_name,
-    repl_shock_dist_name,
-    loc_scale,
-    seed,
+    num_periods, num_buses, costs, ev, trans_mat, disc_fac, seed,
 ):
     """
+    Simulating the decision process.
+
     This function simulates the decision strategy, as long as the current period is
     below the number of periods and the current highest state of a bus is in the
     first half of the state space.
 
-    :param costs:        A two dimensional float numpy array containing for each
-                         state the cost to maintain in the first and to replace the bus
-                         engine in the second column.
-    :param ev:           A numpy array containing for each state the expected value
-                         fixed point.total
-    :param num_periods:  The number of periods to be simulated.
-    :type num_periods:   int
-    :param disc_fac:         The discount factor.
-    :type disc_fac:          float
+    Parameters
+    ----------
+    num_periods : int
+         The number of periods to be simulated.
+    num_buses : int
+        The number of buses to be simulated.
+    costs : numpy.array
+        see :ref:`costs`
+    ev : numpy.array
+        see :ref:`ev`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    disc_fac : float
+        see :ref:`disc_fac`
+    seed : int
+        A positive integer setting the random seed for drawing random numbers.
 
-    :return: The function returns the following objects:
+    Returns
+    -------
+    states : numpy.array
+        A two dimensional numpy array containing for each bus in each period the
+        state as an integer.
 
-        :states:           : A two dimensional numpy array containing for each bus in
-                             each period the state as an integer.
-        :decisions:        : A two dimensional numpy array containing for each bus in
-                             each period the decision as an integer.
-        :utilities:        : A two dimensional numpy array containing for each bus in
-                             each period the utility as a float.
-        :num_states: (int) : The size of the state space.
+    decisions : numpy.array
+        A two dimensional numpy array containing for each bus in each period the
+        decision as an integer.
 
+    utilities : numpy.array
+        A two dimensional numpy array containing for each bus in each period the
+        utility as a float.
+
+    usage : numpy.array
+        A two dimensional numpy array containing for each bus in each period the
+        mileage usage of last period as integer.
     """
     np.random.seed(seed)
     num_states = ev.shape[0]
@@ -53,13 +59,7 @@ def simulate_strategy(
             old_state = states[bus, period]
 
             intermediate_state, decision, utility = decide(
-                old_state,
-                costs,
-                disc_fac,
-                ev,
-                maint_shock_dist_name,
-                repl_shock_dist_name,
-                loc_scale,
+                old_state, costs, disc_fac, ev,
             )
 
             state_increase = draw_increment(intermediate_state, trans_mat)
@@ -76,18 +76,32 @@ def simulate_strategy(
 
 @numba.jit(nopython=True)
 def decide(
-    old_state,
-    costs,
-    disc_fac,
-    ev,
-    maint_shock_dist_name,
-    repl_shock_dist_name,
-    loc_scale,
+    old_state, costs, disc_fac, ev,
 ):
-    unobs = (
-        draw_unob(maint_shock_dist_name, loc_scale[0, 0], loc_scale[0, 1]),
-        draw_unob(repl_shock_dist_name, loc_scale[1, 0], loc_scale[1, 1]),
-    )
+    """
+    Choosing action in current state.
+
+    Parameters
+    ----------
+    old_state: int
+        Current state.
+    costs : numpy.array
+        see :ref:`costs`
+    disc_fac : float
+        see :ref:`disc_fac`
+    ev : numpy.array
+        see :ref:`ev`
+
+    Returns
+    -------
+    intermediate_state : int
+        State before transition.
+    decision : int
+        Decision of this period.
+    utility : float
+        Utility of this period.
+    """
+    unobs = np.random.gumbel(-np.euler_gamma, 1, size=2)
 
     value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + disc_fac * ev[0]
     value_maintain = -costs[old_state, 0] + unobs[0] + disc_fac * ev[old_state]
@@ -104,49 +118,60 @@ def decide(
 
 @numba.jit(nopython=True)
 def draw_increment(state, trans_mat):
+    """
+    Drawing a random increase.
+
+    Parameters
+    ----------
+    state : int
+        Current state.
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+
+    Returns
+    -------
+    increase : int
+        Number of state increase.
+    """
     max_state = np.max(np.nonzero(trans_mat[state, :])[0])
     p = trans_mat[state, state : (max_state + 1)]  # noqa: E203
-    return np.argmax(np.random.multinomial(1, p))
+    increase = np.argmax(np.random.multinomial(1, p))
+    return increase
 
 
-def get_unobs_data(shock):
-    """
-    :param shock            : A tuple of pandas.Series, where each Series name is
-                             the scipy distribution function and the data is the loc
-                             and scale specification.
-
-    :return: A list of distribution names and an array of loc and scalle parameters.
-    """
-    # If no specification on the shocks is given. A right skewed gumbel distribution
-    # with mean 0 and scale pi^2/6 is assumed for each shock component.
-    shock = (
-        (
-            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel"),
-            pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel"),
-        )
-        if shock is None
-        else shock
-    )
-
-    loc_scale = np.zeros((2, 2), dtype=float)
-    for i, params in enumerate(shock):
-        if "loc" in params.index:
-            loc_scale[i, 0] = params["loc"]
-        else:
-            loc_scale[i, 0] = 0
-        if "scale" in params.index:
-            loc_scale[i, 1] = params["scale"]
-        else:
-            loc_scale[i, 1] = 1
-
-    return shock[0].name, shock[1].name, loc_scale
-
-
-@numba.jit(nopython=True)
-def draw_unob(dist_name, loc, scale):
-    if dist_name == "gumbel":
-        return np.random.gumbel(loc, scale)
-    elif dist_name == "normal":
-        return np.random.normal(loc, scale)
-    else:
-        raise ValueError
+# This was an old attempt to implement more shocks than the standard gumbel. Would do
+# this much different now!!!! Just keep it for further work!
+# def get_unobs_data(shock):
+#     # If no specification on the shocks is given. A right skewed gumbel distribution
+#     # with mean 0 and scale pi^2/6 is assumed for each shock component.
+#     shock = (
+#         (
+#             pd.Series(index=["loc"], data=[], name="gumbel"),
+#             pd.Series(index=["loc"], data=[-np.euler_gamma], name="gumbel"),
+#         )
+#         if shock is None
+#         else shock
+#     )
+#
+#     loc_scale = np.zeros((2, 2), dtype=float)
+#     for i, params in enumerate(shock):
+#         if "loc" in params.index:
+#             loc_scale[i, 0] = params["loc"]
+#         else:
+#             loc_scale[i, 0] = 0
+#         if "scale" in params.index:
+#             loc_scale[i, 1] = params["scale"]
+#         else:
+#             loc_scale[i, 1] = 1
+#
+#     return shock[0].name, shock[1].name, loc_scale
+#
+#
+# @numba.jit(nopython=True)
+# def draw_unob(dist_name, loc, scale):
+#     if dist_name == "gumbel":
+#         return np.random.gumbel(loc, scale)
+#     elif dist_name == "normal":
+#         return np.random.normal(loc, scale)
+#     else:
+#         raise ValueError

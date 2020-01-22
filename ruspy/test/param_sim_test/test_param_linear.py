@@ -36,7 +36,7 @@ def inputs():
             "use_search_bounds": "no",
         },
         "simulation": {
-            "disc_fac": disc_fac,
+            "discount_factor": disc_fac,
             "buses": num_buses,
             "periods": num_periods,
         },

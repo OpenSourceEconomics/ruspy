@@ -21,8 +21,8 @@ def random_init(constr=None):
     else:
         agents = np.random.randint(20, 100)
 
-    if "disc_fac" in keys:
-        disc_fac = constr["disc_fac"]
+    if "discount_factor" in keys:
+        disc_fac = constr["discount_factor"]
     else:
         disc_fac = np.random.uniform(0.9, 0.999)
 
@@ -48,7 +48,7 @@ def random_init(constr=None):
 
     init_dict["simulation"]["periods"] = periods
     init_dict["simulation"]["buses"] = agents
-    init_dict["simulation"]["disc_fac"] = disc_fac
+    init_dict["simulation"]["discount_factor"] = disc_fac
     init_dict["simulation"]["seed"] = seed
     init_dict["simulation"]["maint_func"] = maint_func
 

@@ -38,8 +38,8 @@ def loglike_cost_params(
     ----------
     params : numpy.array
         see :ref:`params`
-    maint_func: :func:
-        see :ref: `maint_func`
+    maint_func: func
+        see :ref:`maint_func`
     num_states : int
         The size of the state space.
     disc_fac : numpy.float
@@ -88,7 +88,7 @@ def derivative_loglike_cost_params(
     ----------
     params : numpy.array
         see :ref:`params`
-    maint_func: :func:
+    maint_func: func
         see :ref: `maint_func`
     num_states : int
         The size of the state space.

@@ -92,6 +92,7 @@ def select_optimizer_options(init_dict, num_params_costs):
 
     Returns
     -------
+    optimizer_options : dictionary
         A dictionary with keywords for the scipy optimizer.
 
     """
