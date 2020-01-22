@@ -24,15 +24,19 @@ def simulate(init_dict, ev_known, costs, trans_mat, shock=None):
     ----------
     init_dict : dictionary
         See :ref:`sim_init_dict`
-    ev_known
-    costs
-    trans_mat
-    shock
+    ev_known : numpy.array
+        See :ref:`ev`
+    costs : numpy.array
+        See ref:`costs`
+    trans_mat : numpy.array
+        See ref:`trans_mat`
+    shock : tuple
+        See ref:`shock`
 
     Returns
     -------
-        The simulated data, containing for each observation, state, decision,
-        utility, and mileage usage. It is indexed by a bus identifier and the period
+    df : pandas.DataFrame
+        See ref:`sim_results`
 
     """
     if "seed" in init_dict.keys():

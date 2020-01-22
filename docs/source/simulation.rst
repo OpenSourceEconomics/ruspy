@@ -12,6 +12,10 @@ the main function and the simulation\_auxiliary with all supplementary functions
 Simulation initialization dictionary
 ------------------------------------
 
+.. _shock:
+
+The unobservables
+-----------------
 
 
 Modules
