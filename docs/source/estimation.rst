@@ -59,16 +59,54 @@ Besides the :ref:`df`, the function needs the following initialization dictionar
 Estimation initialization dictionary
 ------------------------------------
 
-The initialization dictionary contains data and model specific information. Besides that it let allows to specify the optimizer from the `scipy library
-<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_. All inputs are either strings or numbers in any format:
+The initialization dictionary contains model, optimizer and algorithmic specific
+information. The information on theses three categories is saved in subdictionaries under
+the keys **model_specifications**, **optimizer** and **alg_details**.  The model specific
+information is mandatory, while the others are optional. If not given, just the default
+values are selected. See :ref:`alg_details` for the possible keys and the default values.
+The mandatory model specific information keys are:
+
+**discount_factor :** *(float)* The discount factor. See :ref:`disc_fac` for details.
+
+**number_states :** *(int)* The size of the state space as integer.
+
+**maint_cost_func :** *(string)* The name of the maintenance cost function. See
+:ref:`maint_func` for details.
+
+**cost_scale :** *(float)* The scale for the maintenance costs. See :ref:`scale` for
+details.
 
 
 
+The dictionary under **optimizer** allows to specify the optimizer from the `scipy library
+<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_. The entries of the dictionary are all *strings* and the following keys are so far possible:
+
+**optimizer_name :** The name of the optimizer. See `scipy library
+<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/
+scipy.optimize.minimize.html>`_ for details. Default is "L-BFGS-B".
+
+**start_values :** The starting vales for the minimization of the cost parameters.
+
+**use_search_bounds :** "yes" or "no" answer, if the algorithm only should search on a
+bounded set.
+
+**search_bounds :**  If "yes" selected above, one can give search bounds. If not
+provided positive values are assured.
+
+**use_gradient :** "yes" or no answer if gradient function should be used.
+
+**additional_options :** It is possible to provide optional keywords, which are
+collected in the "options" dictionary of scipy.
+
+For further details see the selection function itself:
 
 
+.. currentmodule:: ruspy.estimation.estimation_interface
 
+.. autosummary::
+    :toctree: _generated/
 
-
+    select_optimizer_options
 
 
 Following the separability of the estimation process the `estimate` function first calls
@@ -267,6 +305,6 @@ Demonstration
 -------------
 
 In the promotion folder of the repository are two demonstration jupyter notebooks. The
-replication notebook is described here. If you have have everything setup, then it should
-be easy to run it. If not it is provided online in an ready to go environment on
-mybinder:
+replication notebook allows to easily experiment with the estimation methods described
+here. If you have have everything setup, then it should be easy to run it. If not there
+is soon coming a mybinder link and you should keep your eyes open!

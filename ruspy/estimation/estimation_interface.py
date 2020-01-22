@@ -15,11 +15,16 @@ from ruspy.model_code.cost_functions import sqrt_costs_dev
 
 def select_model_parameters(init_dict):
     """
-    Selecting the model specifications.
+        Selecting the model specifications.
 
-    :param init_dict: The initizialization dictionary of the estimation process.
-    :return:
-        The model sepcification.
+    Parameters
+    ----------
+    init_dict : dictionary
+        see ref:`init_dict`
+
+    Returns
+    -------
+        The model sepcifications.
     """
     if "model_specifications" not in init_dict:
         raise ValueError("Specify model parameters")
@@ -38,10 +43,15 @@ def select_model_parameters(init_dict):
 
 def select_cost_function(maint_cost_func_name):
     """
-    Selecting the maintenance cost function.
+        Selecting the maintenance cost function.
 
-    :param maint_cost_func_name: The name of the maintenance cost function.
-    :return:
+    Parameters
+    ----------
+    maint_cost_func_name : string
+        The name of the maintenance cost function.
+
+    Returns
+    -------
         The maintenance cost function, its derivative and the number of cost
         parameters in this model.
     """
@@ -71,10 +81,19 @@ def select_cost_function(maint_cost_func_name):
 
 def select_optimizer_options(init_dict, num_params_costs):
     """
-    Creating the options for the scipy optimizer.
-    :param init_dict:
-    :param num_params_costs:
-    :return:
+        Creating the options for the scipy optimizer.
+
+    Parameters
+    ----------
+    init_dict : dictionary
+        see ref:`init_dict`
+    num_params_costs : int
+        Length of cost parameter vector.
+
+    Returns
+    -------
+        A dictionary with keywords for the scipy optimizer.
+
     """
 
     optimizer_dict = {} if "optimizer" not in init_dict else init_dict["optimizer"]
