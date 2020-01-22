@@ -12,7 +12,7 @@ def bootstrapp(params_raw, hesse_inv_raw, reparam=None, runs=1000):
 
     hesse_inv_raw : numpy.array
         The inverse of hessian matrix, provided by the scipy minimizer. For more
-        information see : https://docs.scipy.org/ .
+        information see: https://docs.scipy.org/ .
 
     reparam : function
         A reparametrization function. If None is given, the dummy function no_reparam,

@@ -72,8 +72,8 @@ Then the mileage state increase is drawn:
 
 .. _sim_results:
 
-The simulation _result_trans
-----------------------------
+The simulation
+--------------
 After the simulation process the observed states, decisions and mileage uses are
 returned. Additionally the agent's utility. They are all stored in pandas.DataFrame with
 column names **states**, **decisions**, **utilities** and **usage**.Hence, the observed

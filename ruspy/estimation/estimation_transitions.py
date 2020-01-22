@@ -20,7 +20,7 @@ def estimate_transitions(df):
         see :ref:`df`
 
     Returns
-    --- ----
+    -------
     result_transitions : dictionary
         see :ref:`result_trans`
 

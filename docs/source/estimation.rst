@@ -110,8 +110,8 @@ For further details see the selection function itself:
     select_optimizer_options
 
 
-Following the separability of the estimation process the `estimate` function first calls
-the estimation function for the transition probabilities.
+Following the separability of the estimation process the ``estimate`` function first
+calls the estimation function for the transition probabilities.
 
 
 Transition probability estimation
@@ -128,11 +128,11 @@ is:
 
     estimate_transitions
 
-So far, there is only the pooled transition from Rust (1987) implemented. The function
-filters missing values from the usage data from the DataFrame and then counts, how often
-each increase occurs. With this transition count the log-likelihood function for the
-transition estimation can be constructed. Note that this is the log-likelihood function
-of a multinomial distribution:
+So far, there is only the pooled transition estimation from Rust (1987) implemented. The
+function filters missing values from the usage data from the DataFrame and then counts,
+how often each increase occurs. With this transition count the log-likelihood function
+for the transition estimation can be constructed. Note that this is the log-likelihood
+function of a multinomial distribution:
 
 .. math::
 
@@ -144,6 +144,7 @@ where :math:`a_i` is the number of occurrences for an increase by :math:`i` stat
 :math:`p_i` their probability. Note that the minus is introduced, such that a
 maximization of the likelihood corresponds to a minimization of this function. The
 corresponding function in the code is:
+
 .. currentmodule:: ruspy.estimation.estimation_transitions
 
 .. autosummary::
@@ -195,11 +196,12 @@ The dictionary containing the transition estimation results has the following ke
 **trans_count :** *(numpy.array)* Number of transitions for an increase of 0, 1, 2, ...
 
 **95_conf_interv :** *(numpy.array)*
-2 x dim(x) matrix containing the bootstrapped (1000 replications) 95% confidence interval
-bounds.
+:math:`2 \times num\_states` dimensional numpy.array containing the bootstrapped (1000
+replications) 95% confidence interval bounds.
 
 **std_errors :** *(numpy.array)*
-dim(X) numpy array with bootstrapped standard errors for each parameter.
+:math:`num\_states` dimensional numpy.array with bootstrapped standard errors for each
+parameter.
 
 
 So far only a pooled estimation of the transitions is possible. Hence, ``ruspy``
@@ -243,8 +245,9 @@ calculation of the same fixed point is avoided by the following function:
 
     get_ev
 
-After successful minimization, some results of the scipy result dictionary are used
-to construct ruspys cost parameter results:
+After successful minimization, some results of the `scipy result dictionary
+<https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.optimize.OptimizeResult.html>`_
+are used to construct ruspys cost parameter results:
 
 
 .. _result_costs:
@@ -261,12 +264,11 @@ The dictionary containing the cost parameter results has the following keys:
 
 **jac :** *(numpy.array)* The value of the estimates' jacobian.
 
-**95_conf_interv :** *(numpy.array)*
-2 x dim(x) matrix containing the bootstrapped (1000 replications) 95% confidence
-interval bounds.
+**95_conf_interv :** *(numpy.array)* :math:`2 \times num\_states` dimensional numpy.array
+containing the bootstrapped (1000 replications) 95% confidence interval bounds.
 
-**std_errors :** *(numpy.array)*
-dim(X) numpy array with bootstrapped standard errors for each parameter.
+**std_errors :** *(numpy.array)* :math:`num\_states` dimensional numpy.array with
+bootstrapped standard errors for each parameter.
 
 
 

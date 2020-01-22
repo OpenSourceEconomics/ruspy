@@ -107,8 +107,8 @@ Cost parameters
 ---------------
 The second in put are the cost parameters, which are sored as a one dimension
 *numpy.array*. At the first position always the replacement cost :math:`RC` is stored.
-The next positions are subsequently filled with :math:`theta_{11}, \theta_{12}, ...`. The
-exact number depends on the functional form.
+The next positions are subsequently filled with :math:`\theta_{11}, \theta_{12}, ...`
+The exact number depends on the functional form.
 
 .. _scale:
 
