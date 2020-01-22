@@ -179,7 +179,7 @@ The transition matrix is then used for the cost parameter estimation.
 
 
 Cost parameter estimation
----------------------------------
+-------------------------
 
 The cost parameters are estimated directly by minimizing the log-likelihood and the corresponding jacobian function with a minimize function from the `scipy library <http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_ . The functions can be found in ``ruspy.estimation.est_cost_params``:
 
@@ -191,16 +191,6 @@ The cost parameters are estimated directly by minimizing the log-likelihood and 
 
   loglike_cost_params
   derivative_loglike_cost_params
-
-For the construction of the likelihood function, ruspy uses matrix algebra and
-therefore creates a :ref:`state_mat` with:
-
-.. currentmodule:: ruspy.estimation.est_cost_params
-
-.. autosummary::
-    :toctree: _generated/
-
-    create_state_matrix
 
 In the minimization the scipy optimizer calls the likelihood functions and its
 derivative with different cost parameters. Together with the constant held
@@ -250,8 +240,16 @@ Auxiliary objects
 State matrix
 """"""""""""
 
-A two dimensional numpy array containing n x s matrix with TRUE in each row at the column
-in which the bus was in that observation.
+A :math:`num\_obs \times num\_states` dimensional **bool numpy array** containing a
+single TRUE in each row at the column in which the bus was in that observation. It is
+used in the matrix multiplication of the likelihood function. It is created by
+
+.. currentmodule:: ruspy.estimation.est_cost_params
+
+.. autosummary::
+    :toctree: _generated/
+
+    create_state_matrix
 
 
 .. _decision_mat:
@@ -260,10 +258,15 @@ in which the bus was in that observation.
 Decision Matrix
 """""""""""""""
 
-A two dimensional numpy array containing  a n x 2 vector with 1 in the first row for
-maintaining and 1 in the second for replacement.
+A :math:`num\_obs \times 2` dimensional numpy array containing 1 in the first row for
+maintaining and 1 in the second for replacement. It is used in the matrix multiplication
+of the likelihood function.
 
-.. _result_dict:
 
-The result dictionary
----------------------
+Demonstration
+-------------
+
+In the promotion folder of the repository are two demonstration jupyter notebooks. The
+replication notebook is described here. If you have have everything setup, then it should
+be easy to run it. If not it is provided online in an ready to go environment on
+mybinder:

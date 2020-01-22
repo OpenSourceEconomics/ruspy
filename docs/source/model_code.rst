@@ -4,17 +4,14 @@ This part documents the different functions for the calculation of the model obj
 determining the decision of Harold Zurcher. Following Rust (1987), the code does not
 estimate the discount factor and it needs to be externally set.
 
-.. _disc_fac:
-
-Discount factor
----------------
-
 .. _costs:
 
 Observed costs
 --------------
 
-The observed costs are saved in an The function to calculate the observed costs is:
+The observed costs are saved in :math:`num\_states \times 2` dimensional numpy array. The
+first column contains the maintenance and the second the replacement costs for each
+state. The function to calculate the observed costs is:
 
 .. currentmodule:: ruspy.model_code.cost_functions
 
@@ -34,8 +31,8 @@ Maintenance cost function
 -------------------------
 
 So far the code allows for five functional forms. The following table reports the
-different functional forms for an arbitrary state :math`x`. Afterwards I list the APIs of
-each function and their derivatives. :math:`states` is the size of the state space.
+different functional forms for an arbitrary state :math:`x`. Afterwards I list the APIs
+of each function and their derivatives. :math:`states` is the size of the state space.
 
 +-------------+-------------------------------------------------------------------------+
 | Name        | Functional form                                                         |
@@ -170,8 +167,6 @@ steps are the following in ruspy:
     contraction_iteration
     kantorovich_step
 
-In the following I describe the conditions, for my algorithm when to switch between those
-iterations.
 
 .. _alg_details:
 
@@ -179,28 +174,41 @@ iterations.
 Algorithmic details
 -------------------
 
-There are several conditions to switch between contraction iterations to
-Newton-Kantorovich iterations. In the following the variable keys are presented, which
-allow to specify the algorithmic behavior:
+In the following the variable keys are presented, which allow to specify the algorithmic
+behavior. The parameters can be grouped into two categories. Switching parameters, which
+allow to specify, when the algorithm switches from contraction to Newton-Kantorovich
+iterations and general parameters, which let the algorithm stop. So far, there is no
+switching back implemented.
 
+**max_cont_steps :** *(int)* The maximum number of contraction iterations before
+switching to Newton-Kantorovich iterations. Default is 20.
 
+**switch_tol :** *(float)* If this threshold is reached by contraction iterations, then
+the algorithm switches to Newton-Kantorovich iterations. Default is :math:`10^{-3}`.
 
+**max_newt_kant_steps :** *(int)* The maximum number of Newton-Kantorovich iterations
+before the algorithm stops. Default is 20.
+
+**threshold :** *(float)* If this threshold is reached by Newton-Kantorovich iterations,
+then the algorithm stops. Default is :math:`10^{-12}`.
 
 .. _ev:
 
---------------
-Expected value
---------------
+-----------------------------
+Expected value of maintenance
+-----------------------------
+
+In ruspy the expected value of maintenance is stored in state space sized numpy array.
+Thus, the exected value of replacement can be found in the zero entry. It is generally
+denoted by *ev*, except in the simulation part of the package where it is denoted by
+*ev_known*. This illustrates that the expected value is created by the agent on his
+beliefs of the process.
 
 
+Common model objects
+--------------------
 
-
-
-
-
-
-Other model objects
--------------------
+Here are some common objects with a short description documented.
 
 .. _trans_mat:
 
@@ -208,9 +216,9 @@ Other model objects
 Transition matrix
 -----------------
 
-The transition matrix for the Markov process stored in a two dimensional numpy array. As
-transition in the case of the replacement corresponds to a transition from state 0, there
-is only matrix with number of rows and columns equally to the size of the state space.
+The transition matrix for the Markov process are stored in a :math:`num\_states \times
+num\_states` dimensional numpy array. As transition in the case of the replacement
+corresponds to a transition from state 0, it exists only matrix.
 
 
 .. _pchoice:
@@ -218,3 +226,26 @@ is only matrix with number of rows and columns equally to the size of the state 
 --------------------
 Choice probabilities
 --------------------
+
+The choice probabilities are stored in a :math:`num\_states \times 2` dimensional numpy
+array. So far only choice probabilities, resulting from an unobserved shock with i.i.d.
+gumbel distribution are implemented. The multinomial logit formula is herefore
+implemented in:
+
+.. currentmodule:: ruspy.model_code.choice_probabilities
+
+.. autosummary::
+    :toctree: _generated/
+
+    choice_prob_gumbel
+
+
+.. _disc_fac:
+
+---------------
+Discount factor
+---------------
+
+The discount factor, as described in the economic model section, is stored as a float in
+ruspy. It needs to be set externally for the simulation as well as for the estimation
+process. The key in the dictionary herefore is always *disc_fac*.
