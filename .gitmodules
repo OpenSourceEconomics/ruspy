@@ -1,3 +1,0 @@
-[submodule "promotion/replication/zurcher-data"]
-	path = promotion/replication/zurcher-data
-	url = https://github.com/OpenSourceEconomics/zurcher-data.git
