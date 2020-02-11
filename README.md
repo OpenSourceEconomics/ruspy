@@ -1,4 +1,4 @@
-# Optimal Replacement of GMC Bus Engines: An Empirical Model of Harold Zurcher
+# Optimal replacement of GMC bus engines: An empirical model of Harold Zurcher
 
 Ruspy is an open-source software package for estimating and simulating infinite horizon single agent discrete choice model in the setting of
 
