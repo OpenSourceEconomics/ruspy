@@ -7,7 +7,7 @@ as a foundation for teaching and research in this particular model and can be us
 freely by everyone. For a full understanding of the mechanisms in this package it is
 advisable to first read the paper:
 
-Rust, J.  (1987). `Optimal Replacement of GMC Bus Engines: An empirical model of Harold
+Rust, J.  (1987). `Optimal replacement of GMC bus engines: An empirical model of Harold
 Zurcher. <https://doi.org/10.2307/1911259>`_ *Econometrica, 55* (5), 999-1033.
 
 and the documentation provided by John Rust on his website:
@@ -25,7 +25,9 @@ Using the code needs this `dependencies
 cloning the repository, you can install the ruspy package via pip locally. This can
 easily be done by
 
-  $ pip install -e ruspy
+.. code-block:: bash
+
+      $ pip install -e ruspy
 
 
 

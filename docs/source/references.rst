@@ -8,7 +8,7 @@ McFadden, D. (1973). `Conditional logit analysis of qualitative choice behavior
 <https://eml.berkeley.edu/reprints/mcfadden/zarembka.pdf>`_. In P. Zarembka (Ed.),
 *Frontiers in Econometrics* (pp. 105–142). New York City, NY: Academic Press.
 
-Rust, J.  (1987). `Optimal Replacement of GMC Bus Engines: An empirical model of Harold
+Rust, J.  (1987). `Optimal replacement of GMC bus engines: An empirical model of Harold
 Zurcher. <https://doi.org/10.2307/1911259>`_ *Econometrica, 55* (5), 999-1033.
 
 Rust, J. (1988). `Maximum likelihood estimation of discrete control processes.
