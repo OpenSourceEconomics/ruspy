@@ -1,15 +1,10 @@
 name: ruspy
 
-channels:
-  - defaults
-  - conda-forge
-  - janosg
-
 dependencies:
   - python
   - numpy
   - sphinx
-  - pandas
+  - pandas=0.25.3
   - statsmodels
   - pytest
   - pytest-xdist
@@ -20,8 +15,9 @@ dependencies:
   - numba
   - mpmath
   - pip
-  - estimagic
   - pip:
       - flake8
       - black
       - pre-commit
+      - jupyter_contrib_nbextensions
+      - sphinx_rtd_theme

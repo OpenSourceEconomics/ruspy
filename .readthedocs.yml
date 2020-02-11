@@ -1,11 +1,11 @@
+version: 2
+
 build:
   image: latest
 
 python:
- version: 3.6
- setup_py_install: true
- use_system_site_packages: true
+  version: 3.7
 
-requirements_file: docs/requirements.txt
+conda:
+  environment: docs/environment.yml
 
-formats: []

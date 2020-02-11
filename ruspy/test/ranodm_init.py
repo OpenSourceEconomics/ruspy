@@ -21,10 +21,10 @@ def random_init(constr=None):
     else:
         agents = np.random.randint(20, 100)
 
-    if "BETA" in keys:
-        beta = constr["BETA"]
+    if "discount_factor" in keys:
+        disc_fac = constr["discount_factor"]
     else:
-        beta = np.random.uniform(0.9, 0.999)
+        disc_fac = np.random.uniform(0.9, 0.999)
 
     if "PERIODS" in keys:
         periods = constr["PERIODS"]
@@ -41,19 +41,19 @@ def random_init(constr=None):
     else:
         maint_func = "linear"
 
-    init_dict = dict()
+    init_dict = {}
 
     for key_ in ["simulation", "estimation"]:
         init_dict[key_] = {}
 
     init_dict["simulation"]["periods"] = periods
     init_dict["simulation"]["buses"] = agents
-    init_dict["simulation"]["beta"] = beta
+    init_dict["simulation"]["discount_factor"] = disc_fac
     init_dict["simulation"]["seed"] = seed
     init_dict["simulation"]["maint_func"] = maint_func
 
     init_dict["estimation"]["states"] = np.random.randint(100, 150)
-    init_dict["estimation"]["beta"] = beta
+    init_dict["estimation"]["disc_fac"] = disc_fac
     init_dict["estimation"]["maint_func"] = maint_func
 
     # Generate random parameterization
@@ -63,14 +63,6 @@ def random_init(constr=None):
     p2 = np.random.uniform(0.55, 0.58)
     p3 = 1 - p1 - p2
     init_dict["simulation"]["known_trans"] = [p1, p2, p3]
-    # As we only draw from 3 dimensional transition probabilities as state space of
-    # 300 should be enough.
-    init_dict["simulation"]["states"] = 300
-
-    # Draw parameter
-    param1 = np.random.normal(10.0, 2)
-    param2 = np.random.normal(2.3, 0.5)
-    init_dict["simulation"]["params"] = [param1, param2]
 
     return init_dict
 
@@ -84,5 +76,5 @@ def print_dict(init_dict, file_name="test"):
     for key_ in order:
         ordered_dict[key_] = init_dict[key_]
 
-    with open("{}.ruspy.yml".format(file_name), "w") as outfile:
+    with open(f"{file_name}.ruspy.yml", "w") as outfile:
         yaml.dump(ordered_dict, outfile, explicit_start=True, indent=4)

@@ -3,54 +3,89 @@ This module contains the main function for the estimation process.
 """
 import numpy as np
 import scipy.optimize as opt
+
+from ruspy.estimation.bootstrapping import bootstrapp
+from ruspy.estimation.est_cost_params import create_state_matrix
+from ruspy.estimation.est_cost_params import loglike_cost_params
+from ruspy.estimation.estimation_interface import select_model_parameters
+from ruspy.estimation.estimation_interface import select_optimizer_options
+from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
-from ruspy.estimation.estimation_cost_parameters import create_transition_matrix
-from ruspy.estimation.estimation_cost_parameters import create_state_matrix
-from ruspy.estimation.estimation_cost_parameters import loglike_opt_rule
-from ruspy.estimation.estimation_cost_parameters import lin_cost
 
 
-def estimate(init_dict, df, repl_4=False):
+def estimate(init_dict, df):
     """
-    This function calls the auxiliary functions to estimate the decision parameters.
-    Therefore it manages the estimation process. As mentioned in the model theory
-    chapter of the paper, the estimation of the transition probabilities and the
-    estimation of the parameters shaping the cost function
-    are completely separate.
+    Estimation function of ruspy.
 
-    :param init_dict: A dictionary containing the following variables as keys:
+    This function coordinates the estimation process of the ruspy package.
 
-        :beta: (float)       : Discount factor.
-        :states: (int)       : The size of the statespace.
-        :maint_func: (func)  : The maintenance cost function. Default is the linear
-                               from the paper.
+    Parameters
+    ----------
+    init_dict : dictionary
+        see ref:`_est_init_dict`
 
-    :param df:        A pandas dataframe, which contains for each observation the Bus
-                      ID, the current state of the bus, the current period and the
-                      decision made in this period.
+    df : pandas.DataFrame
+        see :ref:`df`
 
-    :param repl_4: Auxiliary variable indicating the complete setting of the
-                   replication of the paper with group 4.
+    Returns
+    -------
+    transition_results : dictionary
+        see :ref:`result_trans`
+    result_cost_params : dictionary
+        see :ref:`result_costs`
 
-    :return: The function returns the optimization result of the transition
-             probabilities and of the cost parameters as separate dictionaries.
+
 
     """
-    beta = init_dict["beta"]
-    transition_results = estimate_transitions(df, repl_4=repl_4)
-    endog = df.loc[:, "decision"].to_numpy()
-    states = df.loc[:, "state"].to_numpy()
-    num_obs = df.shape[0]
-    num_states = init_dict["states"]
-    maint_func = lin_cost  # For now just set this to a linear cost function
+
+    transition_results = estimate_transitions(df)
+
+    endog = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
+    states = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
+
+    (
+        disc_fac,
+        num_states,
+        maint_func,
+        maint_func_dev,
+        num_params,
+        scale,
+    ) = select_model_parameters(init_dict)
+
     decision_mat = np.vstack(((1 - endog), endog))
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
-    state_mat = create_state_matrix(states, num_states, num_obs)
-    result = opt.minimize(
-        loglike_opt_rule,
-        args=(maint_func, num_states, trans_mat, state_mat, decision_mat, beta),
-        x0=np.array([5, 5]),
-        bounds=[(1e-6, None), (1e-6, None)],
-        method="L-BFGS-B",
+    state_mat = create_state_matrix(states, num_states)
+
+    optimizer_options = select_optimizer_options(init_dict, num_params)
+
+    alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
+
+    result_cost_params = {}
+
+    min_result = opt.minimize(
+        loglike_cost_params,
+        args=(
+            maint_func,
+            maint_func_dev,
+            num_states,
+            trans_mat,
+            state_mat,
+            decision_mat,
+            disc_fac,
+            scale,
+            alg_details,
+        ),
+        **optimizer_options
     )
-    return transition_results, result
+    result_cost_params["x"] = min_result["x"]
+    result_cost_params["fun"] = min_result["fun"]
+    result_cost_params["message"] = min_result["message"]
+    result_cost_params["jac"] = min_result["jac"]
+
+    if "hess_inv" in min_result:
+        (
+            result_cost_params["95_conf_interv"],
+            result_cost_params["std_errors"],
+        ) = bootstrapp(min_result["x"], min_result["hess_inv"])
+
+    return transition_results, result_cost_params

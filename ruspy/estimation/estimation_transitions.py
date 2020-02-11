@@ -2,103 +2,120 @@
 This module contains the functions necessary for the estimation process of transition
 probabilities.
 """
-import numpy as np
-from math import log
 import numba
+import numpy as np
+import scipy.optimize as opt
+
+from ruspy.estimation.bootstrapping import bootstrapp
 
 
-def estimate_transitions(df, repl_4=False):
+def estimate_transitions(df):
+    """Estimating the transition proabilities.
+
+    The sub function for managing the estimation of the transition probabilities.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        see :ref:`df`
+
+    Returns
+    -------
+    result_transitions : dictionary
+        see :ref:`result_trans`
+
     """
-    The sub function for estimating the transition probabilities. This function
-    manages the estimation process of the transition probaiblities and calls the
-    necessary subfunctions.
-
-    :param df: A pandas dataframe, which contains for each observation the Bus ID,
-    the current state of the bus, the current period and the decision made in this
-    period.
-
-    :param repl_4: Auxiliary variable indicating the transition estimation as in Rust
-        (1987). The treatment of the engine replacement decision for the state
-        transitions is hardcoded below.
-
-    :return: The optimization result of the transition probabilities estimation as a
-             dictionary.
-    """
-    result_transitions = dict()
-    num_bus = len(df["Bus_ID"].unique())
-    num_periods = int(df.shape[0] / num_bus)
-    states = df["state"].values.reshape(num_bus, num_periods)
-    decisions = df["decision"].values.reshape(num_bus, num_periods)
-    space_state = states.max() + 1
-    state_count = np.zeros(shape=(space_state, space_state), dtype=int)
-    increases = np.zeros(shape=(num_bus, num_periods - 1), dtype=int)
-
-    increases, state_count = create_increases(
-        increases, state_count, num_bus, num_periods, states, decisions, repl_4
+    result_transitions = {}
+    usage = df["usage"].to_numpy(dtype=float)
+    usage = usage[~np.isnan(usage)].astype(int)
+    result_transitions["trans_count"] = transition_count = np.bincount(usage)
+    raw_result_trans = opt.minimize(
+        loglike_trans,
+        args=transition_count,
+        x0=np.full(len(transition_count), 0.1),
+        method="BFGS",
     )
-    result_transitions["state_count"] = state_count
-    transition_count = np.bincount(increases.flatten())
-    trans_probs = np.array(transition_count) / np.sum(transition_count)
-    ll = loglike(trans_probs, transition_count)
-    result_transitions.update(
-        {"x": trans_probs, "fun": ll, "trans_count": transition_count}
+    p_raw = raw_result_trans["x"]
+    result_transitions["x"] = reparam_trans(p_raw)
+
+    result_transitions["95_conf_interv"], result_transitions["std_errors"] = bootstrapp(
+        p_raw, raw_result_trans["hess_inv"], reparam=reparam_trans
     )
+
+    result_transitions["fun"] = loglike_trans(p_raw, transition_count)
+
     return result_transitions
 
 
+def loglike_trans(p_raw, transition_count):
+    """
+    Log-likelihood function of transition probability estimation.
+
+    Parameters
+    ----------
+    p_raw : numpy.array
+        The raw values before reparametrization, on which there are no constraints
+        or bounds.
+    transition_count : numpy
+        The pooled count of state increases per period in the data.
+
+    Returns
+    -------
+
+    log_like : numpy.float
+        The negative log-likelihood value of the transition probabilities
+    """
+    trans_probs = reparam_trans(p_raw)
+    log_like = -np.sum(np.multiply(transition_count, np.log(trans_probs)))
+    return log_like
+
+
+def reparam_trans(p_raw):
+    """
+    The reparametrization function for transition probabilities.
+
+    Parameters
+    ----------
+    p_raw : numpy.array
+        The raw values before reparametrization, on which there are no constraints
+        or bounds.
+
+    Returns
+    -------
+    trans_prob : numpy.array
+        The probabilities of an state increase.
+
+    """
+    p = np.exp(p_raw) / np.sum(np.exp(p_raw))
+    return p
+
+
 @numba.jit(nopython=True)
-def create_increases(
-    increases, state_count, num_bus, num_periods, states, decisions, repl_4=False
-):
+def create_transition_matrix(num_states, trans_prob):
     """
-    This function counts how often the buses increased their state by 0, by 1 etc.
+    Creating the transition matrix with the assumption, that in every row the state
+    increases have the same probability.
 
-    :param increases:        An array containing zeros and be filled with the increases.
-    :param state_count:      An array containing the number of observations per state.
-    :param num_bus:          The number of buses in the samples.
-    :type num_bus:           int
-    :param num_periods:      The number of periods the buses drove.
-    :type num_periods:       int
-    :param states:           A two dimensional numpy array containing for each bus in
-                             each period the state as an integer.
-    :param decisions:        A two dimensional numpy array containing for each bus in
-                             each period the decision as an integer.
+    Parameters
+    ----------
+    num_states : int
+        The size of the state space.
+    trans_prob : numpy.array
+        The probabilities of an state increase.
 
-    :param repl_4: Auxiliary variable indicating the transition estimation as in Rust
-        (1987). The treatment of the engine replacement decision for the state
-        transitions is hardcoded below.
+    Returns
+    -------
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
 
-    :return: A list with the highest increase as maximal index and the increase
-             counts as entries.
     """
-
-    for bus in range(num_bus):
-        for period in range(num_periods - 1):
-            if decisions[bus, period] == 0:
-                increases[bus, period] = states[bus, period + 1] - states[bus, period]
-                state_count[states[bus, period], states[bus, period + 1]] += 1
+    trans_mat = np.zeros((num_states, num_states))
+    for i in range(num_states):  # Loop over all states.
+        for j, p in enumerate(trans_prob):  # Loop over the possible increases.
+            if i + j < num_states - 1:
+                trans_mat[i, i + j] = p
+            elif i + j == num_states - 1:
+                trans_mat[i, num_states - 1] = trans_prob[j:].sum()
             else:
-                if repl_4:
-                    increases[bus, period] = 1  # This is the setting from Rust (1987)
-                else:
-                    increases[bus, period] = states[bus, period + 1]
-                state_count[0, increases[bus, period]] += 1
-    return increases, state_count
-
-
-@numba.jit(nopython=True)
-def loglike(trans_probs, transition_count):
-    """
-    The loglikelihood function for estimating the transition probabilities.
-
-    :param trans_probs:      A numpy array containing transition probabilities.
-    :param transition_count: A list with the highest state increase as maximal index
-                             and the increase counts as entries.
-
-    :return: The negative loglikelihood value for minimizing the second liklihood
-             function.
-    """
-    ll = 0
-    for i, p in enumerate(trans_probs):
-        ll = ll + transition_count[i] * log(p)
-    return -ll
+                pass
+    return trans_mat

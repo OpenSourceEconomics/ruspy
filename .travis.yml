@@ -15,12 +15,11 @@ before_script:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)
 
 script:
-    - py.test --cov=ruspy
+    - source .envrc
+    - py.test
+    - python ex_promotion_nbs.py
 
 
 after_success:
     - codecov
-
-notifications:
-  email: false
 
