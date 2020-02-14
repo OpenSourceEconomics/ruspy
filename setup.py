@@ -2,7 +2,9 @@ import os
 import sys
 from shutil import rmtree
 
-from setuptools import find_packages, setup, Command
+from setuptools import Command
+from setuptools import find_packages
+from setuptools import setup
 
 # Package meta-data.
 NAME = "ruspy"
@@ -19,7 +21,6 @@ REQUIRED = [
     "scipy",
     "pyyaml",
     "matplotlib",
-    "mpmath",
     "numba",
 ]
 
@@ -38,7 +39,7 @@ class PublishCommand(Command):
     @staticmethod
     def status(s):
         """Prints things in bold."""
-        print("\033[1m{0}\033[0m".format(s))
+        print(f"\033[1m{s}\033[0m")
 
     def initialize_options(self):
         pass
@@ -54,7 +55,7 @@ class PublishCommand(Command):
             pass
 
         self.status("Building Source and Wheel (universal) distribution…")
-        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
+        os.system(f"{sys.executable} setup.py sdist bdist_wheel --universal")
 
         self.status("Uploading the package to PyPi via Twine…")
         os.system("twine upload dist/*")
