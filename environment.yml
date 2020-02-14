@@ -4,7 +4,7 @@ dependencies:
   - python
   - numpy
   - sphinx
-  - pandas=0.25.3
+  - pandas=1.0.0
   - statsmodels
   - pytest
   - pytest-xdist
