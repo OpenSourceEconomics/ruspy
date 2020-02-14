@@ -8,7 +8,10 @@ from setuptools import setup
 
 # Package meta-data.
 NAME = "ruspy"
-DESCRIPTION = "Hier sollte eine Beschreibung stehen."
+DESCRIPTION = (
+    "A Python package for the simulation and estimation of a prototypical "
+    "infinite-horizon dynamic discrete choice model based on Rust (1987)."
+)
 URL = ""
 EMAIL = "s6mables@uni-bonn.de"
 AUTHOR = "Maximilian Blesch"
