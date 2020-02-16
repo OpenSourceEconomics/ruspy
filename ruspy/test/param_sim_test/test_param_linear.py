@@ -37,6 +37,7 @@ def inputs():
         },
         "simulation": {
             "discount_factor": disc_fac,
+            "seed": 123,
             "buses": num_buses,
             "periods": num_periods,
         },
@@ -66,7 +67,3 @@ def test_repl_params(inputs):
 
 def test_repl_trans(inputs):
     assert_allclose(inputs["trans_est"], inputs["trans_base"], atol=1e-2)
-
-
-def test_success(inputs):
-    assert inputs["message"] == "Optimization terminated successfully."

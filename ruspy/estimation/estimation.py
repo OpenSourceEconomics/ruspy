@@ -40,8 +40,8 @@ def estimate(init_dict, df):
 
     transition_results = estimate_transitions(df)
 
-    endog = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
-    states = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
+    endog = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy(int)
+    states = df.loc[(slice(None), slice(1, None)), "state"].to_numpy(int)
 
     (
         disc_fac,

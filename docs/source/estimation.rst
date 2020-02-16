@@ -311,5 +311,4 @@ In the promotion folder of the repository are two demonstration jupyter notebook
 `replication
 <https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion/replication/replication.ipynb>`_
 notebook allows to easily experiment with the estimation methods described here. If you
-have have everything setup, then it should be easy to run it. If not, there is soon
-coming a mybinder link and you should keep your eyes open!
+have have everything setup, then it should be easy to run it.

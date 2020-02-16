@@ -13,6 +13,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
+print(sys.path)
 
 # -- Project information -----------------------------------------------------
 
@@ -50,11 +51,10 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
-    "nbsphinx",
     "numpydoc",
 ]
 
-napoleon_google_docstring = True
+
 napoleon_numpy_docstring = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

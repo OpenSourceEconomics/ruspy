@@ -84,5 +84,4 @@ Demonstration
 
 In the promotion folder of the repository are two demonstration jupyter notebooks. The
 `simulation <https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion/simulation/simulation_convergence.ipynb>`_ notebook allows to easily experiment with the estimation methods described
-here. If you have have everything setup, then it should be easy to run it. If not there
-is soon coming a mybinder link and you should keep your `eyes open <https://gph.is/2rY1Er1>`_ !
+here. If you have have everything setup, then it should be easy to run it.

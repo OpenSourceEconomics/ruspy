@@ -42,8 +42,8 @@ def inputs():
     out["params_est"] = result_fixp["x"]
     out["trans_ll"] = result_trans["fun"]
     out["cost_ll"] = result_fixp["fun"]
-    out["states"] = df.loc[(slice(None), slice(1, None)), "state"].to_numpy()
-    out["decisions"] = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy()
+    out["states"] = df.loc[(slice(None), slice(1, None)), "state"].to_numpy(int)
+    out["decisions"] = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy(int)
     out["disc_fac"] = disc_fac
     out["num_states"] = num_states
     out["scale"] = scale
