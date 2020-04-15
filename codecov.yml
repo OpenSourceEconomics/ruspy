@@ -9,8 +9,6 @@ coverage:
       threshold: 5%
 
 ignore:
-  - ".tox/**/*"
-  - "release.py"
   - "setup.py"
-  - "respy/conftest.py"
-  - "respy/tests/**/*"
+  - "respy/ruspy_config.py"
+  - "ruspy/tests/**/*"
