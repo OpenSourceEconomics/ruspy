@@ -10,5 +10,5 @@ coverage:
 
 ignore:
   - "setup.py"
-  - "respy/ruspy_config.py"
+  - "respy/config.py"
   - "ruspy/tests/**/*"
