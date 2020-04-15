@@ -34,7 +34,7 @@ def inputs():
             "use_search_bounds": "no",
         },
     }
-    df = pd.read_pickle(TEST_FOLDER + "group_4.pkl", "rb")
+    df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
     result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
