@@ -4,6 +4,8 @@ This part documents the different functions for the calculation of the model obj
 determining the decision of Harold Zurcher. Following Rust (1987), the code does not
 estimate the discount factor and it needs to be externally set.
 
+
+
 .. _costs:
 
 Observed costs
