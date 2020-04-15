@@ -8,9 +8,9 @@ dependencies:
   - statsmodels
   - pytest
   - pytest-xdist
+  - pytest-cov
   - scipy
   - matplotlib
-  - pytest-cov
   - numpydoc
   - jupyter
   - numba
