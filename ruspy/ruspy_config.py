@@ -1,8 +1,9 @@
 """This module provides some configuration for the package."""
-import sys
 import os
+import sys
 
 import numpy as np
+
 
 # We only support modern Python.
 np.testing.assert_equal(sys.version_info[:2] >= (3, 6), True)

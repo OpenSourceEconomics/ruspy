@@ -3,10 +3,10 @@ import os
 
 import pytest
 
-from ruspy.simulation.simulation import simulate
-from ruspy.ruspy_config import PACKAGE_DIR
-from ruspy.estimation.estimation import estimate
 import ruspy.ruspy_config
+from ruspy.estimation.estimation import estimate
+from ruspy.ruspy_config import PACKAGE_DIR
+from ruspy.simulation.simulation import simulate
 
 
 def test():
