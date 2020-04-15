@@ -6,6 +6,8 @@ estimate the discount factor and it needs to be externally set.
 
 .. _costs:
 
+
+
 Observed costs
 --------------
 
