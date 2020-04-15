@@ -36,9 +36,9 @@ If you want to replicate Rust (1987) you can download the raw data from John Rus
 `website <https://editorialexpress.com/jrust/research.html>`_ and prepare it yourself it
 the desired manner. Or you can use the functions in `zurcher-data
 <https://github.com/OpenSourceEconomics/zurcher-data>`_ which are provided by the
-`OpenSourceEconomics <https://github.com/OpenSourceEconomics>`_ community and tailored to
-the ruspy package. In the demonstration section these functions are used to replicate the
-results documented.
+`OpenSourceEconomics <https://github.com/OpenSourceEconomics>`_ community and
+tailored to the ruspy package. In the demonstration section these functions are used
+to replicate the results documented.
 
 
 The estimation function
@@ -61,11 +61,11 @@ Estimation initialization dictionary
 ------------------------------------
 
 The initialization dictionary contains model, optimizer and algorithmic specific
-information. The information on theses three categories is saved in subdictionaries under
-the keys **model_specifications**, **optimizer** and **alg_details**.  The model specific
-information is mandatory, while the others are optional. If not given, just the default
-values are selected. See :ref:`alg_details` for the possible keys and the default values.
-The mandatory model specific information keys are:
+information. The information on theses three categories is saved in subdictionaries
+under the keys **model_specifications**, **optimizer** and **alg_details**.  The
+model specific information is mandatory, while the others are optional. If not given,
+just the default values are selected. See :ref:`alg_details` for the possible keys
+and the default values. The mandatory model specific information keys are:
 
 **discount_factor :** *(float)* The discount factor. See :ref:`disc_fac` for details.
 
@@ -79,8 +79,10 @@ details.
 
 
 
-The dictionary under **optimizer** allows to specify the optimizer from the `scipy library
-<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_. The entries of the dictionary are all *strings* and the following keys are so far possible:
+The dictionary under **optimizer** allows to specify the optimizer from the `scipy
+library <http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize
+.minimize.html>`_. The entries of the dictionary are all *strings* and the following
+keys are so far possible:
 
 **optimizer_name :** The name of the optimizer. See `scipy library
 <http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/
@@ -154,8 +156,8 @@ corresponding function in the code is:
 
 
 The ``estimate_transitions`` function minimizes now the ``loglike_trans`` function by
-calling a minimize routine from the `scipy library
-<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_.
+calling a minimize routine from the `scipy library <http://lagrange.univ-lyon1
+.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_.
 Even though transition probabilities need to add up to 1 and have to be positive, there
 are no constraints on the minimized parameters. The constraints are applied inside
 ``loglike_trans`` by a reparametrization function:
@@ -222,7 +224,10 @@ The transition matrix is then used for the cost parameter estimation.
 Cost parameter estimation
 -------------------------
 
-The cost parameters are estimated directly by minimizing the log-likelihood and the corresponding jacobian function with a minimize function from the `scipy library <http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_ . The functions can be found in ``ruspy.estimation.est_cost_params``:
+The cost parameters are estimated directly by minimizing the log-likelihood and the
+corresponding jacobian function with a minimize function from the `scipy library
+<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize
+.html>`_ . The functions can be found in ``ruspy.estimation.est_cost_params``:
 
 
 .. currentmodule:: ruspy.estimation.est_cost_params
@@ -246,8 +251,8 @@ calculation of the same fixed point is avoided by the following function:
     get_ev
 
 After successful minimization, some results of the `scipy result dictionary
-<https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.optimize.OptimizeResult.html>`_
-are used to construct ruspys cost parameter results:
+<https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.optimize
+.OptimizeResult.html>`_ are used to construct ruspys cost parameter results:
 
 
 .. _result_costs:
@@ -264,8 +269,9 @@ The dictionary containing the cost parameter results has the following keys:
 
 **jac :** *(numpy.array)* The value of the estimates' jacobian.
 
-**95_conf_interv :** *(numpy.array)* :math:`2 \times num\_states` dimensional numpy.array
-containing the bootstrapped (1000 replications) 95% confidence interval bounds.
+**95_conf_interv :** *(numpy.array)* :math:`2 \times num\_states` dimensional
+numpy.array containing the bootstrapped (1000 replications) 95% confidence interval
+bounds.
 
 **std_errors :** *(numpy.array)* :math:`num\_states` dimensional numpy.array with
 bootstrapped standard errors for each parameter.
@@ -308,7 +314,7 @@ Demonstration
 -------------
 
 In the promotion folder of the repository are two demonstration jupyter notebooks. The
-`replication
-<https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion/replication/replication.ipynb>`_
-notebook allows to easily experiment with the estimation methods described here. If you
-have have everything setup, then it should be easy to run it.
+`replication <https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion
+/replication/replication.ipynb>`_ notebook allows to easily experiment with the
+estimation methods described here. If you have have everything setup, then it should
+be easy to run it.

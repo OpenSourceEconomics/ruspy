@@ -9,8 +9,8 @@ the main function and the ``simulation_auxiliary`` with all supplementary functi
 The simulate function
 ---------------------
 
-The simulate function can be found in ``ruspy.simulation.simulation`` and coordinates the
-whole simulation process.
+The simulate function can be found in ``ruspy.simulation.simulation`` and coordinates
+the whole simulation process.
 
 .. currentmodule:: ruspy.simulation.simulation
 
@@ -83,5 +83,7 @@ Demonstration
 -------------
 
 In the promotion folder of the repository are two demonstration jupyter notebooks. The
-`simulation <https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion/simulation/simulation_convergence.ipynb>`_ notebook allows to easily experiment with the estimation methods described
-here. If you have have everything setup, then it should be easy to run it.
+`simulation <https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/
+promotion/simulation/simulation_convergence.ipynb>`_ notebook allows to easily
+experiment with the estimation methods described here. If you have have everything
+setup, then it should be easy to run it.

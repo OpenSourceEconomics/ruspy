@@ -27,7 +27,8 @@ separable and given by:
 .. math::
 
     \begin{align}
-    u(a_t, x_t, \theta_1, RC) + \epsilon_t(a_t) \quad \text{with} \quad u(a_t, x_t, \theta_1, RC) = \begin{cases}
+    u(a_t, x_t, \theta_1, RC) + \epsilon_t(a_t) \quad \text{with} \quad u(a_t, x_t,
+    \theta_1, RC) = \begin{cases}
     -RC - c(0, \theta_1)   & a_t = 1 \\
     -c(x_t, \theta_1) & a_t = 0.
     \end{cases}
@@ -35,8 +36,8 @@ separable and given by:
 
 
 The objective of Harold Zurcher is to choose a strategy :math:`\pi` of all strategies
-:math:`\Pi` to maximize the utility over infinite horizon and therefore the current value
-in period :math:`t` and state :math:`s_t` is given by:
+:math:`\Pi` to maximize the utility over infinite horizon and therefore the current
+value in period :math:`t` and state :math:`s_t` is given by:
 
 .. math::
 
@@ -47,9 +48,9 @@ in period :math:`t` and state :math:`s_t` is given by:
 The discount factor :math:`\delta` weighs the utilities over all periods and therefore
 captures the preference of utility in current and future time periods. As the model
 assumes stationary utility, as well as stationary transition probabilities the future
-looks the same, whether the agent is at time :math:`t` in state :math:`s` or at any other
-time. Therefore the optimal decision in every period can be interferred by the Bellman
-equation:
+looks the same, whether the agent is at time :math:`t` in state :math:`s` or at any
+other time. Therefore the optimal decision in every period can be interferred by the
+Bellman equation:
 
 .. math::
 
@@ -85,8 +86,8 @@ observable and unobservable state variables, i.e.
     \end{equation}
 
 and furthermore assumes that the unobservables :math:`\epsilon_t(a_t)` are independent
-and identically distributed according to an extreme value distribution with mean zero and
-scale parameter one, i.e.:
+and identically distributed according to an extreme value distribution with mean zero
+and scale parameter one, i.e.:
 
 .. math::
 
@@ -99,14 +100,14 @@ where :math:`\theta_2 = 0.577216`, i.e. the Euler-Mascheroni constant.
 
 Rust (1988) shows that these two assumptions, together with the additive separability
 between the observed and unobserved state variables in the immediate utilities, imply
-that :math:`EV_\theta` is a function independent of :math:`\epsilon_t` and the unique fix
-point of a contraction mapping on the reduced space of all state action pairs :math:`(x,
-a)`. Furthermore, the regenerative property of the process yields for all states
-:math:`x`, that the expected value of replacement corresponds to the expected value of
-maintenance in state :math:`0`, i.e. :math:`EV_\theta(x, 1) = EV_\theta(0, 0)`. Thus
-:math:`EV_\theta` is the unique fixed point on the observed mileage state :math:`x` only.
-Therefore in the following :math:`EV_\theta(x)` refers to :math:`EV_\theta(x, 0)`. The
-contraction mapping is then given by:
+that :math:`EV_\theta` is a function independent of :math:`\epsilon_t` and the unique
+fix point of a contraction mapping on the reduced space of all state action pairs
+:math:`(x,a)`. Furthermore, the regenerative property of the process yields for all
+states :math:`x`, that the expected value of replacement corresponds to the expected
+value of maintenance in state :math:`0`, i.e. :math:`EV_\theta(x, 1) = EV_\theta(0,
+0)`. Thus :math:`EV_\theta` is the unique fixed point on the observed mileage state
+:math:`x` only. Therefore in the following :math:`EV_\theta(x)` refers to
+:math:`EV_\theta(x, 0)`. The contraction mapping is then given by:
 
 .. math::
 
@@ -122,15 +123,15 @@ closed-form solution given by the multinomial logit formula (McFadden, 1973):
 
     \begin{equation}
     P(a|x, \theta) = \frac{\exp(u(a, x, RC, \theta_1) + \delta EV_\theta((a-1) \cdot
-    x))}{\sum_{i \in \{0, 1\}} \exp(u(i, x, RC, \theta_1) + \delta EV_\theta((i - 1) x))}
+    x))}{\sum_{i \in \{0, 1\}} \exp(u(i, x, RC, \theta_1) + \delta EV_\theta((i - 1)x))}
     \end{equation}
 
-These closed form solutions allow to estimate the structural parameters driving Zurcher's
-decisions. Given the data :math:`\{a_0, ....a_T, x_0, ..., x_T\}` for a single bus, one
-can form the likelihood function :math:`l^f(a_1, ..., a_T, x_1, ...., x_T | a_0, x_0,
-\theta)` and estimate the parameter vector $\theta$ by maximum likelihood. Rust (1988)
-proofs that this function has due to the conditional independence assumption a simple
-form:
+These closed form solutions allow to estimate the structural parameters driving
+Zurcher's decisions. Given the data :math:`\{a_0, ....a_T, x_0, ..., x_T\}` for a
+single bus, one can form the likelihood function :math:`l^f(a_1, ..., a_T, x_1, ....,
+x_T | a_0, x_0, \theta)` and estimate the parameter vector $\theta$ by maximum
+likelihood. Rust (1988) proofs that this function has due to the conditional
+independence assumption a simple form:
 
 .. math::
 
