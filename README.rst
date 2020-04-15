@@ -26,7 +26,7 @@ You can install ``ruspy`` via conda with
 .. code-block:: bash
 
     $ conda config --add channels conda-forge
-    $ conda install -c opensourceeconomics robupy
+    $ conda install -c opensourceeconomics ruspy
 
 Please visit our `online documentation <https://ruspy.readthedocs.io/>`_ for
 tutorials and other information.
@@ -35,13 +35,13 @@ tutorials and other information.
 Citation
 --------
 
-If you use robupy for your research, do not forget to cite it with
+If you use ruspy for your research, do not forget to cite it with
 
 .. code-block:: bash
 
-    @Unpublished{The robupy team,
-        Author = {The robupy team},
-        Title  = {robupy - A Python package for robust optimization},
+    @Unpublished{ruspy-1.0,
+        Author = {Maximilian Blesch},
+        Title  = {robupy - An open-source package for the simulation and estimation of a prototypical infinite-horizon dynamic discrete choice model based on Rust (1987)},
         Year   = {2019},
-        Url    = {https://github.com/OpenSourceEconomics/robupy},
+        Url    = {https://github.com/OpenSourceEconomics/ruspy},
         }
