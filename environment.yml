@@ -1,16 +1,16 @@
 name: ruspy
 
 dependencies:
-  - python
+  - python=3.7
   - numpy
   - sphinx
-  - pandas=1.0.0
+  - pandas
   - statsmodels
   - pytest
   - pytest-xdist
+  - pytest-cov
   - scipy
   - matplotlib
-  - pytest-cov
   - numpydoc
   - jupyter
   - numba

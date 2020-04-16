@@ -1,17 +1,16 @@
-import pickle as pkl
-
 import numpy as np
+import pandas as pd
 import pytest
 from numpy.testing import assert_allclose
 from numpy.testing import assert_array_almost_equal
 
+from ruspy.config import TEST_RESOURCES_DIR
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.estimation import estimate
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import quadratic_costs
 from ruspy.model_code.cost_functions import quadratic_costs_dev
-from ruspy.ruspy_config import TEST_RESOURCES_DIR
 
 
 TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
@@ -36,7 +35,7 @@ def inputs():
             "use_search_bounds": "no",
         },
     }
-    df = pkl.load(open(TEST_FOLDER + "group_4.pkl", "rb"))
+    df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
     result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]

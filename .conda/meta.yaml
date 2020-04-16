@@ -1,0 +1,27 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: ruspy
+  version: {{ data.get('version') }}
+
+source:
+  # git_url is nice in that it won't capture devenv stuff.  However, it only captures
+  # committed code, so pay attention.
+  git_url: ../
+
+build:
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python >=3.6,<3.8
+  run:
+    - python >=3.6,<3.8
+    - statsmodels
+    - numba >=0.42
+    - numpy
+    - pandas = 1.0.0
+    - pytest
+    - pytest-xdist
+    - scipy

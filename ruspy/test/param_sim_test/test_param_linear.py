@@ -2,12 +2,12 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
+from ruspy.config import TEST_RESOURCES_DIR
 from ruspy.estimation.estimation import estimate
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import lin_cost
 from ruspy.model_code.fix_point_alg import calc_fixp
-from ruspy.ruspy_config import TEST_RESOURCES_DIR
 from ruspy.simulation.simulation import simulate
 
 TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"

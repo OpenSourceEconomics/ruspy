@@ -9,8 +9,8 @@ estimate the discount factor and it needs to be externally set.
 Observed costs
 --------------
 
-The observed costs are saved in :math:`num\_states \times 2` dimensional numpy array. The
-first column contains the maintenance and the second the replacement costs for each
+The observed costs are saved in :math:`num\_states \times 2` dimensional numpy array.
+The first column contains the maintenance and the second the replacement costs for each
 state. The function to calculate the observed costs is:
 
 .. currentmodule:: ruspy.model_code.cost_functions
@@ -34,19 +34,19 @@ So far the code allows for five functional forms. The following table reports th
 different functional forms for an arbitrary state :math:`x`. Afterwards I list the APIs
 of each function and their derivatives. :math:`states` is the size of the state space.
 
-+-------------+-------------------------------------------------------------------------+
-| Name        | Functional form                                                         |
-+-------------+-------------------------------------------------------------------------+
-| linear      | :math:`c(x,\theta_1) = \theta_{11} x`                                   |
-+-------------+-------------------------------------------------------------------------+
-| square root | :math:`c(x,\theta_1) = \theta_{11} \sqrt{x}`                            |
-+-------------+-------------------------------------------------------------------------+
-| cubic       | :math:`c(x,\theta_1) = \theta_{11}x+\theta_{12} x**2 + \theta_{13} x**3`|
-+-------------+-------------------------------------------------------------------------+
-| hyperbolic  | :math:`c(x,\theta_1) = (\theta_{11} / ((states + 1) - x))`              |
-+-------------+-------------------------------------------------------------------------+
-| quadratic   | :math:`c(x,\theta_1) = (\theta_{11} x +\theta_{12} x**2)`               |
-+-------------+-------------------------------------------------------------------------+
++-------------+------------------------------------------------------------------------+
+| Name        | Functional form                                                        |
++-------------+------------------------------------------------------------------------+
+| linear      | :math:`c(x,\theta_1) = \theta_{11} x`                                  |
++-------------+------------------------------------------------------------------------+
+| square root | :math:`c(x,\theta_1) = \theta_{11} \sqrt{x}`                           |
++-------------+------------------------------------------------------------------------+
+| cubic       | :math:`c(x,\theta_1) = \theta_{11}x+\theta_{12} x**2+\theta_{13} x**3` |
++-------------+------------------------------------------------------------------------+
+| hyperbolic  | :math:`c(x,\theta_1) = (\theta_{11} / ((states + 1) - x))`             |
++-------------+------------------------------------------------------------------------+
+| quadratic   | :math:`c(x,\theta_1) = (\theta_{11} x +\theta_{12} x**2)`              |
++-------------+------------------------------------------------------------------------+
 
 Linear cost function
 x
@@ -139,10 +139,10 @@ minimal scale needed for each form:
 Fixed point algorithm
 ---------------------
 
-This part documents the core contribution to research of the Rust (1987) paper, the Fixed
-Point Algorithm (FXP). It allows to consequently calculate the log-likelihood value for
-each cost parameter and thus, to estimate the model. The computation of the fixed point
-is managed by:
+This part documents the core contribution to research of the Rust (1987) paper, the
+Fixed Point Algorithm (FXP). It allows to consequently calculate the log-likelihood
+value for each cost parameter and thus, to estimate the model. The computation of the
+fixed point is managed by:
 
 .. currentmodule:: ruspy.model_code.fix_point_alg
 

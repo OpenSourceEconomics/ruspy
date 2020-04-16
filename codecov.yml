@@ -1,0 +1,14 @@
+coverage:
+  range: 50...100
+  precision: 2
+  round: down
+  status:
+    project:
+      threshold: 5%
+    patch:
+      threshold: 5%
+
+ignore:
+  - "setup.py"
+  - "respy/config.py"
+  - "ruspy/tests/**/*"
