@@ -1,8 +1,14 @@
 ruspy
 ======
 
+.. image:: https://anaconda.org/opensourceeconomics/ruspy/badges/version.svg
+    :target: https://anaconda.org/OpenSourceEconomics/ruspy/
+
+.. image:: https://anaconda.org/opensourceeconomics/ruspy/badges/platforms.svg
+    :target: https://anaconda.org/OpenSourceEconomics/ruspy/
+
 .. image:: https://readthedocs.org/projects/ruspy/badge/?version=latest
-    :target: https://ruspy.readthedocs.io/en/latest/?badge=latest
+    :target: https://ruspy.readthedocs.io/
 
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
     :target: https://opensource.org/licenses/MIT
