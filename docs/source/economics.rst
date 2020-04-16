@@ -14,12 +14,12 @@ his expected total discounted utility with respect to the expected mileage usage
 bus. Each month :math:`t`, a bus arrives at the bus depot in state :math:`s_t = (x_t,
 \epsilon_t(a_t))` containing the mileage since last engine replacement :math:`x_t` and
 other signs of wear and tear plus decision specific information :math:`\epsilon_t(a_t)`.
-Harold Zurcher is faced with the decision to either conduct a complete engine replacement
-:math:`(a_t = 1)` or to perform basic maintenance work :math:`(a_t = 0)`. The cost of
-maintenance :math:`c(x_t, \theta_1)` increases with the mileage state, while the cost of
-replacement :math:`RC` remains constant. Notationwise :math:`\theta_1` captures the
-structural parameters shaping the maintenance cost function. In the case of an engine
-replacement, the mileage state is reset to zero.
+Harold Zurcher is faced with the decision to either conduct a complete engine
+replacement :math:`(a_t = 1)` or to perform basic maintenance work :math:`(a_t = 0)`.
+The cost of maintenance :math:`c(x_t, \theta_1)` increases with the mileage state,
+while the cost of replacement :math:`RC` remains constant. Notationwise
+:math:`\theta_1` captures the structural parameters shaping the maintenance cost
+function. In the case of an engine replacement, the mileage state is reset to zero.
 
 The immediate utility of each action in month :math:`t` is assumed to be additively
 separable and given by:
