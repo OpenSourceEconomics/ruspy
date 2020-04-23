@@ -48,9 +48,10 @@ def estimate_transitions(df):
         criterion_kwargs={"transition_count": transition_count},
         logging="logging_transition.db",
         )
+    
     result_transitions["x"] = raw_result_trans[1]["value"].to_numpy()
     result_transitions["fun"] = raw_result_trans[0]["fitness"]
-    
+
     # bootstrapping does not work right now as estimagic gives out correct x but 
     # but the reparam version of the Hessian
     # if isinstance(raw_result_trans[0]["hessian"], np.ndarray):

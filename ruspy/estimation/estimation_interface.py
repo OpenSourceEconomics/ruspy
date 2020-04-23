@@ -98,52 +98,26 @@ def select_optimizer_options(init_dict, num_params_costs):
 
     """
 
-    optimizer_dict = {} if "optimizer" not in init_dict else init_dict["optimizer"]
-    optimizer_options = {}
+    optimizer_options = {} if "optimizer" not in init_dict else init_dict["optimizer"]
 
-    if "optimizer_name" in optimizer_dict:
-        optimizer_options["algorithm"] = optimizer_dict["optimizer_name"]
-    else:
-        optimizer_options["algorithm"] = "scipy_L-BFGS-B"
 
-    if "start_values" in optimizer_dict:
-        optimizer_options["params"] = pd.DataFrame(
-            np.array(optimizer_dict["start_values"]),
-            columns=["value"],
-            )
+    if "algorithm" not in optimizer_options:
+        optimizer_options["algorithm"] = "scipy_L-BFGS-B"        
     else:
+        pass
+
+    if "params" not in optimizer_options:
         optimizer_options["params"] = pd.DataFrame(
             np.power(np.full(num_params_costs, 10, dtype=float),
             np.arange(1, -num_params_costs + 1, -1)),
             columns=["value"],
             )
-
-    if "use_search_bounds" in optimizer_dict:
-        if optimizer_dict["use_search_bounds"] == "yes":
-            optimizer_options["params"][["lower", "upper"]] = pd.DataFrame(
-                np.array([[1e-6, np.inf]] * num_params_costs))
-        else:
-            pass
     else:
         pass
 
-    if "search_bounds" in optimizer_dict:
-        optimizer_options["params"][["lower", "upper"]] = pd.DataFrame(
-            np.array(optimizer_dict["search_bounds"]))
+    if "gradient" not in optimizer_options:
+        optimizer_options["gradient"] = derivative_loglike_cost_params
     else:
         pass
-
-    if "use_gradient" in optimizer_dict:
-        if optimizer_dict["use_gradient"] == "yes":
-            optimizer_options["gradient"] = derivative_loglike_cost_params
-        else:
-            pass
-    else:
-        pass
-
-    # if "additional_options" in optimizer_dict:
-    #     optimizer_options["options"] = optimizer_dict["additional_options"]
-    # else:
-    #     optimizer_options["options"] = {}
 
     return optimizer_options

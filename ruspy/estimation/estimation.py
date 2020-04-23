@@ -83,9 +83,8 @@ def estimate(init_dict, df):
     result_cost_params["fun"] = min_result[0]["fitness"]
     result_cost_params["status"] = min_result[0]["status"]
     result_cost_params["message"] = min_result[0]["message"]
-    result_cost_params["jac"] = min_result[0]["jacobian"]
-
-        
+    result_cost_params["jac"] = min_result[0]["jacobian"]        
+    
     if isinstance(min_result[0]["hessian"], np.ndarray):
         (
             result_cost_params["95_conf_interv"],
