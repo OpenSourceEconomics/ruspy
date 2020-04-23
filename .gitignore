@@ -21,4 +21,5 @@ figures
 ruspy.rst
 modules.rst
 _generated
+*.db
 

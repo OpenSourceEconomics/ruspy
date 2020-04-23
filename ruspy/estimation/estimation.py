@@ -2,8 +2,8 @@
 This module contains the main function for the estimation process.
 """
 import numpy as np
-import scipy.optimize as opt
 
+from estimagic.optimization.optimize import minimize
 from ruspy.estimation.bootstrapping import bootstrapp
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import loglike_cost_params
@@ -60,32 +60,44 @@ def estimate(init_dict, df):
 
     alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
 
+    kwargs = {
+            "maint_func": maint_func, 
+            "maint_func_dev": maint_func_dev,
+            "num_states": num_states,
+            "trans_mat": trans_mat,
+            "state_mat": state_mat,
+            "decision_mat": decision_mat,
+            "disc_fac": disc_fac,
+            "scale": scale,
+            "alg_details": alg_details}
+    
     result_cost_params = {}
 
-    min_result = opt.minimize(
+    min_result = minimize(
         loglike_cost_params,
-        args=(
-            maint_func,
-            maint_func_dev,
-            num_states,
-            trans_mat,
-            state_mat,
-            decision_mat,
-            disc_fac,
-            scale,
-            alg_details,
-        ),
-        **optimizer_options
-    )
-    result_cost_params["x"] = min_result["x"]
-    result_cost_params["fun"] = min_result["fun"]
-    result_cost_params["message"] = min_result["message"]
-    result_cost_params["jac"] = min_result["jac"]
+        criterion_kwargs = kwargs,
+        gradient_kwargs = kwargs,
+        **optimizer_options,
+        )
+    result_cost_params["x"] = min_result[1]["value"].to_numpy()
+    result_cost_params["fun"] = min_result[0]["fitness"]
+    result_cost_params["status"] = min_result[0]["status"]
+    result_cost_params["message"] = min_result[0]["message"]
+    result_cost_params["jac"] = min_result[0]["jacobian"]
 
-    if "hess_inv" in min_result:
+        
+    if isinstance(min_result[0]["hessian"], np.ndarray):
         (
             result_cost_params["95_conf_interv"],
             result_cost_params["std_errors"],
-        ) = bootstrapp(min_result["x"], min_result["hess_inv"])
+        ) = bootstrapp(result_cost_params["x"], min_result[0]["hessian_inverse"])
+        
+    # estimagic version
+    # if isinstance(min_result[0]["hessian"], np.ndarray):
+    #     result_cost_params["covariance"] = cov_hessian(min_result[0]["hessian_inverse"])
+    #     result_cost_params["se"] = se_from_cov(result_cost_params["covariance"])
+    # else: 
+    #     result_cost_params["covariance"] = None
+    #     result_cost_params["se"] = None
 
     return transition_results, result_cost_params
