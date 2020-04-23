@@ -25,7 +25,7 @@ ruspy
 ``ruspy`` is an open-source package for the simulation and estimation of a prototypical
 infinite-horizon dynamic discrete choice model based on
 
-    Rust, J. (1987). _`Optimal replacement of GMC bus engines: An empirical model of Harold Zurcher. <https://doi.org/10.2307/1911259>`_ *Econometrica, 55* (5), 999-1033.
+    Rust, J. (1987). `Optimal replacement of GMC bus engines: An empirical model of Harold Zurcher. <https://doi.org/10.2307/1911259>`_ *Econometrica, 55* (5), 999-1033.
 
 You can install ``ruspy`` via conda with
 
