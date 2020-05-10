@@ -60,14 +60,14 @@ def estimate_mpec(init_dict, df):
     state_mat = create_state_matrix(states, num_states)
 
     def function_wrapper_like(function, args):
-        def call(params, grad):
-            result = function(params, *args, grad)
+        def call(mpec_params, grad):
+            result = function(mpec_params, *args, grad)
             return result
         return call
     
     def function_wrapper_constr(function, args):
-        def call(params):
-            result = function(result=np.array([]), params=params, *args, grad=np.array([]))
+        def call(mpec_params):
+            result = function(result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([]))
             return result
         return call
     
@@ -78,7 +78,7 @@ def estimate_mpec(init_dict, df):
         decision_mat,
         disc_fac,
         scale,
-        params,
+        mpec_params,
         grad=np.array([]),
     ):
         """
@@ -113,12 +113,12 @@ def estimate_mpec(init_dict, df):
         if grad.size>0:
             # numerical gradient
             # grad[:] = approx_fprime(params, partial_loglike_mpec, 10e-6)
-             grad[:] = mpec_loglike_cost_params_dev(params, maint_func, maint_func_dev, 
+             grad[:] = mpec_loglike_cost_params_dev(mpec_params, maint_func, maint_func_dev, 
                                                           num_states, num_params, 
                                                           disc_fac, scale, 
                                                           decision_mat, state_mat)
-        costs = calc_obs_costs(num_states, maint_func, params[num_states:], scale)   
-        p_choice = choice_prob_gumbel(params[0:num_states], costs, disc_fac)
+        costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)   
+        p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
         log_like = like_hood_data(np.log(p_choice), decision_mat, state_mat)
         return float(log_like)
     
@@ -128,7 +128,7 @@ def estimate_mpec(init_dict, df):
                         disc_fac,
                         scale,
                         result, 
-                        params,
+                        mpec_params,
                         grad=np.array([])):
         """
         Calulates the constraint of MPEC.
@@ -161,7 +161,7 @@ def estimate_mpec(init_dict, df):
         if grad.size > 0:
             # numerical jacobian
             # grad[:, :] = approx_derivative(partial_constr_mpec_deriv, params)
-            grad[:, :] = mpec_constraint_dev(params,
+            grad[:, :] = mpec_constraint_dev(mpec_params,
                                             maint_func,
                                             maint_func_dev,
                                             num_states,
@@ -170,8 +170,8 @@ def estimate_mpec(init_dict, df):
                                             scale,
                                             trans_mat)      
             
-        ev = params[0:num_states]
-        obs_costs = calc_obs_costs(num_states, maint_func, params[num_states:], scale)
+        ev = mpec_params[0:num_states]
+        obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
         
         maint_value = disc_fac * ev - obs_costs[:, 0]
         repl_value = disc_fac * ev[0] - obs_costs[0, 1] - obs_costs[0, 0]
@@ -232,7 +232,7 @@ def estimate_mpec(init_dict, df):
 
     return mpec_transition_results, mpec_cost_parameters
 
-def mpec_loglike_cost_params_dev(params,
+def mpec_loglike_cost_params_dev(mpec_params,
                                  maint_func,
                                  maint_func_dev,
                                  num_states,
@@ -274,8 +274,8 @@ def mpec_loglike_cost_params_dev(params,
 
     """
     # Calculate choice probabilities
-    costs = calc_obs_costs(num_states, maint_func, params[num_states:], scale)   
-    p_choice = choice_prob_gumbel(params[0:num_states], costs, disc_fac)
+    costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)   
+    p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
 
     # Create matrix that represents d[V(0)-V(x)]/ d[theta] (depending on x)
     payoff_difference_derivative = np.zeros((num_states + num_params, num_states))
@@ -299,7 +299,7 @@ def mpec_loglike_cost_params_dev(params,
     
     return gradient
 
-def mpec_constraint_dev(params,
+def mpec_constraint_dev(mpec_params,
                         maint_func,
                         maint_func_dev,
                         num_states,
@@ -335,8 +335,9 @@ def mpec_constraint_dev(params,
         Jacobian of the MPEC constraint.
 
     """
-    ev = params[0:num_states]
-    obs_costs = calc_obs_costs(num_states, maint_func, params[num_states:], scale)
+    # Calculate a vector representing 1 divided by the right hand side of the MPEC constraint
+    ev = mpec_params[0:num_states]
+    obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
     
     maint_value = disc_fac * ev - obs_costs[:, 0]
     repl_value = disc_fac * ev[0] - obs_costs[0, 1] - obs_costs[0, 0]
