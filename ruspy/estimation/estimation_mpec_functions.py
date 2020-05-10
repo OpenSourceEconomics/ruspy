@@ -1,26 +1,33 @@
 """
-This module contains all the key functions used to estimate MPEC.
+This module contains all the key functions used to estimate the model using MPEC.
 """
 import numpy as np
 
-from functools import partial
-from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
-from scipy.optimize import approx_fprime
-from scipy.optimize._numdiff import approx_derivative
+from ruspy.model_code.cost_functions import calc_obs_costs
+
+# from functools import partial
+# from scipy.optimize import approx_fprime
+# from scipy.optimize._numdiff import approx_derivative
 
 
 def function_wrapper_like(function, args):
     def call(mpec_params, grad):
         result = function(mpec_params, *args, grad)
         return result
+
     return call
+
 
 def function_wrapper_constr(function, args):
     def call(mpec_params):
-        result = function(result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([]))
+        result = function(
+            result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([])
+        )
         return result
+
     return call
+
 
 def mpec_loglike_cost_params(
     maint_func,
@@ -32,10 +39,10 @@ def mpec_loglike_cost_params(
     disc_fac,
     scale,
     mpec_params,
-    grad=np.array([]),
+    grad,
 ):
     """
-    Calculate the negative partial log likelihood depending on cost parameters 
+    Calculate the negative partial log likelihood depending on cost parameters
     as well as the discretized expected values.
 
     Parameters
@@ -47,7 +54,7 @@ def mpec_loglike_cost_params(
     state_mat : numpy.array
         see :ref:`state_mat`
     decision_mat : numpy.array
-        see :ref:`decision_mat` 
+        see :ref:`decision_mat`
     disc_fac : numpy.float
         see :ref:`disc_fac`
     scale : numpy.float
@@ -63,21 +70,28 @@ def mpec_loglike_cost_params(
         Contains the negative partial log likelihood for the given parameters.
 
     """
-    if grad.size>0:
+    if grad.size > 0:
         # numerical gradient (comment out for analytical)
         # partial_loglike_mpec = partial(mpec_loglike_cost_params, maint_func,
-        #                        maint_func_dev, num_states, num_params,
-        #                        state_mat, decision_mat, 
-        #                        disc_fac, scale)
+        #                         maint_func_dev, num_states, num_params,
+        #                         state_mat, decision_mat,
+        #                         disc_fac, scale, grad = np.array([]))
         # grad[:] = approx_fprime(mpec_params, partial_loglike_mpec, 10e-6)
-       
+
         # analytical gradient (comment out for numerical)
-        grad[:] = mpec_loglike_cost_params_dev(mpec_params, maint_func, maint_func_dev, 
-                                                       num_states, num_params, 
-                                                       disc_fac, scale, 
-                                                       decision_mat, state_mat)
-        
-    costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)   
+        grad[:] = mpec_loglike_cost_params_dev(
+            mpec_params,
+            maint_func,
+            maint_func_dev,
+            num_states,
+            num_params,
+            disc_fac,
+            scale,
+            decision_mat,
+            state_mat,
+        )
+
+    costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
     log_like = like_hood_data(np.log(p_choice), decision_mat, state_mat)
     return float(log_like)
@@ -87,19 +101,21 @@ def like_hood_data(l_values, decision_mat, state_mat):
     return -np.sum(decision_mat * np.dot(l_values.T, state_mat))
 
 
-def mpec_constraint(maint_func,
-                    maint_func_dev,
-                    num_states,
-                    num_params,
-                    trans_mat, 
-                    disc_fac,
-                    scale,
-                    result, 
-                    mpec_params,
-                    grad=np.array([])):
+def mpec_constraint(
+    maint_func,
+    maint_func_dev,
+    num_states,
+    num_params,
+    trans_mat,
+    disc_fac,
+    scale,
+    result,
+    mpec_params,
+    grad,
+):
     """
     Calulate the constraint of MPEC.
-    
+
     Parameters
     ----------
     maint_func : func
@@ -107,7 +123,7 @@ def mpec_constraint(maint_func,
     num_states : int
         The size of the state space.
     decision_mat : numpy.array
-        see :ref:`decision_mat` 
+        see :ref:`decision_mat`
     disc_fac : numpy.float
         see :ref:`disc_fac`
     scale : numpy.float
@@ -127,29 +143,31 @@ def mpec_constraint(maint_func,
     """
     if grad.size > 0:
         # numerical jacobian (comment out for analytical)
-        # partial_constr_mpec_deriv = function_wrapper_constr(mpec_constraint, 
+        # partial_constr_mpec_deriv = function_wrapper_constr(mpec_constraint,
         #                                             args=(maint_func,
         #                                                   maint_func_dev,
         #                                                   num_states,
         #                                                   num_params,
-        #                                                   trans_mat, 
+        #                                                   trans_mat,
         #                                                   disc_fac,
         #                                                   scale))
         # grad[:, :] = approx_derivative(partial_constr_mpec_deriv, mpec_params)
-        
+
         # analytical jacobian (comment out for numerical)
-        grad[:, :] = mpec_constraint_dev(mpec_params,
-                                        maint_func,
-                                        maint_func_dev,
-                                        num_states,
-                                        num_params,
-                                        disc_fac,
-                                        scale,
-                                        trans_mat)      
-        
+        grad[:, :] = mpec_constraint_dev(
+            mpec_params,
+            maint_func,
+            maint_func_dev,
+            num_states,
+            num_params,
+            disc_fac,
+            scale,
+            trans_mat,
+        )
+
     ev = mpec_params[0:num_states]
     obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
-    
+
     maint_value = disc_fac * ev - obs_costs[:, 0]
     repl_value = disc_fac * ev[0] - obs_costs[0, 1] - obs_costs[0, 0]
 
@@ -168,16 +186,17 @@ def mpec_constraint(maint_func,
     return ev_new - ev
 
 
-def mpec_loglike_cost_params_dev(mpec_params,
-                                 maint_func,
-                                 maint_func_dev,
-                                 num_states,
-                                 num_params,
-                                 disc_fac,
-                                 scale,
-                                 decision_mat,
-                                 state_mat,
-                                 ):
+def mpec_loglike_cost_params_dev(
+    mpec_params,
+    maint_func,
+    maint_func_dev,
+    num_states,
+    num_params,
+    disc_fac,
+    scale,
+    decision_mat,
+    state_mat,
+):
     """
     Computing the gradient of the objective function for MPEC.
 
@@ -198,7 +217,7 @@ def mpec_loglike_cost_params_dev(mpec_params,
     scale : numpy.float
         see :ref:`scale`
     decision_mat : numpy.array
-        see :ref:`decision_mat` 
+        see :ref:`decision_mat`
     state_mat : numpy.array
         see :ref:`state_mat`
 
@@ -210,39 +229,51 @@ def mpec_loglike_cost_params_dev(mpec_params,
 
     """
     # Calculate choice probabilities
-    costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)   
+    costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
 
     # Create matrix that represents d[V(0)-V(x)]/ d[theta] (depending on x)
     payoff_difference_derivative = np.zeros((num_states + num_params, num_states))
-    payoff_difference_derivative[0, 1:] = disc_fac 
-    payoff_difference_derivative[1:num_states, 1:] = -disc_fac*np.eye(num_states-1) 
+    payoff_difference_derivative[0, 1:] = disc_fac
+    payoff_difference_derivative[1:num_states, 1:] = -disc_fac * np.eye(num_states - 1)
     payoff_difference_derivative[num_states, :] = -1
-    payoff_difference_derivative[num_states+1:, :] = (
-        -maint_func_dev(num_states, scale)[0] + maint_func_dev(num_states, scale)).T
-    
+    payoff_difference_derivative[num_states + 1 :, :] = (
+        -maint_func_dev(num_states, scale)[0] + maint_func_dev(num_states, scale)
+    ).T
+
     # Calculate derivative depending on whether d is 0 or 1
-    derivative_d0 = -payoff_difference_derivative * p_choice[:,1]
-    derivative_d1 = payoff_difference_derivative * p_choice[:,0]
+    derivative_d0 = -payoff_difference_derivative * p_choice[:, 1]
+    derivative_d1 = payoff_difference_derivative * p_choice[:, 0]
     derivative_both = np.vstack((derivative_d0, derivative_d1))
-    
+
     # Calculate actual gradient depending on the given data
-    decision_mat_temp = np.vstack((np.tile(decision_mat[0], (num_states+num_params, 1)),
-                                   np.tile(decision_mat[1], (num_states+num_params, 1))))
-    
-    gradient_temp = -np.sum(decision_mat_temp * np.dot(derivative_both, state_mat), axis = 1)
-    gradient = np.reshape(gradient_temp, (num_states+num_params, 2), order = "F").sum(axis = 1)
-    
+    decision_mat_temp = np.vstack(
+        (
+            np.tile(decision_mat[0], (num_states + num_params, 1)),
+            np.tile(decision_mat[1], (num_states + num_params, 1)),
+        )
+    )
+
+    gradient_temp = -np.sum(
+        decision_mat_temp * np.dot(derivative_both, state_mat), axis=1
+    )
+    gradient = np.reshape(gradient_temp, (num_states + num_params, 2), order="F").sum(
+        axis=1
+    )
+
     return gradient
 
-def mpec_constraint_dev(mpec_params,
-                        maint_func,
-                        maint_func_dev,
-                        num_states,
-                        num_params,
-                        disc_fac,
-                        scale,
-                        trans_mat):
+
+def mpec_constraint_dev(
+    mpec_params,
+    maint_func,
+    maint_func_dev,
+    num_states,
+    num_params,
+    disc_fac,
+    scale,
+    trans_mat,
+):
     """
     Calculating the Jacobian of the MPEC constraint.
 
@@ -274,35 +305,49 @@ def mpec_constraint_dev(mpec_params,
     # Calculate a vector representing 1 divided by the right hand side of the MPEC constraint
     ev = mpec_params[0:num_states]
     obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
-    
+
     maint_value = disc_fac * ev - obs_costs[:, 0]
     repl_value = disc_fac * ev[0] - obs_costs[0, 1] - obs_costs[0, 0]
 
     ev_max = np.max(np.array(maint_value, repl_value))
-    
+
     exp_centered_maint_value = np.exp(maint_value - ev_max)
     exp_centered_repl_value = np.exp(repl_value - ev_max)
     log_sum_denom = 1 / (exp_centered_maint_value + exp_centered_repl_value)
-    
+
     jacobian = np.zeros((num_states, num_states + num_params))
-    
+
     # Calculate derivative to EV(0)
-    jacobian[:, 0] = np.dot(disc_fac * exp_centered_repl_value * trans_mat, log_sum_denom)
-    jacobian[0, 0] = jacobian[0, 0] + (1 - log_sum_denom[0] * exp_centered_repl_value) * disc_fac * trans_mat[0, 0]
+    jacobian[:, 0] = np.dot(
+        disc_fac * exp_centered_repl_value * trans_mat, log_sum_denom
+    )
+    jacobian[0, 0] = (
+        jacobian[0, 0]
+        + (1 - log_sum_denom[0] * exp_centered_repl_value) * disc_fac * trans_mat[0, 0]
+    )
     # Calculate derivative to EV(1) until EV(num_states)
-    jacobian[:, 1:num_states] = trans_mat[:,1:] * log_sum_denom[1:] * disc_fac * exp_centered_maint_value[1:]
+    jacobian[:, 1:num_states] = (
+        trans_mat[:, 1:] * log_sum_denom[1:] * disc_fac * exp_centered_maint_value[1:]
+    )
     # Calculate derivative to RC
-    jacobian[:, num_states] = np.dot(trans_mat, -exp_centered_repl_value * log_sum_denom)     
+    jacobian[:, num_states] = np.dot(
+        trans_mat, -exp_centered_repl_value * log_sum_denom
+    )
     # Calculate derivative to maintenance cost parameters
-    jacobian[:, num_states+1:] = np.reshape(
-        np.dot(trans_mat, log_sum_denom * (
-        (-exp_centered_maint_value * maint_func_dev(num_states, scale).T).T - 
-        exp_centered_repl_value * maint_func_dev(num_states, scale)[0])
-            ), (num_states, num_params-1)
-        )
-    # Calculate the Jacobian of EV 
+    jacobian[:, num_states + 1 :] = np.reshape(
+        np.dot(
+            trans_mat,
+            log_sum_denom
+            * (
+                (-exp_centered_maint_value * maint_func_dev(num_states, scale).T).T
+                - exp_centered_repl_value * maint_func_dev(num_states, scale)[0]
+            ),
+        ),
+        (num_states, num_params - 1),
+    )
+    # Calculate the Jacobian of EV
     ev_jacobian = np.hstack((np.eye(num_states), np.zeros((num_states, num_params))))
-    
+
     jacobian = jacobian - ev_jacobian
-    
+
     return jacobian
