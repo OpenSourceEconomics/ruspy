@@ -11,9 +11,8 @@ from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.estimation.estimation_mpec_functions import (mpec_loglike_cost_params, 
-                                                        mpec_constraint,
-                                                        function_wrapper_constr,
-                                                        )
+                                                        mpec_constraint)
+                                                        
                                                         
 
 def estimate_mpec(init_dict, df):
@@ -70,15 +69,6 @@ def estimate_mpec(init_dict, df):
                                   num_states, num_params,
                                   trans_mat, disc_fac, scale)
     
-    # Just needed for numerical derivative
-    partial_constr_mpec_deriv = function_wrapper_constr(mpec_constraint, 
-                                                        args=(maint_func,
-                                                              maint_func_dev,
-                                                              num_states,
-                                                              num_params,
-                                                              trans_mat, 
-                                                              disc_fac,
-                                                              scale))
     
     # set up nlopt
     opt=nlopt.opt(nlopt.LD_SLSQP, num_states + num_params)

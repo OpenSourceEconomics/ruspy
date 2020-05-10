@@ -3,6 +3,7 @@ This module contains all the key functions used to estimate MPEC.
 """
 import numpy as np
 
+from functools import partial
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from scipy.optimize import approx_fprime
@@ -63,12 +64,19 @@ def mpec_loglike_cost_params(
 
     """
     if grad.size>0:
-        # numerical gradient
-        # grad[:] = approx_fprime(params, partial_loglike_mpec, 10e-6)
-         grad[:] = mpec_loglike_cost_params_dev(mpec_params, maint_func, maint_func_dev, 
-                                                      num_states, num_params, 
-                                                      disc_fac, scale, 
-                                                      decision_mat, state_mat)
+        # numerical gradient (comment out for analytical)
+        # partial_loglike_mpec = partial(mpec_loglike_cost_params, maint_func,
+        #                        maint_func_dev, num_states, num_params,
+        #                        state_mat, decision_mat, 
+        #                        disc_fac, scale)
+        # grad[:] = approx_fprime(mpec_params, partial_loglike_mpec, 10e-6)
+       
+        # analytical gradient (comment out for numerical)
+        grad[:] = mpec_loglike_cost_params_dev(mpec_params, maint_func, maint_func_dev, 
+                                                       num_states, num_params, 
+                                                       disc_fac, scale, 
+                                                       decision_mat, state_mat)
+        
     costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)   
     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
     log_like = like_hood_data(np.log(p_choice), decision_mat, state_mat)
@@ -90,7 +98,7 @@ def mpec_constraint(maint_func,
                     mpec_params,
                     grad=np.array([])):
     """
-    Calulates the constraint of MPEC.
+    Calulate the constraint of MPEC.
     
     Parameters
     ----------
@@ -118,8 +126,18 @@ def mpec_constraint(maint_func,
 
     """
     if grad.size > 0:
-        # numerical jacobian
-        # grad[:, :] = approx_derivative(partial_constr_mpec_deriv, params)
+        # numerical jacobian (comment out for analytical)
+        # partial_constr_mpec_deriv = function_wrapper_constr(mpec_constraint, 
+        #                                             args=(maint_func,
+        #                                                   maint_func_dev,
+        #                                                   num_states,
+        #                                                   num_params,
+        #                                                   trans_mat, 
+        #                                                   disc_fac,
+        #                                                   scale))
+        # grad[:, :] = approx_derivative(partial_constr_mpec_deriv, mpec_params)
+        
+        # analytical jacobian (comment out for numerical)
         grad[:, :] = mpec_constraint_dev(mpec_params,
                                         maint_func,
                                         maint_func_dev,
@@ -148,7 +166,6 @@ def mpec_constraint(maint_func,
     if result.size > 0:
         result[:] = ev_new - ev
     return ev_new - ev
-
 
 
 def mpec_loglike_cost_params_dev(mpec_params,
