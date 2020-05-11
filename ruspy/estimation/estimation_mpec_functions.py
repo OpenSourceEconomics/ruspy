@@ -334,15 +334,15 @@ def mpec_constraint_dev(
         trans_mat, -exp_centered_repl_value * log_sum_denom
     )
     # Calculate derivative to maintenance cost parameters
+    log_sum_denom_temp = np.reshape(log_sum_denom, (num_states, 1))
+    maint_cost_difference_dev = np.reshape(
+        (-exp_centered_maint_value * maint_func_dev(num_states, scale).T).T
+        - exp_centered_repl_value * maint_func_dev(num_states, scale)[0],
+        (num_states, num_params - 1),
+    )
+
     jacobian[:, num_states + 1 :] = np.reshape(
-        np.dot(
-            trans_mat,
-            log_sum_denom
-            * (
-                (-exp_centered_maint_value * maint_func_dev(num_states, scale).T).T
-                - exp_centered_repl_value * maint_func_dev(num_states, scale)[0]
-            ),
-        ),
+        np.dot(trans_mat, log_sum_denom_temp * maint_cost_difference_dev),
         (num_states, num_params - 1),
     )
     # Calculate the Jacobian of EV
