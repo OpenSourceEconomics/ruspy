@@ -5,9 +5,9 @@ probabilities.
 import numba
 import numpy as np
 import pandas as pd
-
 from estimagic.optimization.optimize import minimize
-from ruspy.estimation.bootstrapping import bootstrapp
+
+# from ruspy.estimation.bootstrapping import bootstrapp
 
 
 def estimate_transitions(df):
@@ -30,29 +30,31 @@ def estimate_transitions(df):
     usage = df["usage"].to_numpy(dtype=float)
     usage = usage[~np.isnan(usage)].astype(int)
     result_transitions["trans_count"] = transition_count = np.bincount(usage)
-    
+
     # Prepare DataFrame for estimagic
     name = ["trans_prob"]
-    number = np.arange(1, len(transition_count) + 1)  
+    number = np.arange(1, len(transition_count) + 1)
     index = pd.MultiIndex.from_product([name, number], names=["name", "number"])
-    params = pd.DataFrame(np.full(len(transition_count), 1/len(transition_count)), 
-                            columns=["value"],
-                            index=index)
+    params = pd.DataFrame(
+        np.full(len(transition_count), 1 / len(transition_count)),
+        columns=["value"],
+        index=index,
+    )
     constr = [{"loc": "trans_prob", "type": "probability"}]
 
     raw_result_trans = minimize(
         criterion=loglike_trans,
         params=params,
-        algorithm='scipy_L-BFGS-B',
+        algorithm="scipy_L-BFGS-B",
         constraints=constr,
         criterion_kwargs={"transition_count": transition_count},
         logging="logging_transition.db",
-        )
-    
+    )
+
     result_transitions["x"] = raw_result_trans[1]["value"].to_numpy()
     result_transitions["fun"] = raw_result_trans[0]["fitness"]
 
-    # bootstrapping does not work right now as estimagic gives out correct x but 
+    # bootstrapping does not work right now as estimagic gives out correct x but
     # but the reparam version of the Hessian
     # if isinstance(raw_result_trans[0]["hessian"], np.ndarray):
     #     result_transitions["95_conf_interv"], result_transitions["std_errors"] = bootstrapp(

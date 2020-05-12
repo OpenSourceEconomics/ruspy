@@ -100,18 +100,19 @@ def select_optimizer_options(init_dict, num_params_costs):
 
     optimizer_options = {} if "optimizer" not in init_dict else init_dict["optimizer"]
 
-
     if "algorithm" not in optimizer_options:
-        optimizer_options["algorithm"] = "scipy_L-BFGS-B"        
+        optimizer_options["algorithm"] = "scipy_L-BFGS-B"
     else:
         pass
 
     if "params" not in optimizer_options:
         optimizer_options["params"] = pd.DataFrame(
-            np.power(np.full(num_params_costs, 10, dtype=float),
-            np.arange(1, -num_params_costs + 1, -1)),
+            np.power(
+                np.full(num_params_costs, 10, dtype=float),
+                np.arange(1, -num_params_costs + 1, -1),
+            ),
             columns=["value"],
-            )
+        )
     else:
         pass
 
