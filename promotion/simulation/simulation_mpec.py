@@ -37,7 +37,7 @@ init_dict = {
     },
 }
 
-num_runs = 250
+num_runs = 5
 num_params = 2  # number of cost parameters
 
 solution_NFXP = np.zeros((num_runs, num_params))
@@ -76,7 +76,7 @@ for j in range(0, num_runs):
     result_transitions, result_fixp = estimate(init_dict, df)
     mpec_result_transitions, mpec_cost_parameters = estimate_mpec(init_dict, df)
     solution_NFXP[j, :] = np.array(result_fixp["x"])
-    solution_MPEC[j, :] = np.array(mpec_cost_parameters[-2:])
+    solution_MPEC[j, :] = np.array(mpec_cost_parameters[-num_params:])
 
 # Save the results
 np.save("./promotion/simulation/solution_NFXP", solution_NFXP)
