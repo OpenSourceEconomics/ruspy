@@ -121,4 +121,9 @@ def select_optimizer_options(init_dict, num_params_costs):
     else:
         pass
 
+    if "logging" not in optimizer_options:
+        optimizer_options["logging"] = False
+    else:
+        pass
+
     return optimizer_options

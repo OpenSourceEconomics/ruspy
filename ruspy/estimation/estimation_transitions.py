@@ -48,13 +48,13 @@ def estimate_transitions(df):
         algorithm="scipy_L-BFGS-B",
         constraints=constr,
         criterion_kwargs={"transition_count": transition_count},
-        logging="logging_transition.db",
+        logging=False,
     )
 
     result_transitions["x"] = raw_result_trans[1]["value"].to_numpy()
     result_transitions["fun"] = raw_result_trans[0]["fitness"]
 
-    # bootstrapping does not work right now as estimagic gives out correct x but
+    # bootstrapping does not work right now as estimagic gives out correct x
     # but the reparam version of the Hessian
     # if isinstance(raw_result_trans[0]["hessian"], np.ndarray):
     #     result_transitions["95_conf_interv"], result_transitions["std_errors"] = bootstrapp(
