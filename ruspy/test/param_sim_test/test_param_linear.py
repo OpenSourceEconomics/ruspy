@@ -30,11 +30,7 @@ def inputs():
             "maint_cost_func": "linear",
             "cost_scale": scale,
         },
-        "optimizer": {
-            "optimizer_name": "BFGS",
-            "use_gradient": "yes",
-            "use_search_bounds": "no",
-        },
+        "optimizer": {"algorithm": "scipy_L-BFGS-B"},
         "simulation": {
             "discount_factor": disc_fac,
             "seed": 123,
@@ -51,7 +47,7 @@ def inputs():
     result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]
     out["params_est"] = result_fixp["x"]
-    out["message"] = result_fixp["message"]
+    out["status"] = result_fixp["status"]
     return out
 
 

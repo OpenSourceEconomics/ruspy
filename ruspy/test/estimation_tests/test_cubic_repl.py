@@ -28,11 +28,7 @@ def inputs():
             "maint_cost_func": "cubic",
             "cost_scale": scale,
         },
-        "optimizer": {
-            "optimizer_name": "BFGS",
-            "use_gradient": "yes",
-            "use_search_bounds": "no",
-        },
+        "optimizer": {"algorithm": "scipy_L-BFGS-B"},
     }
     df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
     result_trans, result_fixp = estimate(init_dict, df)
@@ -45,7 +41,7 @@ def inputs():
     out["disc_fac"] = disc_fac
     out["num_states"] = num_states
     out["scale"] = scale
-    out["message"] = result_fixp["message"]
+    out["status"] = result_fixp["status"]
     return out
 
 
@@ -56,7 +52,7 @@ def outputs():
     out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_params_cubic.txt")
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
-    out["cost_ll"] = 163.624044  # 162.885
+    out["cost_ll"] = 164.632939  # 162.885
     return out
 
 
@@ -85,7 +81,7 @@ def test_ll_params_derivative(inputs, outputs):
     disc_fac = inputs["disc_fac"]
     assert_array_almost_equal(
         derivative_loglike_cost_params(
-            inputs["params_est"],
+            pd.DataFrame(inputs["params_est"], columns=["value"]),
             cubic_costs,
             cubic_costs_dev,
             num_states,
@@ -102,4 +98,4 @@ def test_ll_params_derivative(inputs, outputs):
 
 
 def test_success(inputs):
-    assert inputs["message"] == "Optimization terminated successfully."
+    assert inputs["status"] == "success"
