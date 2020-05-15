@@ -57,7 +57,7 @@ def outputs():
 
 
 def test_repl_params(inputs, outputs):
-    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=5)
+    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=3)
 
 
 def test_repl_trans(inputs, outputs):
