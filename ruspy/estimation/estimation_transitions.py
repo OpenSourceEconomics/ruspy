@@ -7,8 +7,6 @@ import numpy as np
 import pandas as pd
 from estimagic.optimization.optimize import minimize
 
-# from ruspy.estimation.bootstrapping import bootstrapp
-
 
 def estimate_transitions(df):
     """Estimating the transition proabilities.
@@ -54,13 +52,6 @@ def estimate_transitions(df):
     result_transitions["x"] = raw_result_trans[1]["value"].to_numpy()
     result_transitions["fun"] = raw_result_trans[0]["fitness"]
 
-    # bootstrapping does not work right now as estimagic gives out correct x
-    # but the reparam version of the Hessian
-    # if isinstance(raw_result_trans[0]["hessian"], np.ndarray):
-    #     result_transitions["95_conf_interv"], result_transitions["std_errors"] = bootstrapp(
-    #     p_raw, raw_result_trans["hess_inv"], reparam=reparam_trans
-    #     )
-
     return result_transitions
 
 
@@ -85,26 +76,6 @@ def loglike_trans(params, transition_count):
     p_raw = params.loc["trans_prob", "value"].to_numpy()
     log_like = -np.sum(np.multiply(transition_count, np.log(p_raw)))
     return log_like
-
-
-def reparam_trans(p_raw):
-    """
-    The reparametrization function for transition probabilities.
-
-    Parameters
-    ----------
-    p_raw : numpy.array
-        The raw values before reparametrization, on which there are no constraints
-        or bounds.
-
-    Returns
-    -------
-    trans_prob : numpy.array
-        The probabilities of an state increase.
-
-    """
-    p = np.exp(p_raw) / np.sum(np.exp(p_raw))
-    return p
 
 
 @numba.jit(nopython=True)

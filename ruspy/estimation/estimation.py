@@ -4,7 +4,6 @@ This module contains the main function for the estimation process.
 import numpy as np
 from estimagic.optimization.optimize import minimize
 
-from ruspy.estimation.bootstrapping import bootstrapp
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_interface import select_model_parameters
@@ -85,19 +84,5 @@ def estimate(init_dict, df):
     result_cost_params["status"] = min_result[0]["status"]
     result_cost_params["message"] = min_result[0]["message"]
     result_cost_params["jac"] = min_result[0]["jacobian"]
-
-    if isinstance(min_result[0]["hessian"], np.ndarray):
-        (
-            result_cost_params["95_conf_interv"],
-            result_cost_params["std_errors"],
-        ) = bootstrapp(result_cost_params["x"], min_result[0]["hessian_inverse"])
-
-    # estimagic version
-    # if isinstance(min_result[0]["hessian"], np.ndarray):
-    #     result_cost_params["covariance"] = cov_hessian(min_result[0]["hessian_inverse"])
-    #     result_cost_params["se"] = se_from_cov(result_cost_params["covariance"])
-    # else:
-    #     result_cost_params["covariance"] = None
-    #     result_cost_params["se"] = None
 
     return transition_results, result_cost_params
