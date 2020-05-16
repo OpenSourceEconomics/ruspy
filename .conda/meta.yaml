@@ -25,3 +25,4 @@ requirements:
     - pytest
     - pytest-xdist
     - scipy
+    - estimagic >=0.0.30
