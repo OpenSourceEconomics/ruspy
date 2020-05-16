@@ -55,9 +55,9 @@ def estimate_transitions(df):
     return result_transitions
 
 
-def loglike_trans(params, transition_count):
+def loglike_trans_individual(params, transition_count):
     """
-    Log-likelihood function of transition probability estimation.
+    Individual negative Log-likelihood function of transition probability estimation.
 
     Parameters
     ----------
@@ -70,11 +70,20 @@ def loglike_trans(params, transition_count):
     Returns
     -------
 
-    log_like : numpy.float
-        The negative log-likelihood value of the transition probabilities
+    log_like_individual : numpy.array
+        The individual negative log-likelihood contributions of the transition probabilities
     """
     p_raw = params.loc["trans_prob", "value"].to_numpy()
-    log_like = -np.sum(np.multiply(transition_count, np.log(p_raw)))
+    log_like_individual = -np.multiply(transition_count, np.log(p_raw))
+    return log_like_individual
+
+
+def loglike_trans(params, transition_count):
+    """
+    Sum the individual negative log-likelihood.
+
+    """
+    log_like = loglike_trans_individual(params, transition_count).sum()
     return log_like
 
 
