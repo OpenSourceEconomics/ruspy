@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.model_code.cost_functions import cubic_costs
@@ -97,46 +98,32 @@ def select_optimizer_options(init_dict, num_params_costs):
 
     """
 
-    optimizer_dict = {} if "optimizer" not in init_dict else init_dict["optimizer"]
-    optimizer_options = {}
+    optimizer_options = {} if "optimizer" not in init_dict else init_dict["optimizer"]
 
-    if "optimizer_name" in optimizer_dict:
-        optimizer_options["method"] = optimizer_dict["optimizer_name"]
+    if "algorithm" not in optimizer_options:
+        optimizer_options["algorithm"] = "scipy_L-BFGS-B"
     else:
-        optimizer_options["method"] = "L-BFGS-B"
+        pass
 
-    if "start_values" in optimizer_dict:
-        optimizer_options["x0"] = np.array(optimizer_dict["start_values"])
-    else:
-        optimizer_options["x0"] = np.power(
-            np.full(num_params_costs, 10, dtype=float),
-            np.arange(1, -num_params_costs + 1, -1),
+    if "params" not in optimizer_options:
+        optimizer_options["params"] = pd.DataFrame(
+            np.power(
+                np.full(num_params_costs, 10, dtype=float),
+                np.arange(1, -num_params_costs + 1, -1),
+            ),
+            columns=["value"],
         )
-
-    if "use_search_bounds" in optimizer_dict:
-        if optimizer_dict["use_search_bounds"] == "yes":
-            optimizer_options["bounds"] = [(1e-6, None)] * num_params_costs
-        else:
-            pass
     else:
         pass
 
-    if "search_bounds" in optimizer_dict:
-        optimizer_options["bounds"] = np.array(optimizer_dict["search_bounds"])
+    if "gradient" not in optimizer_options:
+        optimizer_options["gradient"] = derivative_loglike_cost_params
     else:
         pass
 
-    if "use_gradient" in optimizer_dict:
-        if optimizer_dict["use_gradient"] == "yes":
-            optimizer_options["jac"] = derivative_loglike_cost_params
-        else:
-            pass
+    if "logging" not in optimizer_options:
+        optimizer_options["logging"] = False
     else:
         pass
-
-    if "additional_options" in optimizer_dict:
-        optimizer_options["options"] = optimizer_dict["additional_options"]
-    else:
-        optimizer_options["options"] = {}
 
     return optimizer_options

@@ -58,6 +58,7 @@ def loglike_cost_params(
 
 
     """
+    params = params["value"].to_numpy()
     costs = calc_obs_costs(num_states, maint_func, params, scale)
 
     ev = get_ev(params, trans_mat, costs, disc_fac, alg_details)
@@ -109,6 +110,7 @@ def derivative_loglike_cost_params(
 
 
     """
+    params = params["value"].to_numpy()
     dev = np.zeros_like(params)
     obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
 

@@ -4,9 +4,8 @@ probabilities.
 """
 import numba
 import numpy as np
-import scipy.optimize as opt
-
-from ruspy.estimation.bootstrapping import bootstrapp
+import pandas as pd
+from estimagic.optimization.optimize import minimize
 
 
 def estimate_transitions(df):
@@ -29,25 +28,34 @@ def estimate_transitions(df):
     usage = df["usage"].to_numpy(dtype=float)
     usage = usage[~np.isnan(usage)].astype(int)
     result_transitions["trans_count"] = transition_count = np.bincount(usage)
-    raw_result_trans = opt.minimize(
-        loglike_trans,
-        args=transition_count,
-        x0=np.full(len(transition_count), 0.1),
-        method="BFGS",
-    )
-    p_raw = raw_result_trans["x"]
-    result_transitions["x"] = reparam_trans(p_raw)
 
-    result_transitions["95_conf_interv"], result_transitions["std_errors"] = bootstrapp(
-        p_raw, raw_result_trans["hess_inv"], reparam=reparam_trans
+    # Prepare DataFrame for estimagic
+    name = ["trans_prob"]
+    number = np.arange(1, len(transition_count) + 1)
+    index = pd.MultiIndex.from_product([name, number], names=["name", "number"])
+    params = pd.DataFrame(
+        np.full(len(transition_count), 1 / len(transition_count)),
+        columns=["value"],
+        index=index,
+    )
+    constr = [{"loc": "trans_prob", "type": "probability"}]
+
+    raw_result_trans = minimize(
+        criterion=loglike_trans,
+        params=params,
+        algorithm="scipy_L-BFGS-B",
+        constraints=constr,
+        criterion_kwargs={"transition_count": transition_count},
+        logging=False,
     )
 
-    result_transitions["fun"] = loglike_trans(p_raw, transition_count)
+    result_transitions["x"] = raw_result_trans[1]["value"].to_numpy()
+    result_transitions["fun"] = raw_result_trans[0]["fitness"]
 
     return result_transitions
 
 
-def loglike_trans(p_raw, transition_count):
+def loglike_trans(params, transition_count):
     """
     Log-likelihood function of transition probability estimation.
 
@@ -65,29 +73,9 @@ def loglike_trans(p_raw, transition_count):
     log_like : numpy.float
         The negative log-likelihood value of the transition probabilities
     """
-    trans_probs = reparam_trans(p_raw)
-    log_like = -np.sum(np.multiply(transition_count, np.log(trans_probs)))
+    p_raw = params.loc["trans_prob", "value"].to_numpy()
+    log_like = -np.sum(np.multiply(transition_count, np.log(p_raw)))
     return log_like
-
-
-def reparam_trans(p_raw):
-    """
-    The reparametrization function for transition probabilities.
-
-    Parameters
-    ----------
-    p_raw : numpy.array
-        The raw values before reparametrization, on which there are no constraints
-        or bounds.
-
-    Returns
-    -------
-    trans_prob : numpy.array
-        The probabilities of an state increase.
-
-    """
-    p = np.exp(p_raw) / np.sum(np.exp(p_raw))
-    return p
 
 
 @numba.jit(nopython=True)

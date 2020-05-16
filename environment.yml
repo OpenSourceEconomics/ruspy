@@ -1,5 +1,7 @@
 name: ruspy
-
+channels:
+  - opensourceeconomics
+  - conda-forge
 dependencies:
   - python=3.7
   - numpy
@@ -16,6 +18,7 @@ dependencies:
   - numba
   - mpmath
   - pip
+  - estimagic>=0.0.30
   - pip:
       - flake8
       - black
