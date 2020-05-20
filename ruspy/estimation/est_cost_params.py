@@ -18,7 +18,7 @@ ev_intermed = None
 current_params = None
 
 
-def loglike_cost_params(
+def loglike_cost_params_individual(
     params,
     maint_func,
     maint_func_dev,
@@ -64,11 +64,39 @@ def loglike_cost_params(
     ev = get_ev(params, trans_mat, costs, disc_fac, alg_details)
 
     p_choice = choice_prob_gumbel(ev, costs, disc_fac)
-    log_like = like_hood_data(np.log(p_choice), decision_mat, state_mat)
+    log_like = like_hood_data_individual(np.log(p_choice), decision_mat, state_mat)
     return log_like
 
 
-def derivative_loglike_cost_params(
+def loglike_cost_params(
+    params,
+    maint_func,
+    maint_func_dev,
+    num_states,
+    trans_mat,
+    state_mat,
+    decision_mat,
+    disc_fac,
+    scale,
+    alg_details,
+):
+
+    log_like_sum = loglike_cost_params_individual(
+        params,
+        maint_func,
+        maint_func_dev,
+        num_states,
+        trans_mat,
+        state_mat,
+        decision_mat,
+        disc_fac,
+        scale,
+        alg_details,
+    ).sum()
+    return log_like_sum
+
+
+def derivative_loglike_cost_params_individual(
     params,
     maint_func,
     maint_func_dev,
@@ -111,7 +139,7 @@ def derivative_loglike_cost_params(
 
     """
     params = params["value"].to_numpy()
-    dev = np.zeros_like(params)
+    dev = np.zeros((decision_mat.shape[1], len(params)))
     obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
 
     ev = get_ev(params, trans_mat, obs_costs, disc_fac, alg_details)
@@ -120,8 +148,8 @@ def derivative_loglike_cost_params(
     maint_cost_dev = maint_func_dev(num_states, scale)
 
     lh_values_rc = like_hood_vaules_rc(ev, obs_costs, p_choice, trans_mat, disc_fac)
-    like_dev_rc = like_hood_data(lh_values_rc, decision_mat, state_mat)
-    dev[0] = like_dev_rc
+    like_dev_rc = like_hood_data_individual(lh_values_rc, decision_mat, state_mat)
+    dev[:, 0] = like_dev_rc
 
     for i in range(len(params) - 1):
         if len(params) == 2:
@@ -132,7 +160,38 @@ def derivative_loglike_cost_params(
         log_like_values_params = log_like_values_param(
             ev, obs_costs, p_choice, trans_mat, cost_dev_param, disc_fac
         )
-        dev[i + 1] = like_hood_data(log_like_values_params, decision_mat, state_mat)
+        dev[:, i + 1] = like_hood_data_individual(
+            log_like_values_params, decision_mat, state_mat
+        )
+
+    return dev
+
+
+def derivative_loglike_cost_params(
+    params,
+    maint_func,
+    maint_func_dev,
+    num_states,
+    trans_mat,
+    state_mat,
+    decision_mat,
+    disc_fac,
+    scale,
+    alg_details,
+):
+
+    dev = derivative_loglike_cost_params_individual(
+        params,
+        maint_func,
+        maint_func_dev,
+        num_states,
+        trans_mat,
+        state_mat,
+        decision_mat,
+        disc_fac,
+        scale,
+        alg_details,
+    ).sum(axis=0)
 
     return dev
 
@@ -195,6 +254,10 @@ def chain_rule_param(cost_dev, dev_ev_param, disc_fac):
         cost_dev[0] - disc_fac * dev_ev_param[0] + disc_fac * dev_ev_param - cost_dev
     )
     return chain_value
+
+
+def like_hood_data_individual(l_values, decision_mat, state_mat):
+    return -(decision_mat * np.dot(l_values.T, state_mat)).sum(axis=0)
 
 
 def like_hood_data(l_values, decision_mat, state_mat):
