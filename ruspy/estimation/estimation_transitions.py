@@ -87,6 +87,19 @@ def loglike_trans(params, transition_count):
     return log_like
 
 
+def loglike_trans_individual_derivative(params, transition_count):
+    p_raw = params.loc["trans_prob", "value"].to_numpy()
+    diagonal = -np.multiply(transition_count, 1 / p_raw)
+    jacobian = diagonal * np.eye(len(p_raw))
+
+    return jacobian
+
+
+def loglike_trans_derivative(params, transition_count):
+    gradient = loglike_trans_individual_derivative(params, transition_count).sum(axis=1)
+    return gradient
+
+
 @numba.jit(nopython=True)
 def create_transition_matrix(num_states, trans_prob):
     """
