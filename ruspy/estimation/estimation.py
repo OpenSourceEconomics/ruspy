@@ -8,13 +8,33 @@ from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_interface import select_optimizer_options
+from ruspy.estimation.estimation_mpec import estimate_mpec
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
 
 
 def estimate(init_dict, df):
+
+    if "approach" in init_dict["optimizer"]:
+        approach = init_dict["optimizer"]["approach"]
+    else:
+        raise ValueError("The key 'approach' must be in the optimizer dictionairy")
+
+    if approach == "NFXP":
+        results_transition_params, results_cost_params = estimate_nfxp(init_dict, df)
+    elif approach == "MPEC":
+        results_transition_params, results_cost_params = estimate_mpec(init_dict, df)
+    else:
+        raise ValueError(
+            f"{approach} is not implemented. Only MPEC or NFXP are valid choices"
+        )
+
+    return results_transition_params, results_cost_params
+
+
+def estimate_nfxp(init_dict, df):
     """
-    Estimation function of ruspy.
+    Estimation function for the nested fixed point algorithm in ruspy.
 
     This function coordinates the estimation process of the ruspy package.
 
@@ -55,7 +75,7 @@ def estimate(init_dict, df):
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     state_mat = create_state_matrix(states, num_states)
 
-    optimizer_options = select_optimizer_options(init_dict, num_params)
+    optimizer_options = select_optimizer_options(init_dict, num_params, num_states)
 
     alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
 

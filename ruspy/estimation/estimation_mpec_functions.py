@@ -79,7 +79,7 @@ def mpec_loglike_cost_params(
         # grad[:] = approx_fprime(mpec_params, partial_loglike_mpec, 10e-6)
 
         # analytical gradient (comment out for numerical)
-        grad[:] = mpec_loglike_cost_params_dev(
+        grad[:] = mpec_loglike_cost_params_derivative(
             mpec_params,
             maint_func,
             maint_func_dev,
@@ -154,7 +154,7 @@ def mpec_constraint(
         # grad[:, :] = approx_derivative(partial_constr_mpec_deriv, mpec_params)
 
         # analytical jacobian (comment out for numerical)
-        grad[:, :] = mpec_constraint_dev(
+        grad[:, :] = mpec_constraint_derivative(
             mpec_params,
             maint_func,
             maint_func_dev,
@@ -173,7 +173,6 @@ def mpec_constraint(
 
     # Select the minimal absolute value to rescale the value vector for the
     # exponential function.
-
     ev_max = np.max(np.array(maint_value, repl_value))
 
     log_sum = ev_max + np.log(
@@ -186,7 +185,7 @@ def mpec_constraint(
     return ev_new - ev
 
 
-def mpec_loglike_cost_params_dev(
+def mpec_loglike_cost_params_derivative(
     mpec_params,
     maint_func,
     maint_func_dev,
@@ -264,7 +263,7 @@ def mpec_loglike_cost_params_dev(
     return gradient
 
 
-def mpec_constraint_dev(
+def mpec_constraint_derivative(
     mpec_params,
     maint_func,
     maint_func_dev,

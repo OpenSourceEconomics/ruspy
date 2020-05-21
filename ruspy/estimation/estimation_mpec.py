@@ -9,6 +9,7 @@ import numpy as np
 
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.estimation_interface import select_model_parameters
+from ruspy.estimation.estimation_interface import select_optimizer_options
 from ruspy.estimation.estimation_mpec_functions import mpec_constraint
 from ruspy.estimation.estimation_mpec_functions import mpec_loglike_cost_params
 from ruspy.estimation.estimation_transitions import create_transition_matrix
@@ -60,6 +61,9 @@ def estimate_mpec(init_dict, df):
     )
     state_mat = create_state_matrix(states, num_states)
 
+    optimizer_options = select_optimizer_options(init_dict, num_params, num_states)
+    # gradient = optimizer_options.pop("gradient")
+
     # Calculate partial functions needed for nlopt
     partial_loglike_mpec = partial(
         mpec_loglike_cost_params,
@@ -85,24 +89,34 @@ def estimate_mpec(init_dict, df):
     )
 
     # set up nlopt
-    opt = nlopt.opt(nlopt.LD_SLSQP, num_states + num_params)
-    # opt = nlopt.opt(nlopt.AUGLAG_EQ, num_states + num_params)
-    # opt.set_local_optimizer(nlopt.opt(nlopt.LD_SLSQP, num_states + num_params))
+    opt = nlopt.opt(
+        eval("nlopt." + optimizer_options.pop("algorithm")), num_states + num_params
+    )
     opt.set_min_objective(partial_loglike_mpec)
-    lb = np.concatenate((np.full(num_states, -np.inf), np.full(num_params, 0.0)))
-    ub = np.concatenate((np.full(num_states, 50.0), np.full(num_params, np.inf)))
-    opt.set_lower_bounds(lb)
-    opt.set_upper_bounds(ub)
     opt.add_equality_mconstraint(
         partial_constr_mpec, np.full(num_states, 1e-6),
     )
-    opt.set_ftol_abs(1e-15)
-    # opt.set_ftol_rel(1e-6)
-    opt.set_xtol_rel(1e-15)
-    opt.set_xtol_abs(1e-3)
-    # opt.set_maxeval(1000)
-    start = np.concatenate((np.full(num_states, 0.0), np.array([4.0, 1.0])))
+
+    # supply user choices
+    params = optimizer_options.pop("params")
+
+    if "set_local_optimizer" in optimizer_options:
+        exec(
+            "opt.set_local_optimizer(nlopt.opt(nlopt."
+            + optimizer_options.pop("set_local_optimizer")
+            + ", num_states+num_params))"
+        )
+
+    for key, _value in optimizer_options.items():
+        exec("opt." + key + "(_value)")
+
     # Solving nlopt
-    mpec_cost_parameters = opt.optimize(start)
+    mpec_cost_parameters = {}
+    mpec_cost_parameters["x"] = opt.optimize(params)
+    mpec_cost_parameters["fun"] = opt.last_optimum_value()
+    if opt.last_optimize_result() > 0:
+        mpec_cost_parameters["status"] = True
+    else:
+        mpec_cost_parameters["status"] = False
 
     return mpec_transition_results, mpec_cost_parameters

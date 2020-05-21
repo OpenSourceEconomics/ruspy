@@ -80,7 +80,7 @@ def select_cost_function(maint_cost_func_name):
     return maint_func, maint_func_dev, num_params
 
 
-def select_optimizer_options(init_dict, num_params_costs):
+def select_optimizer_options(init_dict, num_params_costs, num_states):
     """
         Creating the options for the scipy optimizer.
 
@@ -98,32 +98,49 @@ def select_optimizer_options(init_dict, num_params_costs):
 
     """
 
-    optimizer_options = {} if "optimizer" not in init_dict else init_dict["optimizer"]
+    if "optimizer" not in init_dict:
+        raise ValueError("the dictionairy 'optimizer' must be in init_dict")
+
+    optimizer_options = init_dict["optimizer"]
 
     if "algorithm" not in optimizer_options:
-        optimizer_options["algorithm"] = "scipy_L-BFGS-B"
-    else:
-        pass
+        raise ValueError("An 'algorithm' must be specified")
 
     if "params" not in optimizer_options:
-        optimizer_options["params"] = pd.DataFrame(
-            np.power(
-                np.full(num_params_costs, 10, dtype=float),
-                np.arange(1, -num_params_costs + 1, -1),
-            ),
-            columns=["value"],
-        )
-    else:
-        pass
+        if optimizer_options["approach"] == "NFXP":
+            optimizer_options["params"] = pd.DataFrame(
+                np.power(
+                    np.full(num_params_costs, 10, dtype=float),
+                    np.arange(1, -num_params_costs + 1, -1),
+                ),
+                columns=["value"],
+            )
+        else:
+            optimizer_options["params"] = np.concatenate(
+                (
+                    np.zeros(num_states),
+                    np.power(
+                        np.full(num_params_costs, 10, dtype=float),
+                        np.arange(1, -num_params_costs + 1, -1),
+                    ),
+                )
+            )
 
-    if "gradient" not in optimizer_options:
-        optimizer_options["gradient"] = derivative_loglike_cost_params
-    else:
-        pass
+    if "gradient" not in optimizer_options or optimizer_options["gradient"] == "Yes":
+        if optimizer_options["approach"] == "NFXP":
+            optimizer_options["gradient"] = derivative_loglike_cost_params
+        else:
+            optimizer_options["gradient"] = True
 
-    if "logging" not in optimizer_options:
+    if optimizer_options["gradient"] == "No":
+        if optimizer_options["approach"] == "NFXP":
+            optimizer_options["gradient"] = None
+        else:
+            optimizer_options["gradient"] = False
+
+    if optimizer_options["approach"] == "NFXP" and "logging" not in optimizer_options:
         optimizer_options["logging"] = False
-    else:
-        pass
+
+    del optimizer_options["approach"]
 
     return optimizer_options
