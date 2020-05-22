@@ -43,7 +43,7 @@ def inputs():
     }
     df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
     result_trans, result_fixp = estimate(init_dict, df)
-    out["params_est"] = result_fixp["x"][num_states:].round(5)
+    out["params_est"] = result_fixp["x"][num_states:].round(8)
     out["cost_ll"] = result_fixp["fun"]
     out["status"] = result_fixp["status"]
     return out
@@ -52,7 +52,7 @@ def inputs():
 @pytest.fixture(scope="module")
 def outputs():
     out = {}
-    out["params_base"] = np.array([10.0749, 229309.1829, 0, 0])
+    out["params_base"] = np.array([10.0749, 229309.1829, 0.0, 0.0])
     out["cost_ll"] = 163.584283  # 162.885
     return out
 
