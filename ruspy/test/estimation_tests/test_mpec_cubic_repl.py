@@ -43,7 +43,7 @@ def inputs():
     }
     df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
     result_trans, result_fixp = estimate(init_dict, df)
-    out["params_est"] = result_fixp["x"][num_states:]
+    out["params_est"] = result_fixp["x"][num_states:].round(5)
     out["cost_ll"] = result_fixp["fun"]
     out["status"] = result_fixp["status"]
     return out
