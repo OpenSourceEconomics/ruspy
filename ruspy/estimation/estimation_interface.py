@@ -101,7 +101,7 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
     if "optimizer" not in init_dict:
         raise ValueError("the dictionairy 'optimizer' must be in init_dict")
 
-    optimizer_options = init_dict["optimizer"]
+    optimizer_options = init_dict["optimizer"].copy()
 
     if "algorithm" not in optimizer_options:
         raise ValueError("An 'algorithm' must be specified")
@@ -130,13 +130,13 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
         if optimizer_options["approach"] == "NFXP":
             optimizer_options["gradient"] = derivative_loglike_cost_params
         else:
-            optimizer_options["gradient"] = True
+            optimizer_options["gradient"] = "Yes"
 
     if optimizer_options["gradient"] == "No":
         if optimizer_options["approach"] == "NFXP":
             optimizer_options["gradient"] = None
         else:
-            optimizer_options["gradient"] = False
+            pass
 
     if optimizer_options["approach"] == "NFXP" and "logging" not in optimizer_options:
         optimizer_options["logging"] = False

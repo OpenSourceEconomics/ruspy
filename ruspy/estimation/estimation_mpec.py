@@ -62,7 +62,7 @@ def estimate_mpec(init_dict, df):
     state_mat = create_state_matrix(states, num_states)
 
     optimizer_options = select_optimizer_options(init_dict, num_params, num_states)
-    # gradient = optimizer_options.pop("gradient")
+    gradient = optimizer_options.pop("gradient")
 
     # Calculate partial functions needed for nlopt
     partial_loglike_mpec = partial(
@@ -75,6 +75,7 @@ def estimate_mpec(init_dict, df):
         decision_mat,
         disc_fac,
         scale,
+        gradient,
     )
 
     partial_constr_mpec = partial(
@@ -86,6 +87,7 @@ def estimate_mpec(init_dict, df):
         trans_mat,
         disc_fac,
         scale,
+        gradient,
     )
 
     # set up nlopt

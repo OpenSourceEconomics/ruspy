@@ -1,14 +1,14 @@
 """
 This module contains all the key functions used to estimate the model using MPEC.
 """
+from functools import partial
+
 import numpy as np
+from scipy.optimize import approx_fprime
+from scipy.optimize._numdiff import approx_derivative
 
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
-
-# from functools import partial
-# from scipy.optimize import approx_fprime
-# from scipy.optimize._numdiff import approx_derivative
 
 
 def function_wrapper_like(function, args):
@@ -38,6 +38,7 @@ def mpec_loglike_cost_params(
     decision_mat,
     disc_fac,
     scale,
+    gradient,
     mpec_params,
     grad,
 ):
@@ -71,25 +72,35 @@ def mpec_loglike_cost_params(
 
     """
     if grad.size > 0:
-        # numerical gradient (comment out for analytical)
-        # partial_loglike_mpec = partial(mpec_loglike_cost_params, maint_func,
-        #                         maint_func_dev, num_states, num_params,
-        #                         state_mat, decision_mat,
-        #                         disc_fac, scale, grad = np.array([]))
-        # grad[:] = approx_fprime(mpec_params, partial_loglike_mpec, 10e-6)
-
-        # analytical gradient (comment out for numerical)
-        grad[:] = mpec_loglike_cost_params_derivative(
-            mpec_params,
-            maint_func,
-            maint_func_dev,
-            num_states,
-            num_params,
-            disc_fac,
-            scale,
-            decision_mat,
-            state_mat,
-        )
+        if gradient == "No":
+            # numerical gradient
+            partial_loglike_mpec = partial(
+                mpec_loglike_cost_params,
+                maint_func,
+                maint_func_dev,
+                num_states,
+                num_params,
+                state_mat,
+                decision_mat,
+                disc_fac,
+                scale,
+                gradient,
+                grad=np.array([]),
+            )
+            grad[:] = approx_fprime(mpec_params, partial_loglike_mpec, 10e-6)
+        else:
+            # analytical gradient
+            grad[:] = mpec_loglike_cost_params_derivative(
+                mpec_params,
+                maint_func,
+                maint_func_dev,
+                num_states,
+                num_params,
+                disc_fac,
+                scale,
+                decision_mat,
+                state_mat,
+            )
 
     costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
@@ -109,6 +120,7 @@ def mpec_constraint(
     trans_mat,
     disc_fac,
     scale,
+    gradient,
     result,
     mpec_params,
     grad,
@@ -142,28 +154,34 @@ def mpec_constraint(
 
     """
     if grad.size > 0:
-        # numerical jacobian (comment out for analytical)
-        # partial_constr_mpec_deriv = function_wrapper_constr(mpec_constraint,
-        #                                             args=(maint_func,
-        #                                                   maint_func_dev,
-        #                                                   num_states,
-        #                                                   num_params,
-        #                                                   trans_mat,
-        #                                                   disc_fac,
-        #                                                   scale))
-        # grad[:, :] = approx_derivative(partial_constr_mpec_deriv, mpec_params)
-
-        # analytical jacobian (comment out for numerical)
-        grad[:, :] = mpec_constraint_derivative(
-            mpec_params,
-            maint_func,
-            maint_func_dev,
-            num_states,
-            num_params,
-            disc_fac,
-            scale,
-            trans_mat,
-        )
+        if gradient == "No":
+            # numerical jacobian
+            partial_constr_mpec_deriv = function_wrapper_constr(
+                mpec_constraint,
+                args=(
+                    maint_func,
+                    maint_func_dev,
+                    num_states,
+                    num_params,
+                    trans_mat,
+                    disc_fac,
+                    scale,
+                    gradient,
+                ),
+            )
+            grad[:, :] = approx_derivative(partial_constr_mpec_deriv, mpec_params)
+        else:
+            # analytical jacobian
+            grad[:, :] = mpec_constraint_derivative(
+                mpec_params,
+                maint_func,
+                maint_func_dev,
+                num_states,
+                num_params,
+                disc_fac,
+                scale,
+                trans_mat,
+            )
 
     ev = mpec_params[0:num_states]
     obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
