@@ -52,7 +52,7 @@ def inputs():
 @pytest.fixture(scope="module")
 def outputs():
     out = {}
-    out["params_base"] = np.array([10.0749, 229309.1829, 0, 1.203236128e-14])
+    out["params_base"] = np.array([10.0749, 229309.1829, 0, 0])
     out["cost_ll"] = 163.584283  # 162.885
     return out
 
