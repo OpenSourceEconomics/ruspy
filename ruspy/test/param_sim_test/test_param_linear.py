@@ -30,7 +30,7 @@ def inputs():
             "maint_cost_func": "linear",
             "cost_scale": scale,
         },
-        "optimizer": {"algorithm": "scipy_L-BFGS-B"},
+        "optimizer": {"approach": "NFXP", "algorithm": "scipy_L-BFGS-B"},
         "simulation": {
             "discount_factor": disc_fac,
             "seed": 123,

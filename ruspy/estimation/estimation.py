@@ -192,7 +192,7 @@ def estimate_mpec(init_dict, df):
     )
     opt.set_min_objective(partial_loglike_mpec)
     opt.add_equality_mconstraint(
-        partial_constr_mpec, np.full(num_states, 1e-6),
+        partial_constr_mpec, np.full(num_states, 0),
     )
 
     # supply user choices
@@ -213,8 +213,8 @@ def estimate_mpec(init_dict, df):
     mpec_cost_parameters["x"] = opt.optimize(params)
     mpec_cost_parameters["fun"] = opt.last_optimum_value()
     if opt.last_optimize_result() > 0:
-        mpec_cost_parameters["status"] = True
+        mpec_cost_parameters["status"] = "success"
     else:
-        mpec_cost_parameters["status"] = False
+        mpec_cost_parameters["status"] = "no success"
 
     return mpec_transition_results, mpec_cost_parameters
