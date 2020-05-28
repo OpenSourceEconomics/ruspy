@@ -43,12 +43,10 @@ def calc_fixp(
     ev_new = np.dot(trans_mat, np.log(np.sum(np.exp(-obs_costs), axis=1)))
     converge_crit = threshold + 1  # Make sure that the loop starts
     while converge_crit > threshold:
-        while converge_crit > switch_tol:
+        while converge_crit > switch_tol and contr_step_count < max_contr_steps:
             ev = ev_new
             ev_new = contraction_iteration(ev, trans_mat, obs_costs, disc_fac)
             contr_step_count += 1
-            if contr_step_count > max_contr_steps:
-                break
             converge_crit = np.max(np.abs(ev_new - ev))
         ev = ev_new
         ev_new = kantorovich_step(ev, trans_mat, obs_costs, disc_fac)

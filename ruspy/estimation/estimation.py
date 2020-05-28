@@ -8,7 +8,6 @@ import numpy as np
 from estimagic.optimization.optimize import minimize
 
 from ruspy.estimation.est_cost_params import create_state_matrix
-from ruspy.estimation.est_cost_params import loglike_cost_params
 from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_interface import select_optimizer_options
 from ruspy.estimation.estimation_transitions import create_transition_matrix
@@ -80,6 +79,7 @@ def estimate_nfxp(init_dict, df):
     state_mat = create_state_matrix(states, num_states)
 
     optimizer_options = select_optimizer_options(init_dict, num_params, num_states)
+    criterion = optimizer_options.pop("criterion")
 
     alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
 
@@ -98,10 +98,7 @@ def estimate_nfxp(init_dict, df):
     result_cost_params = {}
 
     min_result = minimize(
-        loglike_cost_params,
-        criterion_kwargs=kwargs,
-        gradient_kwargs=kwargs,
-        **optimizer_options,
+        criterion, criterion_kwargs=kwargs, gradient_kwargs=kwargs, **optimizer_options,
     )
     result_cost_params["x"] = min_result[1]["value"].to_numpy()
     result_cost_params["fun"] = min_result[0]["fitness"]

@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 
 from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
+from ruspy.estimation.est_cost_params import derivative_loglike_cost_params_individual
+from ruspy.estimation.est_cost_params import loglike_cost_params
+from ruspy.estimation.est_cost_params import loglike_cost_params_individual
 from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import cubic_costs_dev
 from ruspy.model_code.cost_functions import hyperbolic_costs
@@ -128,7 +131,12 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
 
     if "gradient" not in optimizer_options or optimizer_options["gradient"] == "Yes":
         if optimizer_options["approach"] == "NFXP":
-            optimizer_options["gradient"] = derivative_loglike_cost_params
+            if optimizer_options["algorithm"] == "estimagic_bhhh":
+                optimizer_options[
+                    "gradient"
+                ] = derivative_loglike_cost_params_individual
+            else:
+                optimizer_options["gradient"] = derivative_loglike_cost_params
         else:
             optimizer_options["gradient"] = "Yes"
 
@@ -137,6 +145,12 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
             optimizer_options["gradient"] = None
         else:
             pass
+
+    if optimizer_options["approach"] == "NFXP":
+        if optimizer_options["algorithm"] == "estimagic_bhhh":
+            optimizer_options["criterion"] = loglike_cost_params_individual
+        else:
+            optimizer_options["criterion"] = loglike_cost_params
 
     if optimizer_options["approach"] == "NFXP" and "logging" not in optimizer_options:
         optimizer_options["logging"] = False

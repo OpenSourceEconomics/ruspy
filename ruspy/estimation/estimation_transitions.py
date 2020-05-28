@@ -34,16 +34,14 @@ def estimate_transitions(df):
     number = np.arange(1, len(transition_count) + 1)
     index = pd.MultiIndex.from_product([name, number], names=["name", "number"])
     params = pd.DataFrame(
-        np.full(len(transition_count), 1 / len(transition_count)),
-        columns=["value"],
-        index=index,
+        transition_count / sum(transition_count), columns=["value"], index=index,
     )
     constr = [{"loc": "trans_prob", "type": "probability"}]
 
     raw_result_trans = minimize(
-        criterion=loglike_trans,
+        criterion=loglike_trans_individual,
         params=params,
-        algorithm="scipy_L-BFGS-B",
+        algorithm="estimagic_bhhh",
         constraints=constr,
         criterion_kwargs={"transition_count": transition_count},
         logging=False,
