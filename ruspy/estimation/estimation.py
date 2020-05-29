@@ -105,6 +105,8 @@ def estimate_nfxp(init_dict, df):
     result_cost_params["status"] = min_result[0]["status"]
     result_cost_params["message"] = min_result[0]["message"]
     result_cost_params["jac"] = min_result[0]["jacobian"]
+    result_cost_params["n_evaluations"] = min_result[0]["n_evaluations"]
+    result_cost_params["n_iterations"] = min_result[0]["n_iterations"]
 
     return transition_results, result_cost_params
 
@@ -213,5 +215,6 @@ def estimate_mpec(init_dict, df):
         mpec_cost_parameters["status"] = "success"
     else:
         mpec_cost_parameters["status"] = "no success"
+    mpec_cost_parameters["n_evaluations"] = opt.get_numevals()
 
     return mpec_transition_results, mpec_cost_parameters
