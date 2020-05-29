@@ -51,12 +51,12 @@ def calc_fixp(
         ev = ev_new
         ev_new = kantorovich_step(ev, trans_mat, obs_costs, disc_fac)
         newt_kant_step_count += 1
-        if newt_kant_step_count > max_newt_kant_steps:
+        if newt_kant_step_count >= max_newt_kant_steps:
             break
         converge_crit = np.max(
             np.abs(ev - contraction_iteration(ev, trans_mat, obs_costs, disc_fac))
         )
-    return ev_new
+    return ev_new, contr_step_count, newt_kant_step_count
 
 
 def contraction_iteration(ev, trans_mat, obs_costs, disc_fac):

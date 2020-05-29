@@ -6,6 +6,7 @@ implementation of fix point algorithm developed by John Rust.
 import numba
 import numpy as np
 
+from ruspy.estimation import config
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.fix_point_alg import calc_fixp
@@ -61,7 +62,11 @@ def loglike_cost_params_individual(
     params = params["value"].to_numpy()
     costs = calc_obs_costs(num_states, maint_func, params, scale)
 
-    ev = get_ev(params, trans_mat, costs, disc_fac, alg_details)
+    ev, contr_step_count, newt_kant_step_count = get_ev(
+        params, trans_mat, costs, disc_fac, alg_details
+    )
+    config.total_contr_count += contr_step_count
+    config.total_newt_kant_count += newt_kant_step_count
 
     p_choice = choice_prob_gumbel(ev, costs, disc_fac)
     log_like = like_hood_data_individual(np.log(p_choice), decision_mat, state_mat)
@@ -142,7 +147,7 @@ def derivative_loglike_cost_params_individual(
     dev = np.zeros((decision_mat.shape[1], len(params)))
     obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
 
-    ev = get_ev(params, trans_mat, obs_costs, disc_fac, alg_details)
+    ev = get_ev(params, trans_mat, obs_costs, disc_fac, alg_details)[0]
 
     p_choice = choice_prob_gumbel(ev, obs_costs, disc_fac)
     maint_cost_dev = maint_func_dev(num_states, scale)

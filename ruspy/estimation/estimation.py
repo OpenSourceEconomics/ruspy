@@ -7,6 +7,7 @@ import nlopt
 import numpy as np
 from estimagic.optimization.optimize import minimize
 
+from ruspy.estimation import config
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_interface import select_optimizer_options
@@ -100,6 +101,7 @@ def estimate_nfxp(init_dict, df):
     min_result = minimize(
         criterion, criterion_kwargs=kwargs, gradient_kwargs=kwargs, **optimizer_options,
     )
+
     result_cost_params["x"] = min_result[1]["value"].to_numpy()
     result_cost_params["fun"] = min_result[0]["fitness"]
     result_cost_params["status"] = min_result[0]["status"]
@@ -107,6 +109,11 @@ def estimate_nfxp(init_dict, df):
     result_cost_params["jac"] = min_result[0]["jacobian"]
     result_cost_params["n_evaluations"] = min_result[0]["n_evaluations"]
     result_cost_params["n_iterations"] = min_result[0]["n_iterations"]
+    result_cost_params["n_contraction_steps"] = config.total_contr_count
+    result_cost_params["n_newt_kant_steps"] = config.total_newt_kant_count
+
+    config.total_contr_count = 0
+    config.total_newt_kant_count = 0
 
     return transition_results, result_cost_params
 
@@ -160,17 +167,18 @@ def estimate_mpec(init_dict, df):
     gradient = optimizer_options.pop("gradient")
 
     # Calculate partial functions needed for nlopt
-    partial_loglike_mpec = partial(
-        mpec_loglike_cost_params,
-        maint_func,
-        maint_func_dev,
-        num_states,
-        num_params,
-        state_mat,
-        decision_mat,
-        disc_fac,
-        scale,
-        gradient,
+    n_evaluations, partial_loglike_mpec = wrapper_loglike_mpec(
+        args=(
+            maint_func,
+            maint_func_dev,
+            num_states,
+            num_params,
+            state_mat,
+            decision_mat,
+            disc_fac,
+            scale,
+            gradient,
+        )
     )
 
     partial_constr_mpec = partial(
@@ -215,6 +223,17 @@ def estimate_mpec(init_dict, df):
         mpec_cost_parameters["status"] = "success"
     else:
         mpec_cost_parameters["status"] = "no success"
-    mpec_cost_parameters["n_evaluations"] = opt.get_numevals()
+    mpec_cost_parameters["n_iterations"] = opt.get_numevals()
+    mpec_cost_parameters["n_evaluations"] = n_evaluations[0]
 
     return mpec_transition_results, mpec_cost_parameters
+
+
+def wrapper_loglike_mpec(args):
+    ncalls = [0]
+
+    def function_wrapper(*x0):
+        ncalls[0] += 1
+        return mpec_loglike_cost_params(*(args + x0))
+
+    return ncalls, function_wrapper
