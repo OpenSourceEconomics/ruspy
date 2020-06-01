@@ -206,11 +206,13 @@ def estimate_mpec(init_dict, df):
     params = optimizer_options.pop("params")
 
     if "set_local_optimizer" in optimizer_options:
-        exec(
-            "opt.set_local_optimizer(nlopt.opt(nlopt."
-            + optimizer_options.pop("set_local_optimizer")
-            + ", num_states+num_params))"
+        sub = nlopt.opt(  # noqa: F841
+            eval("nlopt." + optimizer_options.pop("set_local_optimizer")),
+            num_states + num_params,
         )
+        exec("opt.set_local_optimizer(sub)")
+        for key, _value in optimizer_options.items():
+            exec("sub." + key + "(_value)")
 
     for key, _value in optimizer_options.items():
         exec("opt." + key + "(_value)")
@@ -220,9 +222,9 @@ def estimate_mpec(init_dict, df):
     mpec_cost_parameters["x"] = opt.optimize(params)
     mpec_cost_parameters["fun"] = opt.last_optimum_value()
     if opt.last_optimize_result() > 0:
-        mpec_cost_parameters["status"] = "success"
+        mpec_cost_parameters["status"] = True
     else:
-        mpec_cost_parameters["status"] = "no success"
+        mpec_cost_parameters["status"] = False
     mpec_cost_parameters["n_iterations"] = opt.get_numevals()
     mpec_cost_parameters["n_evaluations"] = n_evaluations[0]
 
