@@ -11,22 +11,55 @@ from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 
 
-def function_wrapper_like(function, args):
-    def call(mpec_params, grad):
+def wrap_mpec_loglike(args):
+    ncalls = [0]
+
+    def function_wrapper(*x0):
+        ncalls[0] += 1
+        return mpec_loglike_cost_params(*(args + x0))
+
+    return ncalls, function_wrapper
+
+
+def wrap_nlopt_likelihood(function, args):
+    def function_wrapper(mpec_params, grad):
         result = function(mpec_params, *args, grad)
         return result
 
-    return call
+    return function_wrapper
 
 
-def function_wrapper_constr(function, args):
-    def call(mpec_params):
+def wrap_nlopt_constraint(function, args):
+    def function_wrapper(mpec_params):
         result = function(
             result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([])
         )
         return result
 
-    return call
+    return function_wrapper
+
+
+def wrap_ipopt_likelihood(function, args):
+    def function_wrapper(mpec_params):
+        return function(
+            *args, gradient=None, mpec_params=mpec_params, grad=np.array([])
+        )
+
+    return function_wrapper
+
+
+def wrap_ipopt_constraint(function, args):
+    def function_wrapper(mpec_params):
+        result = function(
+            *args,
+            gradient=None,
+            result=np.array([]),
+            mpec_params=mpec_params,
+            grad=np.array([]),
+        )
+        return result
+
+    return function_wrapper
 
 
 def mpec_loglike_cost_params(
@@ -91,7 +124,6 @@ def mpec_loglike_cost_params(
         else:
             # analytical gradient
             grad[:] = mpec_loglike_cost_params_derivative(
-                mpec_params,
                 maint_func,
                 maint_func_dev,
                 num_states,
@@ -100,6 +132,7 @@ def mpec_loglike_cost_params(
                 scale,
                 decision_mat,
                 state_mat,
+                mpec_params,
             )
 
     costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
@@ -156,7 +189,7 @@ def mpec_constraint(
     if grad.size > 0:
         if gradient == "No":
             # numerical jacobian
-            partial_constr_mpec_deriv = function_wrapper_constr(
+            partial_constr_mpec_deriv = wrap_nlopt_constraint(
                 mpec_constraint,
                 args=(
                     maint_func,
@@ -173,7 +206,6 @@ def mpec_constraint(
         else:
             # analytical jacobian
             grad[:, :] = mpec_constraint_derivative(
-                mpec_params,
                 maint_func,
                 maint_func_dev,
                 num_states,
@@ -181,6 +213,7 @@ def mpec_constraint(
                 disc_fac,
                 scale,
                 trans_mat,
+                mpec_params,
             )
 
     ev = mpec_params[0:num_states]
@@ -204,7 +237,6 @@ def mpec_constraint(
 
 
 def mpec_loglike_cost_params_derivative(
-    mpec_params,
     maint_func,
     maint_func_dev,
     num_states,
@@ -213,6 +245,7 @@ def mpec_loglike_cost_params_derivative(
     scale,
     decision_mat,
     state_mat,
+    mpec_params,
 ):
     """
     Computing the gradient of the objective function for MPEC.
@@ -282,7 +315,6 @@ def mpec_loglike_cost_params_derivative(
 
 
 def mpec_constraint_derivative(
-    mpec_params,
     maint_func,
     maint_func_dev,
     num_states,
@@ -290,6 +322,7 @@ def mpec_constraint_derivative(
     disc_fac,
     scale,
     trans_mat,
+    mpec_params,
 ):
     """
     Calculating the Jacobian of the MPEC constraint.

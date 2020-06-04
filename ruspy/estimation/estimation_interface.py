@@ -155,6 +155,19 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
     if optimizer_options["approach"] == "NFXP" and "logging" not in optimizer_options:
         optimizer_options["logging"] = False
 
+    if (
+        optimizer_options["approach"] == "MPEC"
+        and optimizer_options["algorithm"] == "ipopt"
+    ):
+        if "set_lower_bounds" not in optimizer_options:
+            optimizer_options["set_lower_bounds"] = np.full(
+                num_params_costs + num_states, -np.Inf
+            )
+        if "set_upper_bounds" not in optimizer_options:
+            optimizer_options["set_upper_bounds"] = np.full(
+                num_params_costs + num_states, np.Inf
+            )
+
     del optimizer_options["approach"]
 
     return optimizer_options

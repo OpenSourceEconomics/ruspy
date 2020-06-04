@@ -22,4 +22,5 @@ ruspy.rst
 modules.rst
 _generated
 *.db
+results_ipopt.txt
 
