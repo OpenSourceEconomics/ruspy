@@ -411,17 +411,24 @@ def estimate_mpec_ipopt(
     mpec_cost_parameters = {}
     mpec_cost_parameters["time"] = 0.0
     mpec_cost_parameters["n_evaluations"] = 0
-    file = open("results_ipopt.txt")
-    lines = file.readlines()
-    rows = [(11, "n_iterations"), (21, "n_evaluations"), (28, "time"), (29, "time")]
-    for row, name in rows:
-        if name != "n_iterations":
-            mpec_cost_parameters[name] += float(lines[row].split("= ", 1)[1])
-        else:
-            mpec_cost_parameters[name] = int(lines[row].split(": ", 1)[1])
+
+    if results_ipopt["status"] == 0:
+        mpec_cost_parameters["status"] = 1 - results_ipopt["status"]
+        file = open("results_ipopt.txt")
+        lines = file.readlines()
+        rows = [(11, "n_iterations"), (21, "n_evaluations"), (28, "time"), (29, "time")]
+        for row, name in rows:
+            if name != "n_iterations":
+                mpec_cost_parameters[name] += float(lines[row].split("= ", 1)[1])
+            else:
+                mpec_cost_parameters[name] = int(lines[row].split(": ", 1)[1])
+    else:
+        mpec_cost_parameters["status"] = 0
+        names = ["n_iterations", "n_evaluations", "time"]
+        for name in names:
+            mpec_cost_parameters[name] = np.nan
 
     mpec_cost_parameters["x"] = results_ipopt["x"]
     mpec_cost_parameters["fun"] = results_ipopt["obj_val"]
-    mpec_cost_parameters["status"] = 1 - results_ipopt["status"]
 
     return transition_results, mpec_cost_parameters

@@ -30,11 +30,12 @@ def process_data(df, run, number_buses, number_periods):
     return data
 
 
-def process_result(approach, transition_result, cost_result, time, number_states):
+def process_result(approach, transition_result, cost_result, number_states):
     if approach == "NFXP":
-        result = np.concatenate((cost_result["x"], transition_result["x"][:4], [time]))
+        result = np.concatenate((cost_result["x"], transition_result["x"][:4]))
 
         for name in [
+            "time",
             "status",
             "n_iterations",
             "n_evaluations",
@@ -45,10 +46,10 @@ def process_result(approach, transition_result, cost_result, time, number_states
 
     else:
         result = np.concatenate(
-            (cost_result["x"][number_states:], transition_result["x"][:4], [time])
+            (cost_result["x"][number_states:], transition_result["x"][:4])
         )
 
-        for name in ["status", "n_iterations", "n_evaluations"]:
+        for name in ["time", "status", "n_iterations", "n_evaluations"]:
             result = np.concatenate((result, np.array([cost_result[name]])))
 
     return result
