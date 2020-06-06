@@ -4,7 +4,6 @@ This module contains all the key functions used to estimate the model using MPEC
 from functools import partial
 
 import numpy as np
-from scipy.optimize import approx_fprime
 from scipy.optimize._numdiff import approx_derivative
 
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
@@ -40,12 +39,15 @@ def wrap_nlopt_constraint(function, args):
 
 
 def wrap_ipopt_likelihood(function, args):
+    ncalls = [0]
+
     def function_wrapper(mpec_params):
+        ncalls[0] += 1
         return function(
             *args, gradient=None, mpec_params=mpec_params, grad=np.array([])
         )
 
-    return function_wrapper
+    return ncalls, function_wrapper
 
 
 def wrap_ipopt_constraint(function, args):
@@ -120,7 +122,9 @@ def mpec_loglike_cost_params(
                 gradient,
                 grad=np.array([]),
             )
-            grad[:] = approx_fprime(mpec_params, partial_loglike_mpec, 10e-6)
+            grad[:] = approx_derivative(
+                partial_loglike_mpec, mpec_params, method="2-point"
+            )
         else:
             # analytical gradient
             grad[:] = mpec_loglike_cost_params_derivative(
@@ -202,7 +206,9 @@ def mpec_constraint(
                     gradient,
                 ),
             )
-            grad[:, :] = approx_derivative(partial_constr_mpec_deriv, mpec_params)
+            grad[:, :] = approx_derivative(
+                partial_constr_mpec_deriv, mpec_params, method="2-point"
+            )
         else:
             # analytical jacobian
             grad[:, :] = mpec_constraint_derivative(

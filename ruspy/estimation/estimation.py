@@ -8,7 +8,6 @@ import ipopt
 import nlopt
 import numpy as np
 from estimagic.optimization.optimize import minimize
-from scipy.optimize import approx_fprime
 from scipy.optimize._numdiff import approx_derivative
 
 from ruspy.estimation import config
@@ -24,6 +23,16 @@ from ruspy.estimation.mpec import mpec_loglike_cost_params_derivative
 from ruspy.estimation.mpec import wrap_ipopt_constraint
 from ruspy.estimation.mpec import wrap_ipopt_likelihood
 from ruspy.estimation.mpec import wrap_mpec_loglike
+
+
+def wrap_nfxp_criterion(function):
+    ncalls = [0]
+
+    def function_wrapper(*wrapper_args, **wrapper_kwargs):
+        ncalls[0] += 1
+        return function(*wrapper_args, **wrapper_kwargs)
+
+    return ncalls, function_wrapper
 
 
 def estimate(init_dict, df):
@@ -126,7 +135,8 @@ def estimate_nfxp(
 
     """
 
-    criterion = optimizer_options.pop("criterion")
+    criterion_temp = optimizer_options.pop("criterion")
+    n_evaluations, criterion = wrap_nfxp_criterion(criterion_temp)
 
     kwargs = {
         "maint_func": maint_func,
@@ -238,7 +248,7 @@ def estimate_mpec_nlopt(
     )
     opt.set_min_objective(partial_loglike_mpec)
     opt.add_equality_mconstraint(
-        partial_constr_mpec, np.full(num_states, 0),
+        partial_constr_mpec, np.full(num_states, 1e-6),
     )
 
     # supply user choices
@@ -316,7 +326,7 @@ def estimate_mpec_ipopt(
     del optimizer_options["algorithm"]
     gradient = optimizer_options.pop("gradient")
 
-    neg_criterion = wrap_ipopt_likelihood(
+    n_evaluations, neg_criterion = wrap_ipopt_likelihood(
         mpec_loglike_cost_params,
         args=(
             maint_func,
@@ -352,7 +362,9 @@ def estimate_mpec_ipopt(
 
         def gradient(self):
             if gradient == "No":
-                gradient_value = approx_fprime(self, neg_criterion, 10e-6)
+                gradient_value = approx_derivative(
+                    neg_criterion, self, method="2-point"
+                )
             else:
                 gradient_func = partial(
                     mpec_loglike_cost_params_derivative,
@@ -373,7 +385,9 @@ def estimate_mpec_ipopt(
 
         def jacobian(self):
             if gradient == "No":
-                jacobian_value = approx_derivative(constraint_func, self)
+                jacobian_value = approx_derivative(
+                    constraint_func, self, method="2-point"
+                )
             else:
                 jacobian_func = partial(
                     mpec_constraint_derivative,
@@ -430,5 +444,6 @@ def estimate_mpec_ipopt(
 
     mpec_cost_parameters["x"] = results_ipopt["x"]
     mpec_cost_parameters["fun"] = results_ipopt["obj_val"]
+    mpec_cost_parameters["n_evaluations_total"] = n_evaluations[0]
 
     return transition_results, mpec_cost_parameters
