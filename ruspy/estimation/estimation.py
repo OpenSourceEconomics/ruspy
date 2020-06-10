@@ -4,10 +4,10 @@ This module contains the main function for the estimation process.
 import time
 from functools import partial
 
-import ipopt
 import nlopt
 import numpy as np
 from estimagic.optimization.optimize import minimize
+from ipopt import minimize_ipopt
 from scipy.optimize._numdiff import approx_derivative
 
 from ruspy.estimation import config
@@ -323,8 +323,14 @@ def estimate_mpec_ipopt(
 
 
     """
+
     del optimizer_options["algorithm"]
     gradient = optimizer_options.pop("gradient")
+    params = optimizer_options.pop("params")
+    lower_bounds = optimizer_options.pop("set_lower_bounds")
+    upper_bounds = optimizer_options.pop("set_upper_bounds")
+    bounds = np.vstack((lower_bounds, upper_bounds)).T
+    bounds = list(map(tuple, bounds))
 
     n_evaluations, neg_criterion = wrap_ipopt_likelihood(
         mpec_loglike_cost_params,
@@ -353,97 +359,70 @@ def estimate_mpec_ipopt(
         ),
     )
 
-    class mpec_ipopt:
-        def __init__(self):
-            pass
+    if gradient == "No":
 
-        def objective(self):
-            return neg_criterion(self)
+        def approx_gradient(params):
+            fun = approx_derivative(neg_criterion, params, method="2-point")
+            return fun
 
-        def gradient(self):
-            if gradient == "No":
-                gradient_value = approx_derivative(
-                    neg_criterion, self, method="2-point"
-                )
-            else:
-                gradient_func = partial(
-                    mpec_loglike_cost_params_derivative,
-                    maint_func,
-                    maint_func_dev,
-                    num_states,
-                    num_params,
-                    disc_fac,
-                    scale,
-                    decision_mat,
-                    state_mat,
-                )
-                gradient_value = gradient_func(self)
-            return gradient_value
+        gradient_func = approx_gradient
 
-        def constraints(self):
-            return constraint_func(self)
+        def approx_jacobian(params):
+            fun = approx_derivative(constraint_func, params, method="2-point")
+            return fun
 
-        def jacobian(self):
-            if gradient == "No":
-                jacobian_value = approx_derivative(
-                    constraint_func, self, method="2-point"
-                )
-            else:
-                jacobian_func = partial(
-                    mpec_constraint_derivative,
-                    maint_func,
-                    maint_func_dev,
-                    num_states,
-                    num_params,
-                    disc_fac,
-                    scale,
-                    trans_mat,
-                )
-                jacobian_value = jacobian_func(self)
-            return jacobian_value
+        jacobian_func = approx_jacobian
+    else:
+        gradient_func = partial(
+            mpec_loglike_cost_params_derivative,
+            maint_func,
+            maint_func_dev,
+            num_states,
+            num_params,
+            disc_fac,
+            scale,
+            decision_mat,
+            state_mat,
+        )
+        jacobian_func = partial(
+            mpec_constraint_derivative,
+            maint_func,
+            maint_func_dev,
+            num_states,
+            num_params,
+            disc_fac,
+            scale,
+            trans_mat,
+        )
 
-    nlp = ipopt.problem(
-        n=num_params + num_states,
-        m=num_states,
-        problem_obj=mpec_ipopt,
-        lb=optimizer_options.pop("set_lower_bounds"),
-        ub=optimizer_options.pop("set_upper_bounds"),
-        cl=np.zeros(num_states),
-        cu=np.zeros(num_states),
+    constraints = {
+        "type": "eq",
+        "fun": constraint_func,
+        "jac": jacobian_func,
+    }
+
+    tic = time.perf_counter()
+    results_ipopt = minimize_ipopt(
+        neg_criterion,
+        params,
+        bounds=bounds,
+        jac=gradient_func,
+        constraints=constraints,
+        options=optimizer_options,
     )
-
-    nlp.addOption("output_file", "results_ipopt.txt")
-    nlp.addOption("file_print_level", 3)
-
-    params = optimizer_options.pop("params")
-
-    for key, value in optimizer_options.items():
-        nlp.addOption(key, value)
-
-    results_ipopt = nlp.solve(params)[1]
+    toc = time.perf_counter()
+    timing = toc - tic
 
     mpec_cost_parameters = {}
-    mpec_cost_parameters["time"] = 0.0
-    mpec_cost_parameters["n_evaluations"] = 0
-
-    if results_ipopt["status"] == 0:
-        mpec_cost_parameters["status"] = 1 - results_ipopt["status"]
-        file = open("results_ipopt.txt")
-        lines = file.readlines()
-        rows = [(11, "n_iterations"), (21, "n_evaluations"), (28, "time"), (29, "time")]
-        for row, name in rows:
-            if name != "n_iterations":
-                mpec_cost_parameters[name] += float(lines[row].split("= ", 1)[1])
-            else:
-                mpec_cost_parameters[name] = int(lines[row].split(": ", 1)[1])
+    mpec_cost_parameters["x"] = results_ipopt["x"]
+    mpec_cost_parameters["fun"] = results_ipopt["fun"]
+    if results_ipopt["success"] is True:
+        mpec_cost_parameters["status"] = 1
     else:
         mpec_cost_parameters["status"] = 0
-        names = ["n_iterations", "n_evaluations", "time"]
-        for name in names:
-            mpec_cost_parameters[name] = np.nan
-
-    mpec_cost_parameters["x"] = results_ipopt["x"]
-    mpec_cost_parameters["fun"] = results_ipopt["obj_val"]
+    mpec_cost_parameters["n_iterations"] = results_ipopt["nit"]
+    mpec_cost_parameters["n_evaluations"] = results_ipopt["nfev"]
+    mpec_cost_parameters["time"] = timing
     mpec_cost_parameters["n_evaluations_total"] = n_evaluations[0]
 
     return transition_results, mpec_cost_parameters
