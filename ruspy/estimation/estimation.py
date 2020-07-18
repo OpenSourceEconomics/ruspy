@@ -25,18 +25,29 @@ from ruspy.estimation.mpec import wrap_ipopt_likelihood
 from ruspy.estimation.mpec import wrap_mpec_loglike
 
 
-def wrap_nfxp_criterion(function):
-    ncalls = [0]
-
-    def function_wrapper(*wrapper_args, **wrapper_kwargs):
-        ncalls[0] += 1
-        return function(*wrapper_args, **wrapper_kwargs)
-
-    return ncalls, function_wrapper
-
-
 def estimate(init_dict, df):
+    """
+    Estimation function of ruspy.
 
+    This function coordinates the estimation process of the ruspy package.
+
+    Parameters
+    ----------
+    init_dict : dictionary
+        see ref:`_est_init_dict`
+
+    df : pandas.DataFrame
+        see :ref:`df`
+
+    Returns
+    -------
+    results_transition_params : dictionary
+        see :ref:`result_trans`
+    results_cost_params : dictionary
+        see :ref:`result_costs`
+
+
+    """
     transition_results = estimate_transitions(df)
 
     endog = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy(int)
@@ -426,3 +437,13 @@ def estimate_mpec_ipopt(
     mpec_cost_parameters["n_evaluations_total"] = n_evaluations[0]
 
     return transition_results, mpec_cost_parameters
+
+
+def wrap_nfxp_criterion(function):
+    ncalls = [0]
+
+    def function_wrapper(*wrapper_args, **wrapper_kwargs):
+        ncalls[0] += 1
+        return function(*wrapper_args, **wrapper_kwargs)
+
+    return ncalls, function_wrapper

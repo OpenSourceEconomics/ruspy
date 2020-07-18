@@ -9,7 +9,7 @@ def calc_obs_costs(num_states, maint_func, params, scale):
     ----------
     num_states : int
         The size of the state space.
-    maint_func: :func:
+    maint_func : callable
         see :ref:`maint_func`
     params : numpy.array
         see :ref:`params`

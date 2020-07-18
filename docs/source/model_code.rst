@@ -105,9 +105,9 @@ hyperbolic cost function
 ---------------
 Cost parameters
 ---------------
-The second in put are the cost parameters, which are sored as a one dimension
+The second in put are the cost parameters, which are stored as a one dimensional
 *numpy.array*. At the first position always the replacement cost :math:`RC` is stored.
-The next positions are subsequently filled with :math:`\theta_{11}, \theta_{12}, ...`
+The next positions are subsequently filled with :math:`\theta_{11}, \theta_{12}, ...`.
 The exact number depends on the functional form.
 
 .. _scale:
@@ -136,13 +136,14 @@ minimal scale needed for each form:
 
 
 
-Fixed point algorithm
----------------------
+Fixed Point Algorithm
+----------------------------
 
 This part documents the core contribution to research of the Rust (1987) paper, the
 Fixed Point Algorithm (FXP). It allows to consequently calculate the log-likelihood
-value for each cost parameter and thus, to estimate the model. The computation of the
-fixed point is managed by:
+value for each cost parameter and thus, to estimate the model and hence builds
+the corner stone of the Nested Fixed Point Algorithm (NFXP).
+The computation of the fixed point is managed by:
 
 .. currentmodule:: ruspy.model_code.fix_point_alg
 
@@ -198,7 +199,7 @@ then the algorithm stops. Default is :math:`10^{-12}`.
 Expected value of maintenance
 -----------------------------
 
-In ruspy the expected value of maintenance is stored in state space sized numpy array.
+In ruspy the expected value of maintenance is stored in a state space sized numpy array.
 Thus, the exected value of replacement can be found in the zero entry. It is generally
 denoted by *ev*, except in the simulation part of the package where it is denoted by
 *ev_known*. This illustrates that the expected value is created by the agent on his

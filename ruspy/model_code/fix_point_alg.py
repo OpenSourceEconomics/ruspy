@@ -13,7 +13,7 @@ def calc_fixp(
     max_newt_kant_steps=20,
 ):
     """
-    Calculating the expected value of maintenance fix-point with the polyalgorithm
+    Calculating the expected value of maintenance fixed point with the polyalgorithm
     proposed by Rust (1987) and Rust (2000).
 
     Parameters
@@ -37,6 +37,10 @@ def calc_fixp(
     -------
     ev_new : numpy.array
         see :ref:`ev`
+    contr_step_count : int
+        shows the amount of contraction iterations needed to find the fixed point.
+    newt_kant_step_count : int
+        shows the amount of Newton-Kantorovich iterations needed to find the fixed point.
     """
     contr_step_count = 0
     newt_kant_step_count = 0

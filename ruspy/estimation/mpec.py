@@ -96,7 +96,7 @@ def mpec_loglike_cost_params(
     scale : numpy.float
         see :ref:`scale`
     mpec_params : numpy.array
-        Contains the expected values as well as the cost parameters.
+        see :ref:`mpec_params`
     grad : numpy.array, optional
         The gradient of the function. The default is np.array([]).
 
@@ -181,7 +181,7 @@ def mpec_constraint(
         Contains the left hand side of the constraint minus the right hand side
         for the nlopt solver. This should be zero for the constraint to hold.
     mpec_params : numpy.array
-        Contains the expected values as well as the cost parameters.
+        see :ref:`mpec_params`
     grad : numpy.array, optional
         The gradient of the function. The default is np.array([]).
 
@@ -254,12 +254,12 @@ def mpec_loglike_cost_params_derivative(
     mpec_params,
 ):
     """
-    Computing the gradient of the objective function for MPEC.
+    Computing the analytical gradient of the objective function for MPEC.
 
     Parameters
     ----------
     mpec_params : numpy.array
-        Contains the expected values as well as the cost parameters.
+        see :ref:`mpec_params`
     maint_func: func
         see :ref: `maint_func`
     maint_func_dev : func
@@ -331,12 +331,12 @@ def mpec_constraint_derivative(
     mpec_params,
 ):
     """
-    Calculating the Jacobian of the MPEC constraint.
+    Calculating the analytical Jacobian of the MPEC constraint.
 
     Parameters
     ----------
     mpec_params : numpy.array
-        Contains the expected values as well as the cost parameters.
+        see :ref:`mpec_params`
     maint_func: func
         see :ref: `maint_func`
     maint_func_dev : func
