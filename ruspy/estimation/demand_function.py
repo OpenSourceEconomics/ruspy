@@ -13,20 +13,28 @@ from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 
 
-def get_demand(init_dict, demand_dict, params):
+def get_demand(init_dict, demand_dict, demand_params):
     """
+    Calculates the implied demand for a range of replacement costs
+    for a certain number of buses over a certain time period.
+
     Parameters
     ----------
     init_dict : dict
-        DESCRIPTION.
-    params : np.array
+        see :ref:`init_dict`.
+    demand_dict : dict
+        see :ref:`demand_dict`.
+    demand_params : np.array
         holds all model parameters for which the implied demand shall be calulated.
         The transition probabilities are the first elements, followed by the
         replacement cost parameter and then by the rest of the cost parameters.
 
     Returns
     -------
-    None.
+    demand_results : pd.DataFrame
+        Index is the replacement cost. For each of those parameters there is the
+        demand calculated and whether a dummy saying whether the fixed point
+        algorithm exited successfully.
 
     """
 
@@ -54,95 +62,17 @@ def get_demand(init_dict, demand_dict, params):
         params[-num_params] = rc
         demand_results.loc[(rc), "success"] = "No"
 
+        # slove the model for the given paramaters
         trans_mat = create_transition_matrix(num_states, params[:-num_params])
 
         obs_costs = calc_obs_costs(num_states, maint_func, params[-num_params:], scale)
         ev = get_ev(params[-num_params], trans_mat, obs_costs, disc_fac, alg_details)[0]
         p_choice = choice_prob_gumbel(ev, obs_costs, disc_fac)
 
-        # calculate initial guess for pi
-        z = 0.999999999
-        choice_trans_prob = p_choice[:, 0] * trans_mat
-        choice_trans_prob[:, 0] = 1 - choice_trans_prob[:, 1:].sum(axis=1)
-        pi = np.linalg.solve(
-            (np.eye(num_states) - z * choice_trans_prob).T,
-            np.full(num_states, 1 - z) / num_states,
-        )
-        pi = pi / pi.sum()
-
-        # check if initial guess is good enough
-        tol = np.max(np.abs(pi - np.dot(pi.T, choice_trans_prob)))
-        if tol >= demand_dict["tolerance"]:
-            # refine guess by contraction iterations
-            while tol >= demand_dict["tolerance"]:
-                pi = np.matmul(pi, choice_trans_prob)
-                tol = np.max(np.abs(pi - np.dot(pi.T, choice_trans_prob)))
-                if tol < demand_dict["tolerance"]:
-                    demand_results.loc[(rc), "success"] = "Yes"
-        else:
-            demand_results.loc[(rc), "success"] = "Yes"
-
-        pi_temp = pi.copy()
-        pi_temp[0] = trans_mat[0, 0] * p_choice[0, 0] * pi[0]
-        pi = np.vstack((pi_temp, pi_temp * (1 - p_choice[:, 0]) / p_choice[:, 0])).T
-
-        demand_results.loc[(rc), "demand"] = (
-            demand_dict["num_buses"] * demand_dict["num_periods"] * pi[:, 1].sum()
-        )
-
-    return demand_results
-
-
-def get_demand_mine(init_dict, demand_dict, params):
-    """
-    Parameters
-    ----------
-    init_dict : dict
-        DESCRIPTION.
-    params : np.array
-        holds all model parameters for which the implied demand shall be calulated.
-        The transition probabilities are the first elements, followed by the
-        replacement cost parameter and then by the rest of the cost parameters.
-
-    Returns
-    -------
-    None.
-
-    """
-
-    (
-        disc_fac,
-        num_states,
-        maint_func,
-        maint_func_dev,
-        num_params,
-        scale,
-    ) = select_model_parameters(init_dict)
-
-    alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
-
-    # Initialize the loop over the replacement costs
-    rc_range = np.linspace(
-        demand_dict["RC_lower_bound"],
-        demand_dict["RC_upper_bound"],
-        demand_dict["demand_evaluations"],
-    )
-    demand_results = pd.DataFrame(index=rc_range, columns=["demand", "success"])
-    demand_results.index.name = "RC"
-
-    for rc in rc_range:
-        params[-num_params] = rc
-        demand_results.loc[(rc), "success"] = "No"
-
-        trans_mat = create_transition_matrix(num_states, params[:-num_params])
-
-        obs_costs = calc_obs_costs(num_states, maint_func, params[-num_params:], scale)
-        ev = get_ev(params[-num_params], trans_mat, obs_costs, disc_fac, alg_details)[0]
-        p_choice = choice_prob_gumbel(ev, obs_costs, disc_fac)
-
-        # calculate initial guess for pi
+        # calculate initial guess for pi and run contraction iterations
         pi_new = np.full((num_states, 2), 1 / (2 * num_states))
         tol = 1
+        iteration = 1
         while tol >= demand_dict["tolerance"]:
             pi = pi_new
             pi_new = p_choice * (
@@ -150,6 +80,9 @@ def get_demand_mine(init_dict, demand_dict, params):
                 + np.dot(np.tile(trans_mat[0, :], (num_states, 1)).T, pi[:, 1])
             ).reshape((num_states, 1))
             tol = np.max(np.abs(pi_new - pi))
+            iteration = +1
+            if iteration > 200:
+                break
             if tol < demand_dict["tolerance"]:
                 demand_results.loc[(rc), "success"] = "Yes"
 
@@ -157,7 +90,9 @@ def get_demand_mine(init_dict, demand_dict, params):
             demand_dict["num_buses"] * demand_dict["num_periods"] * pi_new[:, 1].sum()
         )
 
-    return demand_results
+        conditional_prob = pi_new / pi_new.sum(axis=0)
+
+    return demand_results, conditional_prob
 
 
 # demand_results.reset_index(inplace=True)
@@ -177,7 +112,7 @@ results = np.load("solution_MPEC.npy")
 # results = results[["theta_30", "theta_31", "theta_32", "theta_33",
 #                   "RC", "theta_11"]].astype(float).to_numpy()
 
-params = np.array([0.0937, 0.4475, 0.4459, 0.0127, 0.0002, 11.7257, 2.4569])
+params = np.array([0.3919, 0.5953, 1 - 0.3919 - 0.5953, 11.7257, 2.4569])
 init_dict = {
     "model_specifications": {
         "discount_factor": 0.9999,
@@ -191,14 +126,15 @@ init_dict = {
         "gradient": "Yes",
         "params": params,
     },
+    "alg_details": {"threshold": 1e-13, "switch_tol": 1e-2},
 }
 demand_dict = {
     "RC_lower_bound": 2,
     "RC_upper_bound": 15,
-    "demand_evaluations": 100,
+    "demand_evaluations": 1000,
     "tolerance": 1e-10,
     "num_periods": 12,
-    "num_buses": 50,
+    "num_buses": 1,
 }
 
 true_demand = (
@@ -245,3 +181,4 @@ params = np.array([0.3919, 0.5953, 1 - 0.3919 - 0.5953, 10.075, 2.293])
 params = np.array(
     [0.1972222222222222, 0.7888888888888889, 0.0138888888888889, 11.0, 3.0]
 )
+params = np.array([0.1191, 0.5762, 0.2868, 0.0158, 0.00209999999999997, 10.896, 1.1732])
