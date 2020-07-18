@@ -47,6 +47,7 @@ def estimate(init_dict, df):
         see :ref:`result_costs`
 
 
+
     """
     transition_results = estimate_transitions(df)
 
@@ -419,7 +420,7 @@ def estimate_mpec_ipopt(
         bounds=bounds,
         jac=gradient_func,
         constraints=constraints,
-        options=optimizer_options,
+        **optimizer_options,
     )
     toc = time.perf_counter()
     timing = toc - tic
