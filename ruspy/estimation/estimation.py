@@ -7,7 +7,16 @@ from functools import partial
 import nlopt
 import numpy as np
 from estimagic.optimization.optimize import minimize
-from ipopt import minimize_ipopt
+
+try:
+    import ipopt  # noqa:F401
+
+    optional_package_is_available = True
+except ImportError:
+    optional_package_is_available = False
+
+if optional_package_is_available:
+    from ipopt import minimize_ipopt
 from scipy.optimize._numdiff import approx_derivative
 
 from ruspy.estimation import config
@@ -25,7 +34,9 @@ from ruspy.estimation.mpec import wrap_ipopt_likelihood
 from ruspy.estimation.mpec import wrap_mpec_loglike
 
 
-def estimate(init_dict, df):
+def estimate(
+    init_dict, df,
+):
     """
     Estimation function of ruspy.
     This function coordinates the estimation process of the ruspy package.
@@ -43,7 +54,6 @@ def estimate(init_dict, df):
         see :ref:`result_trans`
     results_cost_params : dictionary
         see :ref:`result_costs`
-
 
     """
     transition_results = estimate_transitions(df)
@@ -386,6 +396,12 @@ def estimate_mpec_ipopt(
 
 
     """
+
+    if not optional_package_is_available:
+        raise NotImplementedError(
+            "To use this you need to install cyipopt from source. A description"
+            + "can be found here: https://github.com/matthias-k/cyipopt"
+        )
 
     del optimizer_options["algorithm"]
     gradient = optimizer_options.pop("gradient")
