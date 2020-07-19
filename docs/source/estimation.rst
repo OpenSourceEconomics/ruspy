@@ -2,7 +2,7 @@
 Estimation
 ######################
 
-Here the estimation process of the ruspy packacge is documented. The structure is the
+Here the estimation process of the ruspy package is documented. The structure is the
 following: The first part documents in detail which format is required on the input data
 and how you can easily access this for the original data. Then the estimation process is
 documented and an introduction to the demonstration notebooks closes this part.
@@ -55,11 +55,12 @@ The estimation process is coordinated by the function estimate:
 
     estimate
 
+
 Besides the :ref:`df`, the function needs the following initialization dictionary
 **init_dict**:
 
 
-.. _est_init_dict:
+.. _init_dict:
 
 *************************************
 Estimation initialization dictionary
@@ -128,6 +129,9 @@ Additionally, the subdictionairy **alg_details** can be used to specify options
 for the fixed point algorithm. See :ref:`alg_details` for the possible keys
 and the default values.
 
+
+.. _mpec_params:
+
 MPEC
 ======================
 
@@ -150,8 +154,6 @@ options are passed in by their name without the prefix "opt.", i.e. a key could
 be for instance "set_lower_bounds" and the value is a numpy array specifying the
 lower bound. What cannot be used are set_min_objective and
 add_equality_mconstraint.
-
-.. _mpec_params:
 
 **params :** *(numpy.array)* The starting values for MPEC consist of the cost
 parameters and the discretized expected values. The array has therefore a length
@@ -215,38 +217,20 @@ corresponding function in the code is:
 .. autosummary::
     :toctree: _generated/
 
-    loglike_trans
+    loglike_trans_individual
 
 
-The ``estimate_transitions`` function minimizes now the ``loglike_trans`` function by
-calling a minimize routine from the `scipy library <http://lagrange.univ-lyon1
-.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize.html>`_.
-Even though transition probabilities need to add up to 1 and have to be positive, there
-are no constraints on the minimized parameters. The constraints are applied inside
-``loglike_trans`` by a reparametrization function:
-
-.. currentmodule:: ruspy.estimation.estimation_transitions
-
-.. autosummary::
-    :toctree: _generated/
-
-    reparam_trans
-
-This allows to create the 95\% interval of the estimated to bootstrap transition
-probabilities from the asymptotic distribution provided by
-the scipy minimizer. The core function for this can be found in
-``ruspy.estimation.bootstrapping``:
-
-.. currentmodule:: ruspy.estimation.bootstrapping
-
-.. autosummary::
-    :toctree: _generated/
-
-    bootstrapp
+The ``estimate_transitions`` function minimizes now the ``loglike_trans_individual``
+function by calling the `BHHH of estimagic
+<https://estimagic.readthedocs.io/en/latest/optimization/algorithms.html>`_.
+The transition probabilities need to add up to 1 and have to be positive
+which is conveniently implemented in estimagic using the `constraints argument
+<https://estimagic.readthedocs.io/en/latest/optimization/constraints/index.html>`_.
 
 
-The collected results of the transition estimation are collected in a dictionary and
-returned to the ``estimate`` function.
+The collected results of the transition estimation are collected in a dictionary
+descibed below and returned to the ``estimate`` function in which then the
+cost parameters are estimated using either NFXP or MPEC.
 
 .. _result_trans:
 
@@ -258,16 +242,6 @@ The dictionary containing the transition estimation results has the following ke
 **fun :** *(numpy.float)* Log-likelihood of transition estimation.
 
 **x :** *(numpy.array)* Estimated transition probabilities.
-
-**trans_count :** *(numpy.array)* Number of transitions for an increase of 0, 1, 2, ...
-
-**95_conf_interv :** *(numpy.array)*
-:math:`2 \times num\_states` dimensional numpy.array containing the bootstrapped (1000
-replications) 95% confidence interval bounds.
-
-**std_errors :** *(numpy.array)*
-:math:`num\_states` dimensional numpy.array with bootstrapped standard errors for each
-parameter.
 
 
 So far only a pooled estimation of the transitions is possible. Hence, ``ruspy``
@@ -282,16 +256,23 @@ nonzero probabilities in each row. This function is:
     create_transition_matrix
 
 
-The transition matrix is then used for the cost parameter estimation.
+The transition matrix is then used for the cost parameter estimation irrespective
+of using NFXP or MPEC.
 
 ***************************
 Cost parameter estimation
 ***************************
 
-The cost parameters are estimated directly by minimizing the log-likelihood and the
-corresponding jacobian function with a minimize function from the `scipy library
-<http://lagrange.univ-lyon1.fr/docs/scipy/0.17.1/generated/scipy.optimize.minimize
-.html>`_ . The functions can be found in ``ruspy.estimation.est_cost_params``:
+The cost parameters are now estimated differently for NFXP and MPEC.
+
+NFXP
+=========================
+
+The cost parameters for the NFXP are estimated directly by minimizing the log-likelihood
+the minimize function from the `estimagic library
+<https://estimagic.readthedocs.io/en/latest/index.html>`_. The objective function
+as well as its analytical derivative can be found in
+``ruspy.estimation.est_cost_params``:
 
 
 .. currentmodule:: ruspy.estimation.est_cost_params
@@ -299,10 +280,20 @@ corresponding jacobian function with a minimize function from the `scipy library
 .. autosummary::
   :toctree: _generated/
 
+  loglike_cost_params_individual
+  derivative_loglike_cost_params_individual
   loglike_cost_params
   derivative_loglike_cost_params
 
-In the minimization the scipy optimizer calls the likelihood functions and its
+As estimagic offers to use an implementation of the BHHH also used by Rust (1987)
+the first two functions above are needed. They work with the individual
+log likelihood contributions of a bus at each time period. The two lower functions
+are needed for other algorithms such as the L-BFGS-B provided by estimagic.
+For this the previous functions are summed up to obtain to latter ones. The selection
+of the correct functions is done by ruspy automatically depending on your choice
+of algorithm.
+
+In the minimization proedure the optimizer calls the likelihood functions and its
 derivative with different cost parameters. Together with the constant held
 arguments, the expected value is calculated by fixed point algorithm. Double
 calculation of the same fixed point is avoided by the following function:
@@ -314,33 +305,87 @@ calculation of the same fixed point is avoided by the following function:
 
     get_ev
 
-After successful minimization, some results of the `scipy result dictionary
-<https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.optimize
-.OptimizeResult.html>`_ are used to construct ruspys cost parameter results:
 
+MPEC
+==============================
+
+In the case of MPEC there is no need to calculate the fixed point via the function
+``get_ev`` but rather a constraint to the likelihood function with the contraction
+mapping has to be specified.
+The functions needed for MPEC are hence the four below being the log likelihood
+function that is now also dependent on :math:`EV`, the constraints as well as
+the analytical derivatives of the two.
+
+.. currentmodule:: ruspy.estimation.mpec
+
+.. autosummary::
+    :toctree: _generated/
+
+    mpec_loglike_cost_params
+    mpec_loglike_cost_params_derivative
+    mpec_constraint
+    mpec_constraint_derivative
+
+
+For both NFXP and MPEC some of the results from the estimators estimagic, ipopt
+and nlopt are passed on to the user. The results are presented below.
 
 .. _result_costs:
 
+******************************
 Cost parameters results
-==========================
+******************************
 
-The dictionary containing the cost parameter results has the following keys:
+Again there are slight differences for NFXP and MPEC.
+The dictionary containing the cost parameter results has the following keys for both
+NFXP and MPEC:
 
-**fun :** *(numpy.float)* Log-likelihood of cost parameter estimation.
+**fun :** *(numpy.float)* Log-likelihood of the cost parameter estimation.
 
-**x :** *(numpy.array)* Estimated cost parameters.
+**x :** *(numpy.array)* Estimated cost parameters and in the case of MPEC also
+the estimated expected values.
 
-**message :** *(string)* The optimizer message of the scipy optimizer.
+**status :** *(bool)* Evaluates to True if the optimizer converged and False
+if not.
+
+**n_iterations :** *(int)* Gives out the number of iterations needed by the
+algorithm.
+
+**n_evaluations :** *(int)* Gives out the number of function evaluations needed
+by the algorithm.
+
+**time :** *(float)* Indicates the time needed by the optimizer to obtain the final
+cost parameter estimates.
+
+For the **NFXP** there are also the following keys:
 
 **jac :** *(numpy.array)* The value of the estimates' jacobian.
 
-**95_conf_interv :** *(numpy.array)* :math:`2 \times num\_states` dimensional
-numpy.array containing the bootstrapped (1000 replications) 95% confidence interval
-bounds.
+**message :** *(string)* The convergence message of estimagic.
 
-**std_errors :** *(numpy.array)* :math:`num\_states` dimensional numpy.array with
-bootstrapped standard errors for each parameter.
+**n_contraction_steps :** *(int)* The number of contraction iterations needed in
+total during the optimization to calculate the fixed points.
 
+**n_newt_kant_steps :** *(int)* The number of Newton-Kantorovich iterations needed in
+total during the optimization to calculate the fixed points.
+
+When using **IPOPT** for **MPEC** the following key is included:
+
+**n_evaluations_total :** *(int)* The number of total function evaluations needed
+which is also including function evaluations made to approximate the derivatives
+of the log likelihood function and the constraints.
+
+The function ``estimate`` calls some sub functions depending on whether NFXP, MPEC
+with IPOPT or MPEC with NLOPT is selected. Those functions can be inspected below:
+
+.. currentmodule:: ruspy.estimation.estimation
+
+.. autosummary::
+    :toctree: _generated/
+
+    estimate_nfxp
+    estimate_mpec_ipopt
+    estimate_mpec_nlopt
 
 
 Auxiliary objects
@@ -381,5 +426,8 @@ Demonstration
 In the promotion folder of the repository are two demonstration jupyter notebooks. The
 `replication <https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion
 /replication/replication.ipynb>`_ notebook allows to easily experiment with the
-estimation methods described here. If you have have everything setup, then it should
-be easy to run it.
+methods described here. If you have have everything setup, then it should
+be easy to run it. For a more advanced set up have a look at the
+`replication of Iskhakov et al. (2016) <https://github.com/OpenSourceEconomics/ruspy/
+blob/replication_notebook_and_documentation/promotion/replication/
+replication_iskhakov_et_al_2016.ipynb>`_.

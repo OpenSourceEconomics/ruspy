@@ -24,7 +24,7 @@ def select_model_parameters(init_dict):
     Parameters
     ----------
     init_dict : dictionary
-        see ref:`init_dict`
+        see :ref:`init_dict`
 
     Returns
     -------
@@ -85,19 +85,21 @@ def select_cost_function(maint_cost_func_name):
 
 def select_optimizer_options(init_dict, num_params_costs, num_states):
     """
-        Creating the options for the scipy optimizer.
+        Creating the options for estimagic, ipopt and nlopt.
 
     Parameters
     ----------
     init_dict : dictionary
-        see ref:`init_dict`
+        see :ref:`init_dict`
     num_params_costs : int
         Length of cost parameter vector.
+    num_states: int
+        The size of the state space.
 
     Returns
     -------
     optimizer_options : dictionary
-        A dictionary with keywords for the scipy optimizer.
+        A dictionary with keywords for the optimizer.
 
     """
 

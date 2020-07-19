@@ -10,60 +10,6 @@ from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 
 
-def wrap_mpec_loglike(args):
-    ncalls = [0]
-
-    def function_wrapper(*x0):
-        ncalls[0] += 1
-        return mpec_loglike_cost_params(*(args + x0))
-
-    return ncalls, function_wrapper
-
-
-def wrap_nlopt_likelihood(function, args):
-    def function_wrapper(mpec_params, grad):
-        result = function(mpec_params, *args, grad)
-        return result
-
-    return function_wrapper
-
-
-def wrap_nlopt_constraint(function, args):
-    def function_wrapper(mpec_params):
-        result = function(
-            result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([])
-        )
-        return result
-
-    return function_wrapper
-
-
-def wrap_ipopt_likelihood(function, args):
-    ncalls = [0]
-
-    def function_wrapper(mpec_params):
-        ncalls[0] += 1
-        return function(
-            *args, gradient=None, mpec_params=mpec_params, grad=np.array([])
-        )
-
-    return ncalls, function_wrapper
-
-
-def wrap_ipopt_constraint(function, args):
-    def function_wrapper(mpec_params):
-        result = function(
-            *args,
-            gradient=None,
-            result=np.array([]),
-            mpec_params=mpec_params,
-            grad=np.array([]),
-        )
-        return result
-
-    return function_wrapper
-
-
 def mpec_loglike_cost_params(
     maint_func,
     maint_func_dev,
@@ -78,15 +24,19 @@ def mpec_loglike_cost_params(
     grad,
 ):
     """
-    Calculate the negative partial log likelihood depending on cost parameters
+    Calculate the negative partial log likelihood for MPEC depending on cost parameters
     as well as the discretized expected values.
 
     Parameters
     ----------
-    maint_func : func
-        see :ref:`maint_func`
+    maint_func: func
+        see :ref: `maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
     num_states : int
         The size of the state space.
+    num_params : int
+        Length of cost parameter vector.
     state_mat : numpy.array
         see :ref:`state_mat`
     decision_mat : numpy.array
@@ -95,6 +45,8 @@ def mpec_loglike_cost_params(
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
+    gradient : str
+        Indicates whether analytical or numerical gradient should be used.
     mpec_params : numpy.array
         see :ref:`mpec_params`
     grad : numpy.array, optional
@@ -169,14 +121,20 @@ def mpec_constraint(
     ----------
     maint_func : func
         see :ref:`maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
     num_states : int
         The size of the state space.
-    decision_mat : numpy.array
-        see :ref:`decision_mat`
+    num_params : int
+        The number of parameters to be estimated.
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
     disc_fac : numpy.float
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
+    gradient : str
+        Indicates whether analytical or numerical gradient should be used.
     result : numpy.array
         Contains the left hand side of the constraint minus the right hand side
         for the nlopt solver. This should be zero for the constraint to hold.
@@ -258,8 +216,6 @@ def mpec_loglike_cost_params_derivative(
 
     Parameters
     ----------
-    mpec_params : numpy.array
-        see :ref:`mpec_params`
     maint_func: func
         see :ref: `maint_func`
     maint_func_dev : func
@@ -276,6 +232,8 @@ def mpec_loglike_cost_params_derivative(
         see :ref:`decision_mat`
     state_mat : numpy.array
         see :ref:`state_mat`
+    mpec_params : numpy.array
+        see :ref:`mpec_params`
 
     Returns
     -------
@@ -335,8 +293,6 @@ def mpec_constraint_derivative(
 
     Parameters
     ----------
-    mpec_params : numpy.array
-        see :ref:`mpec_params`
     maint_func: func
         see :ref: `maint_func`
     maint_func_dev : func
@@ -351,6 +307,8 @@ def mpec_constraint_derivative(
         see :ref:`scale`
     trans_mat : numpy.array
         see :ref:`trans_mat`
+    mpec_params : numpy.array
+        see :ref:`mpec_params`
 
     Returns
     -------
@@ -407,3 +365,57 @@ def mpec_constraint_derivative(
     jacobian = jacobian - ev_jacobian
 
     return jacobian
+
+
+def wrap_mpec_loglike(args):
+    ncalls = [0]
+
+    def function_wrapper(*x0):
+        ncalls[0] += 1
+        return mpec_loglike_cost_params(*(args + x0))
+
+    return ncalls, function_wrapper
+
+
+def wrap_nlopt_likelihood(function, args):
+    def function_wrapper(mpec_params, grad):
+        result = function(mpec_params, *args, grad)
+        return result
+
+    return function_wrapper
+
+
+def wrap_nlopt_constraint(function, args):
+    def function_wrapper(mpec_params):
+        result = function(
+            result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([])
+        )
+        return result
+
+    return function_wrapper
+
+
+def wrap_ipopt_likelihood(function, args):
+    ncalls = [0]
+
+    def function_wrapper(mpec_params):
+        ncalls[0] += 1
+        return function(
+            *args, gradient=None, mpec_params=mpec_params, grad=np.array([])
+        )
+
+    return ncalls, function_wrapper
+
+
+def wrap_ipopt_constraint(function, args):
+    def function_wrapper(mpec_params):
+        result = function(
+            *args,
+            gradient=None,
+            result=np.array([]),
+            mpec_params=mpec_params,
+            grad=np.array([]),
+        )
+        return result
+
+    return function_wrapper

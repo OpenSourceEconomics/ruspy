@@ -59,17 +59,16 @@ def loglike_trans_individual(params, transition_count):
 
     Parameters
     ----------
-    p_raw : numpy.array
-        The raw values before reparametrization, on which there are no constraints
-        or bounds.
-    transition_count : numpy
+    p_raw : pandas.DataFrame
+        The untransformed transition probability guess.
+    transition_count : numpy.array
         The pooled count of state increases per period in the data.
 
     Returns
     -------
-
     log_like_individual : numpy.array
         The individual negative log-likelihood contributions of the transition probabilities
+
     """
     p_raw = params.loc["trans_prob", "value"].to_numpy()
     log_like_individual = -np.multiply(transition_count, np.log(p_raw))

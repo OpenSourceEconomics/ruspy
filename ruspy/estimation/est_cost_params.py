@@ -32,12 +32,13 @@ def loglike_cost_params_individual(
     alg_details,
 ):
     """
-    This is the logliklihood function for the estimation of the cost parameters.
+    This is the individual logliklihood function for the estimation of the cost parameters
+    needed for the BHHH optimizer.
 
 
     Parameters
     ----------
-    params : numpy.array
+    params : pandas.DataFrame
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -54,8 +55,9 @@ def loglike_cost_params_individual(
 
     Returns
     -------
-    log_like : numpy.float
-        The negative log-likelihood value of the cost parameters.
+    log_like : numpy.array
+        A num_buses times num_periods dimensional array containing the negative
+        log-likelihood contributions of the individuals.
 
 
     """
@@ -85,6 +87,10 @@ def loglike_cost_params(
     scale,
     alg_details,
 ):
+    """
+    sums the individual negative log likelihood contributions for algorithms
+    such as the L-BFGS-B.
+    """
 
     log_like_sum = loglike_cost_params_individual(
         params,
@@ -114,13 +120,13 @@ def derivative_loglike_cost_params_individual(
     alg_details,
 ):
     """
-    This is the derivative of logliklihood function of the cost
-    parameter estimation with respect to all cost parameters.
+    This is the Jacobian of the individual log likelihood function of the cost
+    parameter estimation with respect to all cost parameters needed for the BHHH.
 
 
     Parameters
     ----------
-    params : numpy.array
+    params : pandas.DataFrame
         see :ref:`params`
     maint_func: func
         see :ref: `maint_func`
@@ -138,8 +144,9 @@ def derivative_loglike_cost_params_individual(
     Returns
     -------
     dev : numpy.array
-        A dim(params) one dimensional numpy array containing the derivative of the
-        cost log-likelihood function for every cost parameter.
+        A num_buses + num_periods x dim(params) matrix in form of numpy array
+        containing the derivative of the individual log-likelihood function for
+        every cost parameter.
 
 
     """
@@ -184,7 +191,11 @@ def derivative_loglike_cost_params(
     scale,
     alg_details,
 ):
+    """
+    sums up the Jacobian to obtain the gradient of the negative log likelihood
+    function needed for algorithm such as the L-BFGS-B.
 
+    """
     dev = derivative_loglike_cost_params_individual(
         params,
         maint_func,
@@ -203,8 +214,8 @@ def derivative_loglike_cost_params(
 
 def get_ev(params, trans_mat, obs_costs, disc_fac, alg_details):
     """
-    A auxiliary function, which allows the log-likelihood function as well as her
-    derivative to share the same fix point and to avoid the need to execute the
+    A auxiliary function, which allows the log-likelihood function as well as its
+    derivative to share the same fixed point and to avoid the need to execute the
     computation double.
 
     Parameters

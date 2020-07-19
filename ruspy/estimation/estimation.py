@@ -28,14 +28,12 @@ from ruspy.estimation.mpec import wrap_mpec_loglike
 def estimate(init_dict, df):
     """
     Estimation function of ruspy.
-
     This function coordinates the estimation process of the ruspy package.
 
     Parameters
     ----------
     init_dict : dictionary
-        see ref:`_est_init_dict`
-
+        see :ref:`init_dict`
     df : pandas.DataFrame
         see :ref:`df`
 
@@ -45,7 +43,6 @@ def estimate(init_dict, df):
         see :ref:`result_trans`
     results_cost_params : dictionary
         see :ref:`result_costs`
-
 
 
     """
@@ -128,15 +125,35 @@ def estimate_nfxp(
     """
     Estimation function for the nested fixed point algorithm in ruspy.
 
-    This function coordinates the estimation process of the ruspy package.
 
     Parameters
     ----------
-    init_dict : dictionary
-        see ref:`_est_init_dict`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    num_states : int
+        The size of the state space.
+    maint_func: func
+        see :ref: `maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
+    num_params : int
+        The number of parameters to be estimated.
+    scale : numpy.float
+        see :ref:`scale`
+    decision_mat : numpy.array
+        see :ref:`decision_mat`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    state_mat : numpy.array
+        see :ref:`state_mat`
+    optimizer_options : dict
+        The options chosen for the optimization algorithm in the initialization
+        dictionairy.
+    transition_results : dict
+        The results from ``estimate_transitions``.
+    alg_details : dict
+        see :ref: `alg_details`
 
-    df : pandas.DataFrame
-        see :ref:`df`
 
     Returns
     -------
@@ -208,19 +225,36 @@ def estimate_mpec_nlopt(
 
     Parameters
     ----------
-    init_dict : dictionary
-        see ref:`_est_init_dict`
-
-    df : pandas.DataFrame
-        see :ref:`df`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    num_states : int
+        The size of the state space.
+    maint_func: func
+        see :ref: `maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
+    num_params : int
+        The number of parameters to be estimated.
+    scale : numpy.float
+        see :ref:`scale`
+    decision_mat : numpy.array
+        see :ref:`decision_mat`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    state_mat : numpy.array
+        see :ref:`state_mat`
+    optimizer_options : dict
+        The options chosen for the optimization algorithm in the initialization
+        dictionairy.
+    transition_results : dict
+        The results from ``estimate_transitions``.
 
     Returns
     -------
-    mpec_transition_results : dictionary
-        see :ref:`mpec_transition_results`
+    transition_results : dictionary
+        see :ref:`result_trans`
     mpec_cost_parameters : dictionary
-        see :ref:`mpec_cost_parameters`
-
+        see :ref:`result_costs`
 
 
     """
@@ -319,19 +353,36 @@ def estimate_mpec_ipopt(
 
     Parameters
     ----------
-    init_dict : dictionary
-        see ref:`_est_init_dict`
-
-    df : pandas.DataFrame
-        see :ref:`df`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    num_states : int
+        The size of the state space.
+    maint_func: func
+        see :ref: `maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
+    num_params : int
+        The number of parameters to be estimated.
+    scale : numpy.float
+        see :ref:`scale`
+    decision_mat : numpy.array
+        see :ref:`decision_mat`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    state_mat : numpy.array
+        see :ref:`state_mat`
+    optimizer_options : dict
+        The options chosen for the optimization algorithm in the initialization
+        dictionairy.
+    transition_results : dict
+        The results from ``estimate_transitions``.
 
     Returns
     -------
-    mpec_transition_results : dictionary
-        see :ref:`mpec_transition_results`
+    transition_results : dictionary
+        see :ref:`result_trans`
     mpec_cost_parameters : dictionary
-        see :ref:`mpec_cost_parameters`
-
+        see :ref:`result_costs`
 
 
     """
@@ -429,9 +480,9 @@ def estimate_mpec_ipopt(
     mpec_cost_parameters["x"] = results_ipopt["x"]
     mpec_cost_parameters["fun"] = results_ipopt["fun"]
     if results_ipopt["success"] is True:
-        mpec_cost_parameters["status"] = 1
+        mpec_cost_parameters["status"] = True
     else:
-        mpec_cost_parameters["status"] = 0
+        mpec_cost_parameters["status"] = False
     mpec_cost_parameters["n_iterations"] = results_ipopt["nit"]
     mpec_cost_parameters["n_evaluations"] = results_ipopt["nfev"]
     mpec_cost_parameters["time"] = timing
