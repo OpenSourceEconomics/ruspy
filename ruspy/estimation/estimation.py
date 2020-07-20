@@ -399,8 +399,10 @@ def estimate_mpec_ipopt(
 
     if not optional_package_is_available:
         raise NotImplementedError(
-            "To use this you need to install cyipopt from source. A description"
-            + "can be found here: https://github.com/matthias-k/cyipopt"
+            """To use this you need to install cyipopt. If you are mac or Linux user
+            the command is $ conda install -c conda-forge cyipopt. If you use
+            Windows you have to install from source. A description can be found
+            here: https://github.com/matthias-k/cyipopt"""
         )
 
     del optimizer_options["algorithm"]
