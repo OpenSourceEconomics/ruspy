@@ -19,6 +19,8 @@ if optional_package_is_available:
     from ipopt import minimize_ipopt
 from scipy.optimize._numdiff import approx_derivative
 
+from ruspy.model_code.cost_functions import calc_obs_costs
+from ruspy.model_code.fix_point_alg import calc_fixp
 from ruspy.estimation import config
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.estimation_interface import select_model_parameters
@@ -309,6 +311,10 @@ def estimate_mpec_nlopt(
 
     # supply user choices
     params = optimizer_options.pop("params")
+    if "get_expected_values" in optimizer_options:
+        get_expected_values = optimizer_options.pop("get_expected_values")
+    else:
+        get_expected_values = "No"
 
     if "set_local_optimizer" in optimizer_options:
         sub = nlopt.opt(  # noqa: F841
@@ -324,6 +330,10 @@ def estimate_mpec_nlopt(
 
     # Solving nlopt
     tic = time.perf_counter()
+    if get_expected_values == "Yes":
+        obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
+        ev = calc_fixp(trans_mat, obs_costs, disc_fac)[0]
+        params = np.concatenate((ev, params))
     result = opt.optimize(params)
     toc = time.perf_counter()
     timing = toc - tic
@@ -412,6 +422,10 @@ def estimate_mpec_ipopt(
     upper_bounds = optimizer_options.pop("set_upper_bounds")
     bounds = np.vstack((lower_bounds, upper_bounds)).T
     bounds = list(map(tuple, bounds))
+    if "get_expected_values" in optimizer_options:
+        get_expected_values = optimizer_options.pop("get_expected_values")
+    else:
+        get_expected_values = "No"
 
     n_evaluations, neg_criterion = wrap_ipopt_likelihood(
         mpec_loglike_cost_params,
@@ -483,6 +497,10 @@ def estimate_mpec_ipopt(
     }
 
     tic = time.perf_counter()
+    if get_expected_values == "Yes":
+        obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
+        ev = calc_fixp(trans_mat, obs_costs, disc_fac)[0]
+        params = np.concatenate((ev, params))
     results_ipopt = minimize_ipopt(
         neg_criterion,
         params,
