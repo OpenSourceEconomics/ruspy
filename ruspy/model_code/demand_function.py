@@ -2,7 +2,6 @@
 We calculate and plot the implied demand function as suggested in Rust (1987).
 Further we add the option to plot uncertainty around it.
 """
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -37,7 +36,7 @@ def get_demand(init_dict, demand_dict, demand_params):
         algorithm exited successfully.
 
     """
-
+    params = demand_params.copy()
     (
         disc_fac,
         num_states,
@@ -62,7 +61,7 @@ def get_demand(init_dict, demand_dict, demand_params):
         params[-num_params] = rc
         demand_results.loc[(rc), "success"] = "No"
 
-        # slove the model for the given paramaters
+        # solve the model for the given paramaters
         trans_mat = create_transition_matrix(num_states, params[:-num_params])
 
         obs_costs = calc_obs_costs(num_states, maint_func, params[-num_params:], scale)
@@ -93,92 +92,3 @@ def get_demand(init_dict, demand_dict, demand_params):
         conditional_prob = pi_new / pi_new.sum(axis=0)
 
     return demand_results, conditional_prob
-
-
-# demand_results.reset_index(inplace=True)
-# fig, axis = plt.subplots()
-# axis.plot(
-#     "RC", "demand", data=demand_results, color="red",
-# )
-# axis.plot(
-#     "RC", "demand_gauss", data=demand_results, color="blue",
-# )
-
-
-# uncertainty
-results = np.load("solution_MPEC.npy")
-# results = pd.read_pickle("results_ipopt").loc[
-#     (0.9999, slice(None), slice(None), "MPEC"), :]
-# results = results[["theta_30", "theta_31", "theta_32", "theta_33",
-#                   "RC", "theta_11"]].astype(float).to_numpy()
-
-params = np.array([0.3919, 0.5953, 1 - 0.3919 - 0.5953, 11.7257, 2.4569])
-init_dict = {
-    "model_specifications": {
-        "discount_factor": 0.9999,
-        "number_states": 175,
-        "maint_cost_func": "linear",
-        "cost_scale": 1e-3,
-    },
-    "optimizer": {
-        "approach": "NFXP",
-        "algorithm": "scipy_L-BFGS-B",
-        "gradient": "Yes",
-        "params": params,
-    },
-    "alg_details": {"threshold": 1e-13, "switch_tol": 1e-2},
-}
-demand_dict = {
-    "RC_lower_bound": 2,
-    "RC_upper_bound": 15,
-    "demand_evaluations": 1000,
-    "tolerance": 1e-10,
-    "num_periods": 12,
-    "num_buses": 1,
-}
-
-true_demand = (
-    get_demand(init_dict, demand_dict, params)["demand"].astype(float).to_numpy()
-)
-
-rc_range = np.linspace(
-    demand_dict["RC_lower_bound"],
-    demand_dict["RC_upper_bound"],
-    demand_dict["demand_evaluations"],
-)
-demand = pd.DataFrame(index=rc_range)
-demand.index.name = "RC"
-for j in range(len(results)):
-    params[-2:] = results[j, :]
-    demand[str(j)] = get_demand(init_dict, demand_dict, params)["demand"]
-
-data = demand.astype(float).to_numpy()
-mean = data.mean(axis=1)
-std = data.std(axis=1)
-lower_percentile = np.percentile(data, 2.5, axis=1)
-upper_percentile = np.percentile(data, 97.5, axis=1)
-lower_bound = 2 * mean - upper_percentile
-upper_bound = 2 * mean - lower_percentile
-
-fig, axis = plt.subplots()
-axis.plot(rc_range, true_demand, color="black")
-axis.plot(rc_range, mean, color="blue")
-axis.plot(rc_range, upper_bound, rc_range, lower_bound, color="red")
-axis.fill_between(rc_range, upper_bound, lower_bound, color="0.5")
-
-
-# delete after
-demand_dict = {
-    "RC_lower_bound": 1,
-    "RC_upper_bound": 15,
-    "demand_evaluations": 200,
-    "tolerance": 1e-10,
-    "num_periods": 1,
-    "num_buses": 1,
-}
-
-params = np.array([0.3919, 0.5953, 1 - 0.3919 - 0.5953, 10.075, 2.293])
-params = np.array(
-    [0.1972222222222222, 0.7888888888888889, 0.0138888888888889, 11.0, 3.0]
-)
-params = np.array([0.1191, 0.5762, 0.2868, 0.0158, 0.00209999999999997, 10.896, 1.1732])
