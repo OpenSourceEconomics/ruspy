@@ -250,3 +250,95 @@ Discount factor
 The discount factor, as described in the economic model section, is stored as a float in
 ruspy. It needs to be set externally for the simulation as well as for the estimation
 process. The key in the dictionary herefore is always *disc_fac*.
+
+
+.. _demand_function_calculation:
+
+
+Demand Function Calculation
+-----------------------------
+
+The demand function can be derived using the following function ``get_demand``.
+
+.. currentmodule:: ruspy.model_code.demand_function
+
+.. autosummary::
+    :toctree: _generated/
+
+    get_demand
+
+Based on the estimated structural parameters :math:`\theta` obtained from the
+function ``estimate`` which is based on the model specification in :ref:`init_dict`,
+one can now derive the implied demand function. In order to do so one has to provide
+the following inputs:
+
+---------------------------
+Initialization Dictionairy
+---------------------------
+
+This is the :ref:`init_dict` needed for the ``estimate`` function. The ``get_demand``
+function draws the model specifications needed to calculate demand from this.
+
+
+.. _demand_dict:
+
+
+------------------
+Demand Dictionary
+------------------
+
+This dictionairy provides all the necessary information about how the demand
+function is supposed to look like and how precisely it is supposed to be calculated.
+It has to hold the following keys:
+
+**RC_lower_bound :** *(float)* The lowest replacement cost for which the demand
+is supposed to be calculated.
+
+**RC_upper_bound :** *(float)* The highest replacement cost for which the demand
+is supposed to be calculated.
+
+**demand_evaluations :** *(int)* The grid size of the replacement cost between
+RC_lower_bound and RC_upper_bound for which the demand level shall be calculated.
+
+**tolerance :** *(float)* The stopping tolerance for the fixed point calculation
+needed to obtain each demand level.
+
+**num_periods :** *(int)* Number of months :math:`T` for which the expected demand
+is derived. Consequently, set it to 12 if you want to get the annual expected demand.
+
+**num_buses :** *(int)* Number of buses :math:`M` for which the demand is
+calculated.
+
+
+.. _demand_params:
+
+-------------------
+Demand Parameters
+-------------------
+
+This numpy array contains the structural parameters of the model for which you want
+to derive the implied demand. This parametrization can come from an estimation
+procedure with the ``estimate`` function but is not limited to that.
+The first elements are the transition probabilities :math:`\theta_{30}, \theta_{31},
+...` and the elements after are :math:`RC, \theta_{11}, ...`.
+
+
+Based on those inputs, the ``get_demand`` function gives out the following DataFrame.
+
+.. _demand_results:
+
+
+------------------
+Demand Results
+------------------
+
+This pandas DataFrame has the grid of replacement costs defined by `RC_lower_bound`,
+`RC_upper_bound` and `demand_evaluations` as an index and gives out for each of them
+in the column *demand* the expected demand level over the specified time horizon
+and for the amount of buses in the fleet. It also contains a column *success*
+which indicates whether the fixed point algorithm converged successfully.
+
+
+The use of the ``get_demand`` function is shown in the following `replication
+<https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion
+/replication/replication.ipynb>`_ notebook.

@@ -23,16 +23,12 @@ def get_demand(init_dict, demand_dict, demand_params):
     demand_dict : dict
         see :ref:`demand_dict`.
     demand_params : np.array
-        holds all model parameters for which the implied demand shall be calulated.
-        The transition probabilities are the first elements, followed by the
-        replacement cost parameter and then by the rest of the cost parameters.
+        see :ref:`demand_params`
 
     Returns
     -------
     demand_results : pd.DataFrame
-        Index is the replacement cost. For each of those parameters there is the
-        demand calculated and a dummy saying whether the fixed point
-        algorithm exited successfully.
+        see :ref:`demand_results`
 
     """
     params = demand_params.copy()

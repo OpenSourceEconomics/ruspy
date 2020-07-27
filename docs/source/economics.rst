@@ -214,7 +214,7 @@ choice probabilities :math:`P(a|x, \theta)` into the likelihood function :math:`
     \begin{split}
     l^f_{aug}(. | a_0, x_0, \theta, EV) = & \prod_{t=1}^T \frac{
     \exp(u(a, x, RC, \theta_1) + \delta EV((a-1) \cdot x))}{
-    \sum_{i \in \{0, 1\}} \exp(u(i, x, RC, \theta_1) + \delta EV((i - 1)x))} \\
+    \sum_{a \in \{0, 1\}} \exp(u(a, x, RC, \theta_1) + \delta EV((a - 1)x))} \\
     \\
     & \times p(x_t| x_{t-1}, a_{t-1}, \theta_3).
     \end{split}
@@ -245,3 +245,55 @@ Kraft (1994)) provided by NLOPT.
 
 The Implied Demand Function
 ---------------------------
+
+Rust (1987) shortly describes a way to uncover an implied demand function of engine
+replacement from his model and its estimated parameters. Theoretically, for Harold
+Zurcher the random annual implied demand function takes the following form:
+
+.. math::
+
+    \begin{equation*}
+      \tilde{d}(RC) = \sum_{t=1}^{12} \sum_{m=1}^{M} \tilde{a}^m_t
+    \end{equation*}
+
+where :math:`\tilde{a}^m_t` is the replacement decision for a certain bus :math:`m`
+in a certain month :math:`t` derived from the process {:math:`a^m_t, x^m_t`}.
+
+For convenience I will drop the index for the bus in the following. Its probability
+distribution is therefore the result of the process described by
+:math:`P(a_t|x_t; \theta)p(x_t|x_{t-1}, a_{t-1}; \theta_3)`. For simplification
+Rust actually derives the expected demand function :math:`d(RC)=E[\tilde{d}(RC)]`.
+Assuming that :math:`\pi` is the long-run stationary distribution of the process
+{:math:`a_t, x_t`} and that the observed initial state {:math:`a_0, x_0`} is in
+the long run equilibrium, :math:`\pi` can be described by the following functional
+equation:
+
+.. math::
+
+    \begin{equation}
+      \pi(x, a; \theta) = \int_{y} \int_{j} P(a|x; \theta)p_3(x|y, j, \theta_3)
+      \pi(dy, dj; \theta).
+    \end{equation}
+
+Further assuming that the processes of {:math:`a_t, x_t`} are independent across
+buses the annual expected implied demand function boils down to:
+
+.. math::
+
+    \begin{equation}
+      d(RC) = 12 M \int_{0}^{\infty} \pi(dx, 1; \theta).
+    \end{equation}
+
+Given some estimated parameters :math:`\hat\theta` from calibrating the Rust Model
+and parametrically varying :math:`RC` results in different estimates of
+:math:`P(a_t|x_t; \theta)p(x_t|x_{t-1}, a_{t-1}; \theta_3)` which in turn affects
+the probability distribution :math:`\pi` which changes the implied demand.
+In the representation above it is clearly assumed that both the mileage state
+:math:`x` and the replacement decision :math:`a` are continuous. The replacement
+decision is actually discrete, though, and the mileage state has to be discretized
+again which in the end results in a sum representation of the function :math:`d(RC)`
+that is taken to calculate the expected annual demand.
+
+This demand function can be calculated in the ruspy package for a given
+parametrization of the model. A description how to do this can be found in
+:ref:`demand_function_calculation`.
