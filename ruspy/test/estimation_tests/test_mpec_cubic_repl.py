@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import pytest
-from numpy.testing import assert_allclose
 from numpy.testing import assert_almost_equal
+from numpy.testing import assert_array_almost_equal
 
 from ruspy.config import TEST_RESOURCES_DIR
 from ruspy.estimation.estimation import estimate
@@ -52,13 +52,13 @@ def inputs():
 @pytest.fixture(scope="module")
 def outputs():
     out = {}
-    out["params_base"] = np.array([10.07494318, 229309.182905, 0.0, 0.0])
+    out["params_base"] = np.array([10.07494318, 229309.298, 0.0, 0.0])
     out["cost_ll"] = 163.584283  # 162.885
     return out
 
 
 def test_repl_params(inputs, outputs):
-    assert_allclose(inputs["params_est"], outputs["params_base"])
+    assert_array_almost_equal(inputs["params_est"], outputs["params_base"], decimal=3)
 
 
 def test_cost_ll(inputs, outputs):
@@ -66,4 +66,4 @@ def test_cost_ll(inputs, outputs):
 
 
 def test_success(inputs):
-    assert inputs["status"] == "success"
+    assert inputs["status"] is True

@@ -39,9 +39,9 @@ def estimate_transitions(df):
     constr = [{"loc": "trans_prob", "type": "probability"}]
 
     raw_result_trans = minimize(
-        criterion=loglike_trans_individual,
+        criterion=loglike_trans,
         params=params,
-        algorithm="estimagic_bhhh",
+        algorithm="scipy_L-BFGS-B",
         constraints=constr,
         criterion_kwargs={"transition_count": transition_count},
         logging=False,

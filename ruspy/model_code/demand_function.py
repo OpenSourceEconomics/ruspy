@@ -1,6 +1,5 @@
 """
-We calculate and plot the implied demand function as suggested in Rust (1987).
-Further we add the option to plot uncertainty around it.
+Calculates the implied demand function as suggested in Rust (1987).
 """
 import numpy as np
 import pandas as pd
@@ -32,7 +31,7 @@ def get_demand(init_dict, demand_dict, demand_params):
     -------
     demand_results : pd.DataFrame
         Index is the replacement cost. For each of those parameters there is the
-        demand calculated and whether a dummy saying whether the fixed point
+        demand calculated and a dummy saying whether the fixed point
         algorithm exited successfully.
 
     """
@@ -89,6 +88,4 @@ def get_demand(init_dict, demand_dict, demand_params):
             demand_dict["num_buses"] * demand_dict["num_periods"] * pi_new[:, 1].sum()
         )
 
-        conditional_prob = pi_new / pi_new.sum(axis=0)
-
-    return demand_results, conditional_prob
+    return demand_results

@@ -33,7 +33,7 @@ def test_regression_simulation(inputs):
 
     costs = calc_obs_costs(num_states, hyperbolic_costs, params, 0.1)
 
-    ev = calc_fixp(trans_mat, costs, disc_fac)
+    ev = calc_fixp(trans_mat, costs, disc_fac)[0]
 
     df = simulate(init_dict["simulation"], ev, costs, trans_mat)
 

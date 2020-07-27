@@ -82,7 +82,6 @@ def test_mpec_likelihood(inputs, outputs):
 def test_like_dev(inputs, outputs):
     assert_array_almost_equal(
         mpec_loglike_cost_params_derivative(
-            inputs["params"],
             inputs["maint_func"],
             inputs["maint_func_dev"],
             inputs["num_states"],
@@ -91,6 +90,7 @@ def test_like_dev(inputs, outputs):
             inputs["scale"],
             inputs["decision_matrix"],
             inputs["state_matrix"],
+            inputs["params"],
         ),
         outputs["mpec_like_dev"],
     )
@@ -120,7 +120,6 @@ def test_mpec_constraint(inputs, outputs):
 def test_mpec_constraint_dev(inputs, outputs):
     assert_array_almost_equal(
         mpec_constraint_derivative(
-            inputs["params"],
             inputs["maint_func"],
             inputs["maint_func_dev"],
             inputs["num_states"],
@@ -128,6 +127,7 @@ def test_mpec_constraint_dev(inputs, outputs):
             inputs["disc_fac"],
             inputs["scale"],
             inputs["trans_matrix"],
+            inputs["params"],
         ),
         outputs["mpec_constr_dev"],
     )
