@@ -4,29 +4,10 @@ This module contains all the key functions used to estimate the model using MPEC
 from functools import partial
 
 import numpy as np
-from scipy.optimize import approx_fprime
 from scipy.optimize._numdiff import approx_derivative
 
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
-
-
-def function_wrapper_like(function, args):
-    def call(mpec_params, grad):
-        result = function(mpec_params, *args, grad)
-        return result
-
-    return call
-
-
-def function_wrapper_constr(function, args):
-    def call(mpec_params):
-        result = function(
-            result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([])
-        )
-        return result
-
-    return call
 
 
 def mpec_loglike_cost_params(
@@ -43,15 +24,19 @@ def mpec_loglike_cost_params(
     grad,
 ):
     """
-    Calculate the negative partial log likelihood depending on cost parameters
+    Calculate the negative partial log likelihood for MPEC depending on cost parameters
     as well as the discretized expected values.
 
     Parameters
     ----------
-    maint_func : func
-        see :ref:`maint_func`
+    maint_func: func
+        see :ref: `maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
     num_states : int
         The size of the state space.
+    num_params : int
+        Length of cost parameter vector.
     state_mat : numpy.array
         see :ref:`state_mat`
     decision_mat : numpy.array
@@ -60,8 +45,10 @@ def mpec_loglike_cost_params(
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
+    gradient : str
+        Indicates whether analytical or numerical gradient should be used.
     mpec_params : numpy.array
-        Contains the expected values as well as the cost parameters.
+        see :ref:`mpec_params`
     grad : numpy.array, optional
         The gradient of the function. The default is np.array([]).
 
@@ -87,11 +74,12 @@ def mpec_loglike_cost_params(
                 gradient,
                 grad=np.array([]),
             )
-            grad[:] = approx_fprime(mpec_params, partial_loglike_mpec, 10e-6)
+            grad[:] = approx_derivative(
+                partial_loglike_mpec, mpec_params, method="2-point"
+            )
         else:
             # analytical gradient
             grad[:] = mpec_loglike_cost_params_derivative(
-                mpec_params,
                 maint_func,
                 maint_func_dev,
                 num_states,
@@ -100,6 +88,7 @@ def mpec_loglike_cost_params(
                 scale,
                 decision_mat,
                 state_mat,
+                mpec_params,
             )
 
     costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
@@ -132,19 +121,25 @@ def mpec_constraint(
     ----------
     maint_func : func
         see :ref:`maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
     num_states : int
         The size of the state space.
-    decision_mat : numpy.array
-        see :ref:`decision_mat`
+    num_params : int
+        The number of parameters to be estimated.
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
     disc_fac : numpy.float
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
+    gradient : str
+        Indicates whether analytical or numerical gradient should be used.
     result : numpy.array
         Contains the left hand side of the constraint minus the right hand side
         for the nlopt solver. This should be zero for the constraint to hold.
     mpec_params : numpy.array
-        Contains the expected values as well as the cost parameters.
+        see :ref:`mpec_params`
     grad : numpy.array, optional
         The gradient of the function. The default is np.array([]).
 
@@ -156,7 +151,7 @@ def mpec_constraint(
     if grad.size > 0:
         if gradient == "No":
             # numerical jacobian
-            partial_constr_mpec_deriv = function_wrapper_constr(
+            partial_constr_mpec_deriv = wrap_nlopt_constraint(
                 mpec_constraint,
                 args=(
                     maint_func,
@@ -169,11 +164,12 @@ def mpec_constraint(
                     gradient,
                 ),
             )
-            grad[:, :] = approx_derivative(partial_constr_mpec_deriv, mpec_params)
+            grad[:, :] = approx_derivative(
+                partial_constr_mpec_deriv, mpec_params, method="2-point"
+            )
         else:
             # analytical jacobian
             grad[:, :] = mpec_constraint_derivative(
-                mpec_params,
                 maint_func,
                 maint_func_dev,
                 num_states,
@@ -181,6 +177,7 @@ def mpec_constraint(
                 disc_fac,
                 scale,
                 trans_mat,
+                mpec_params,
             )
 
     ev = mpec_params[0:num_states]
@@ -204,7 +201,6 @@ def mpec_constraint(
 
 
 def mpec_loglike_cost_params_derivative(
-    mpec_params,
     maint_func,
     maint_func_dev,
     num_states,
@@ -213,14 +209,13 @@ def mpec_loglike_cost_params_derivative(
     scale,
     decision_mat,
     state_mat,
+    mpec_params,
 ):
     """
-    Computing the gradient of the objective function for MPEC.
+    Computing the analytical gradient of the objective function for MPEC.
 
     Parameters
     ----------
-    mpec_params : numpy.array
-        Contains the expected values as well as the cost parameters.
     maint_func: func
         see :ref: `maint_func`
     maint_func_dev : func
@@ -237,6 +232,8 @@ def mpec_loglike_cost_params_derivative(
         see :ref:`decision_mat`
     state_mat : numpy.array
         see :ref:`state_mat`
+    mpec_params : numpy.array
+        see :ref:`mpec_params`
 
     Returns
     -------
@@ -282,7 +279,6 @@ def mpec_loglike_cost_params_derivative(
 
 
 def mpec_constraint_derivative(
-    mpec_params,
     maint_func,
     maint_func_dev,
     num_states,
@@ -290,14 +286,13 @@ def mpec_constraint_derivative(
     disc_fac,
     scale,
     trans_mat,
+    mpec_params,
 ):
     """
-    Calculating the Jacobian of the MPEC constraint.
+    Calculating the analytical Jacobian of the MPEC constraint.
 
     Parameters
     ----------
-    mpec_params : numpy.array
-        Contains the expected values as well as the cost parameters.
     maint_func: func
         see :ref: `maint_func`
     maint_func_dev : func
@@ -312,6 +307,8 @@ def mpec_constraint_derivative(
         see :ref:`scale`
     trans_mat : numpy.array
         see :ref:`trans_mat`
+    mpec_params : numpy.array
+        see :ref:`mpec_params`
 
     Returns
     -------
@@ -368,3 +365,57 @@ def mpec_constraint_derivative(
     jacobian = jacobian - ev_jacobian
 
     return jacobian
+
+
+def wrap_mpec_loglike(args):
+    ncalls = [0]
+
+    def function_wrapper(*x0):
+        ncalls[0] += 1
+        return mpec_loglike_cost_params(*(args + x0))
+
+    return ncalls, function_wrapper
+
+
+def wrap_nlopt_likelihood(function, args):
+    def function_wrapper(mpec_params, grad):
+        result = function(mpec_params, *args, grad)
+        return result
+
+    return function_wrapper
+
+
+def wrap_nlopt_constraint(function, args):
+    def function_wrapper(mpec_params):
+        result = function(
+            result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([])
+        )
+        return result
+
+    return function_wrapper
+
+
+def wrap_ipopt_likelihood(function, args):
+    ncalls = [0]
+
+    def function_wrapper(mpec_params):
+        ncalls[0] += 1
+        return function(
+            *args, gradient=None, mpec_params=mpec_params, grad=np.array([])
+        )
+
+    return ncalls, function_wrapper
+
+
+def wrap_ipopt_constraint(function, args):
+    def function_wrapper(mpec_params):
+        result = function(
+            *args,
+            gradient=None,
+            result=np.array([]),
+            mpec_params=mpec_params,
+            grad=np.array([]),
+        )
+        return result
+
+    return function_wrapper

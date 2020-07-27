@@ -66,4 +66,4 @@ def test_cost_ll(inputs, outputs):
 
 
 def test_success(inputs):
-    assert inputs["status"] == "success"
+    assert inputs["status"] is True

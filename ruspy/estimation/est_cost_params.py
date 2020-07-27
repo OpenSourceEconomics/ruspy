@@ -6,6 +6,7 @@ implementation of fix point algorithm developed by John Rust.
 import numba
 import numpy as np
 
+from ruspy.estimation import config
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.fix_point_alg import calc_fixp
@@ -31,12 +32,13 @@ def loglike_cost_params_individual(
     alg_details,
 ):
     """
-    This is the logliklihood function for the estimation of the cost parameters.
+    This is the individual logliklihood function for the estimation of the cost parameters
+    needed for the BHHH optimizer.
 
 
     Parameters
     ----------
-    params : numpy.array
+    params : pandas.DataFrame
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -53,15 +55,20 @@ def loglike_cost_params_individual(
 
     Returns
     -------
-    log_like : numpy.float
-        The negative log-likelihood value of the cost parameters.
+    log_like : numpy.array
+        A num_buses times num_periods dimensional array containing the negative
+        log-likelihood contributions of the individuals.
 
 
     """
     params = params["value"].to_numpy()
     costs = calc_obs_costs(num_states, maint_func, params, scale)
 
-    ev = get_ev(params, trans_mat, costs, disc_fac, alg_details)
+    ev, contr_step_count, newt_kant_step_count = get_ev(
+        params, trans_mat, costs, disc_fac, alg_details
+    )
+    config.total_contr_count += contr_step_count
+    config.total_newt_kant_count += newt_kant_step_count
 
     p_choice = choice_prob_gumbel(ev, costs, disc_fac)
     log_like = like_hood_data_individual(np.log(p_choice), decision_mat, state_mat)
@@ -80,6 +87,10 @@ def loglike_cost_params(
     scale,
     alg_details,
 ):
+    """
+    sums the individual negative log likelihood contributions for algorithms
+    such as the L-BFGS-B.
+    """
 
     log_like_sum = loglike_cost_params_individual(
         params,
@@ -109,13 +120,13 @@ def derivative_loglike_cost_params_individual(
     alg_details,
 ):
     """
-    This is the derivative of logliklihood function of the cost
-    parameter estimation with respect to all cost parameters.
+    This is the Jacobian of the individual log likelihood function of the cost
+    parameter estimation with respect to all cost parameters needed for the BHHH.
 
 
     Parameters
     ----------
-    params : numpy.array
+    params : pandas.DataFrame
         see :ref:`params`
     maint_func: func
         see :ref: `maint_func`
@@ -133,8 +144,9 @@ def derivative_loglike_cost_params_individual(
     Returns
     -------
     dev : numpy.array
-        A dim(params) one dimensional numpy array containing the derivative of the
-        cost log-likelihood function for every cost parameter.
+        A num_buses + num_periods x dim(params) matrix in form of numpy array
+        containing the derivative of the individual log-likelihood function for
+        every cost parameter.
 
 
     """
@@ -142,7 +154,7 @@ def derivative_loglike_cost_params_individual(
     dev = np.zeros((decision_mat.shape[1], len(params)))
     obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
 
-    ev = get_ev(params, trans_mat, obs_costs, disc_fac, alg_details)
+    ev = get_ev(params, trans_mat, obs_costs, disc_fac, alg_details)[0]
 
     p_choice = choice_prob_gumbel(ev, obs_costs, disc_fac)
     maint_cost_dev = maint_func_dev(num_states, scale)
@@ -179,7 +191,11 @@ def derivative_loglike_cost_params(
     scale,
     alg_details,
 ):
+    """
+    sums up the Jacobian to obtain the gradient of the negative log likelihood
+    function needed for algorithm such as the L-BFGS-B.
 
+    """
     dev = derivative_loglike_cost_params_individual(
         params,
         maint_func,
@@ -198,8 +214,8 @@ def derivative_loglike_cost_params(
 
 def get_ev(params, trans_mat, obs_costs, disc_fac, alg_details):
     """
-    A auxiliary function, which allows the log-likelihood function as well as her
-    derivative to share the same fix point and to avoid the need to execute the
+    A auxiliary function, which allows the log-likelihood function as well as its
+    derivative to share the same fixed point and to avoid the need to execute the
     computation double.
 
     Parameters
