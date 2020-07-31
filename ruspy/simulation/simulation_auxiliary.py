@@ -66,11 +66,13 @@ def simulate_strategy(
             decisions[bus, period] = decision
             utilities[bus, period] = utility
             new_state = intermediate_state + state_increase
+            if new_state > num_states:
+                new_state = num_states
+                state_increase = num_states - intermediate_state
             usage[bus, period] = state_increase
             if period < num_periods - 1:
                 states[bus, period + 1] = new_state
-            if new_state > num_states - 10:
-                raise ValueError("State space is too small.")
+
     return states, decisions, utilities, usage
 
 
