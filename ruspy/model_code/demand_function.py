@@ -4,11 +4,11 @@ Calculates the implied demand function as suggested in Rust (1987).
 import numpy as np
 import pandas as pd
 
-from ruspy.estimation.est_cost_params import get_ev
 from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
+from ruspy.model_code.fix_point_alg import calc_fixp
 
 
 def get_demand(init_dict, demand_dict, demand_params):
@@ -41,8 +41,6 @@ def get_demand(init_dict, demand_dict, demand_params):
         scale,
     ) = select_model_parameters(init_dict)
 
-    alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
-
     # Initialize the loop over the replacement costs
     rc_range = np.linspace(
         demand_dict["RC_lower_bound"],
@@ -60,7 +58,7 @@ def get_demand(init_dict, demand_dict, demand_params):
         trans_mat = create_transition_matrix(num_states, params[:-num_params])
 
         obs_costs = calc_obs_costs(num_states, maint_func, params[-num_params:], scale)
-        ev = get_ev(params[-num_params], trans_mat, obs_costs, disc_fac, alg_details)[0]
+        ev = calc_fixp(trans_mat, obs_costs, disc_fac)[0]
         p_choice = choice_prob_gumbel(ev, obs_costs, disc_fac)
 
         # calculate initial guess for pi and run contraction iterations

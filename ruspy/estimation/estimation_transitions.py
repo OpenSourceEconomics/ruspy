@@ -36,6 +36,7 @@ def estimate_transitions(df):
     params = pd.DataFrame(
         transition_count / sum(transition_count), columns=["value"], index=index,
     )
+    params.loc[params["value"] == 0] = 1e-20
     constr = [{"loc": "trans_prob", "type": "probability"}]
 
     raw_result_trans = minimize(
