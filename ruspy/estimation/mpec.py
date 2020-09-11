@@ -6,6 +6,7 @@ from functools import partial
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
+from ruspy.estimation.est_cost_params import like_hood_data
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 
@@ -95,10 +96,6 @@ def mpec_loglike_cost_params(
     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
     log_like = like_hood_data(np.log(p_choice), decision_mat, state_mat)
     return float(log_like)
-
-
-def like_hood_data(l_values, decision_mat, state_mat):
-    return -np.sum(decision_mat * np.dot(l_values.T, state_mat))
 
 
 def mpec_constraint(
@@ -246,21 +243,13 @@ def mpec_loglike_cost_params_derivative(
     costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
 
-    # Create matrix that represents d[V(0)-V(x)]/ d[theta] (depending on x)
-    payoff_difference_derivative = np.zeros((num_states + num_params, num_states))
-    payoff_difference_derivative[0, 1:] = disc_fac
-    payoff_difference_derivative[1:num_states, 1:] = -disc_fac * np.eye(num_states - 1)
-    payoff_difference_derivative[num_states, :] = -1
-    payoff_difference_derivative[num_states + 1 :, :] = (
-        -maint_func_dev(num_states, scale)[0] + maint_func_dev(num_states, scale)
-    ).T
-
-    # Calculate derivative depending on whether d is 0 or 1
-    derivative_d0 = -payoff_difference_derivative * p_choice[:, 1]
-    derivative_d1 = payoff_difference_derivative * p_choice[:, 0]
-    derivative_both = np.vstack((derivative_d0, derivative_d1))
+    # calculate the derivative based on the model
+    derivative_both = mpec_loglike_cost_params_derivative_model(
+        num_states, num_params, disc_fac, scale, maint_func_dev, p_choice
+    )
 
     # Calculate actual gradient depending on the given data
+    # get decision matrix into the needed shape
     decision_mat_temp = np.vstack(
         (
             np.tile(decision_mat[0], (num_states + num_params, 1)),
@@ -268,9 +257,11 @@ def mpec_loglike_cost_params_derivative(
         )
     )
 
+    # calculate the gradient
     gradient_temp = -np.sum(
         decision_mat_temp * np.dot(derivative_both, state_mat), axis=1
     )
+    # bring the calculated gradient into the correct shape
     gradient = np.reshape(gradient_temp, (num_states + num_params, 2), order="F").sum(
         axis=1
     )
@@ -365,6 +356,53 @@ def mpec_constraint_derivative(
     jacobian = jacobian - ev_jacobian
 
     return jacobian
+
+
+def mpec_loglike_cost_params_derivative_model(
+    num_states, num_params, disc_fac, scale, maint_func_dev, p_choice
+):
+    """
+    generates the derivative of the log likelihood function of mpec depending
+    on the model characteristics.
+
+    Parameters
+    ----------
+    num_states : int
+        The size of the state space.
+    num_params : int
+        Length of cost parameter vector.
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    scale : numpy.float
+        see :ref:`scale`
+    maint_func_dev : func
+        see :ref: `maint_func_dev`
+    p_choice : np.array
+        num_states x 2 matrix that contains the calculated conditional choice
+        probabilities.
+
+    Returns
+    -------
+    derivative_both : np.array
+        gives out the derivative of the log likelihood function depending
+        on the model characteristics.
+
+    """
+    # Create matrix that represents d[V(0)-V(x)]/ d[theta] (depending on x)
+    payoff_difference_derivative = np.zeros((num_states + num_params, num_states))
+    payoff_difference_derivative[0, 1:] = disc_fac
+    payoff_difference_derivative[1:num_states, 1:] = -disc_fac * np.eye(num_states - 1)
+    payoff_difference_derivative[num_states, :] = -1
+    payoff_difference_derivative[num_states + 1 :, :] = (
+        -maint_func_dev(num_states, scale)[0] + maint_func_dev(num_states, scale)
+    ).T
+
+    # Calculate derivative depending on whether d is 0 or 1
+    derivative_d0 = -payoff_difference_derivative * p_choice[:, 1]
+    derivative_d1 = payoff_difference_derivative * p_choice[:, 0]
+    derivative_both = np.vstack((derivative_d0, derivative_d1))
+
+    return derivative_both
 
 
 def wrap_mpec_loglike(args):

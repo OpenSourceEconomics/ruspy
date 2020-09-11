@@ -4,6 +4,8 @@ a decision process in the model of John Rust's 1987 paper, it is sufficient to i
 the function from this module and feed it with a init dictionary containing the
 relevant variables.
 """
+import warnings
+
 import numpy as np
 import pandas as pd
 
@@ -45,7 +47,7 @@ def simulate(init_dict, ev_known, costs, trans_mat):
             "The transition matrix and the expected value of the agent "
             "need to have the same size."
         )
-    states, decisions, utilities, usage = simulate_strategy(
+    states, decisions, utilities, usage, absorbing_state = simulate_strategy(
         num_periods, num_buses, costs, ev_known, trans_mat, disc_fac, seed,
     )
     bus_ids = np.arange(num_buses) + 1
@@ -60,5 +62,14 @@ def simulate(init_dict, ev_known, costs, trans_mat):
             "usage": usage.flatten(),
         },
     )
+    if absorbing_state == 1:
+        warnings.warn(
+            """
+                      For at least one bus in at least one time period the state
+                      reached the highest possible grid point. This might confound
+                      your results. Please consider increasing the grid size
+                      until this messsage does not appear anymore.
+                      """
+        )
 
     return df

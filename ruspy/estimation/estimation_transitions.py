@@ -80,12 +80,43 @@ def loglike_trans(params, transition_count):
     """
     Sum the individual negative log-likelihood.
 
+    Parameters
+    ----------
+    params : pd.DataFrame
+        parameter guess of the transition probabilities.
+    transition_count : numpy.array
+        The pooled count of state increases per period in the data.
+
+    Returns
+    -------
+    log_like : float
+        the negative log likelihood given some transition probability guess.
+
     """
     log_like = loglike_trans_individual(params, transition_count).sum()
     return log_like
 
 
 def loglike_trans_individual_derivative(params, transition_count):
+    """
+    generates the jacobian of the individual log likelihood function of the
+    transition probabilities. This function is currently not used but is kept
+    for further development of the package when estimagic can handle constrains
+    with analytical derivatives.
+
+    Parameters
+    ----------
+    params : pd.DataFrame
+        parameter guess of the transition probabilities.
+    transition_count : numpy.array
+        The pooled count of state increases per period in the data.
+
+    Returns
+    -------
+    jacobian : np.array
+        a dim(params) x dim(params) matrix containing the Jacobian.
+
+    """
     p_raw = params.loc["trans_prob", "value"].to_numpy()
     diagonal = -np.multiply(transition_count, 1 / p_raw)
     jacobian = diagonal * np.eye(len(p_raw))

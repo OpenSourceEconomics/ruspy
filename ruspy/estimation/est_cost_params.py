@@ -90,6 +90,35 @@ def loglike_cost_params(
     """
     sums the individual negative log likelihood contributions for algorithms
     such as the L-BFGS-B.
+
+    Parameters
+    ----------
+    params : pandas.DataFrame
+        see :ref:`params`
+    maint_func: func
+        see :ref:`maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
+    num_states : int
+        The size of the state space.
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    state_mat : numpy.array
+        see :ref:`state_mat`
+    decision_mat : numpy.array
+        see :ref:`decision_mat`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    scale : numpy.float
+        see :ref:`scale`
+    alg_details : dict
+        see :ref: `alg_details`
+
+    Returns
+    -------
+    log_like_sum : float
+        The negative log likelihood based on the data.
+
     """
 
     log_like_sum = loglike_cost_params_individual(
@@ -195,6 +224,35 @@ def derivative_loglike_cost_params(
     sums up the Jacobian to obtain the gradient of the negative log likelihood
     function needed for algorithm such as the L-BFGS-B.
 
+    Parameters
+    ----------
+    params : pandas.DataFrame
+        see :ref:`params`
+    maint_func: func
+        see :ref: `maint_func`
+    maint_func_dev: func
+        see :ref: `maint_func_dev`
+    num_states : int
+        The size of the state space.
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    state_mat : numpy.array
+        see :ref:`state_mat`
+    decision_mat : numpy.array
+        see :ref:`decision_mat`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    scale : numpy.float
+        see :ref:`scale`
+    alg_details : dict
+        see :ref: `alg_details`
+
+    Returns
+    -------
+    dev : np.array
+        A dimension(params) sized vector containing the gradient of the negative
+        likelihood function.
+
     """
     dev = derivative_loglike_cost_params_individual(
         params,
@@ -273,6 +331,24 @@ def chain_rule_param(cost_dev, dev_ev_param, disc_fac):
 
 
 def like_hood_data_individual(l_values, decision_mat, state_mat):
+    """
+    generates the individual likelihood contribution based on the model.
+
+    Parameters
+    ----------
+    l_values : np.array
+        the raw log likelihood per state.
+    decision_mat : numpy.array
+        see :ref:`decision_mat`
+    state_mat : numpy.array
+        see :ref:`state_mat`
+
+    Returns
+    -------
+    np.array
+        the individual likelihood contribution depending on the exact model.
+
+    """
     return -(decision_mat * np.dot(l_values.T, state_mat)).sum(axis=0)
 
 
