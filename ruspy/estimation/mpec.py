@@ -31,9 +31,9 @@ def mpec_loglike_cost_params(
     Parameters
     ----------
     maint_func: func
-        see :ref: `maint_func`
+        see :func: `maint_func`
     maint_func_dev: func
-        see :ref: `maint_func_dev`
+        see :func: `maint_func_dev`
     num_states : int
         The size of the state space.
     num_params : int
@@ -117,9 +117,9 @@ def mpec_constraint(
     Parameters
     ----------
     maint_func : func
-        see :ref:`maint_func`
+        see :func:`maint_func`
     maint_func_dev: func
-        see :ref: `maint_func_dev`
+        see :func: `maint_func_dev`
     num_states : int
         The size of the state space.
     num_params : int
@@ -214,9 +214,9 @@ def mpec_loglike_cost_params_derivative(
     Parameters
     ----------
     maint_func: func
-        see :ref: `maint_func`
+        see :func: `maint_func`
     maint_func_dev : func
-        see :ref: `maint_func_dev`
+        see :func: `maint_func_dev`
     num_states : int
         The size of the state space.
     num_params : int
@@ -285,9 +285,9 @@ def mpec_constraint_derivative(
     Parameters
     ----------
     maint_func: func
-        see :ref: `maint_func`
+        see :func: `maint_func`
     maint_func_dev : func
-        see :ref: `maint_func_dev`
+        see :func: `maint_func_dev`
     num_states : int
         The size of the state space.
     num_params : int
@@ -307,7 +307,8 @@ def mpec_constraint_derivative(
         Jacobian of the MPEC constraint.
 
     """
-    # Calculate a vector representing 1 divided by the right hand side of the MPEC constraint
+    # Calculate a vector representing 1 divided by the right hand side of the MPEC
+    # constraint
     ev = mpec_params[0:num_states]
     obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
 
