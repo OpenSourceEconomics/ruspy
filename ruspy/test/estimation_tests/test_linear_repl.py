@@ -110,4 +110,4 @@ def test_ll_params_derivative(inputs, outputs):
 
 
 def test_success(inputs):
-    assert inputs["status"] == "success"
+    assert inputs["status"] == 1
