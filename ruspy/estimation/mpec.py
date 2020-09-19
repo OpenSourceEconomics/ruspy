@@ -33,7 +33,7 @@ def mpec_loglike_cost_params(
     maint_func: func
         see :ref:`maint_func`
     maint_func_dev: func
-        see :ref:`maint_func_dev`
+        see :ref:`maint_func`
     num_states : int
         The size of the state space.
     num_params : int
@@ -119,7 +119,7 @@ def mpec_constraint(
     maint_func: func
         see :ref:`maint_func`
     maint_func_dev: func
-        see :ref:`maint_func_dev`
+        see :ref:`maint_func`
     num_states : int
         The size of the state space.
     num_params : int
@@ -216,7 +216,7 @@ def mpec_loglike_cost_params_derivative(
     maint_func: func
         see :ref:`maint_func`
     maint_func_dev: func
-        see :ref:`maint_func_dev`
+        see :ref:`maint_func`
     num_states : int
         The size of the state space.
     num_params : int
@@ -287,7 +287,7 @@ def mpec_constraint_derivative(
     maint_func: func
         see :ref:`maint_func`
     maint_func_dev: func
-        see :ref:`maint_func_dev`
+        see :ref:`maint_func`
     num_states : int
         The size of the state space.
     num_params : int
@@ -377,7 +377,7 @@ def mpec_loglike_cost_params_derivative_model(
     scale : numpy.float
         see :ref:`scale`
     maint_func_dev : func
-        see :ref: `maint_func_dev`
+        see :ref:`maint_func`
     p_choice : np.array
         num_states x 2 matrix that contains the calculated conditional choice
         probabilities.
