@@ -202,7 +202,10 @@ def estimate_nfxp(
 
     result_cost_params["x"] = min_result[1]["value"].to_numpy()
     result_cost_params["fun"] = min_result[0]["fitness"]
-    result_cost_params["status"] = min_result[0]["status"]
+    if min_result[0]["status"] == "success":
+        result_cost_params["status"] = 1
+    else:
+        result_cost_params["status"] = 0
     result_cost_params["message"] = min_result[0]["message"]
     result_cost_params["jac"] = min_result[0]["jacobian"]
     result_cost_params["n_evaluations"] = min_result[0]["n_evaluations"]

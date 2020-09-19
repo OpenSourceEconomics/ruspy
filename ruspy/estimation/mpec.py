@@ -31,9 +31,9 @@ def mpec_loglike_cost_params(
     Parameters
     ----------
     maint_func: func
-        see :func: `maint_func`
+        see :ref:`maint_func`
     maint_func_dev: func
-        see :func: `maint_func_dev`
+        see :ref:`maint_func_dev`
     num_states : int
         The size of the state space.
     num_params : int
@@ -116,10 +116,10 @@ def mpec_constraint(
 
     Parameters
     ----------
-    maint_func : func
-        see :func:`maint_func`
+    maint_func: func
+        see :ref:`maint_func`
     maint_func_dev: func
-        see :func: `maint_func_dev`
+        see :ref:`maint_func_dev`
     num_states : int
         The size of the state space.
     num_params : int
@@ -214,9 +214,9 @@ def mpec_loglike_cost_params_derivative(
     Parameters
     ----------
     maint_func: func
-        see :func: `maint_func`
-    maint_func_dev : func
-        see :func: `maint_func_dev`
+        see :ref:`maint_func`
+    maint_func_dev: func
+        see :ref:`maint_func_dev`
     num_states : int
         The size of the state space.
     num_params : int
@@ -285,9 +285,9 @@ def mpec_constraint_derivative(
     Parameters
     ----------
     maint_func: func
-        see :func: `maint_func`
-    maint_func_dev : func
-        see :func: `maint_func_dev`
+        see :ref:`maint_func`
+    maint_func_dev: func
+        see :ref:`maint_func_dev`
     num_states : int
         The size of the state space.
     num_params : int
