@@ -1,33 +1,42 @@
 Welcome to ruspy's documentation!
 =================================
 
-Ruspy is an open-source software package for estimating and simulating infinite
-horizon single agent discrete choice model in the setting of Rust (1987). It serves
+Ruspy is an open-source software package for estimating and simulating an infinite
+horizon single agent discrete choice model in the setting of Rust (1987).
+This package offers to choose whether to estimate the model using the nested fixed
+point algorithm suggested by Rust (1987) or by employing the mathematical programming
+with equilibrium constraints based on Su and Judd (2012). It serves
 as a foundation for teaching and research in this particular model and can be used
 freely by everyone. For a full understanding of the mechanisms in this package it is
-advisable to first read the paper:
+advisable to first read the two papers:
 
-Rust, J.  (1987). `Optimal replacement of GMC bus engines: An empirical model of Harold
-Zurcher. <https://doi.org/10.2307/1911259>`_ *Econometrica, 55* (5), 999-1033.
+  Rust, J.  (1987). `Optimal replacement of GMC bus engines: An empirical model of Harold
+  Zurcher. <https://doi.org/10.2307/1911259>`_ *Econometrica, 55* (5), 999-1033.
+
+  Su, C. L., & Judd, K. L. (2012).  `Constrained optimization approaches to estimation of
+  structural models. <https://www.jstor.org/stable/23271445>`_ *Econometrica, 80* (5), 2213-2230.
 
 and the documentation provided by John Rust on his website:
 
   Rust, J. (2000). `Nested fixed point algorithm documentation manual.
   <https://editorialexpress.com/jrust/nfxp.pdf>`_ *Unpublished Manuscript.*
 
+as well as the comment by Iskakhov et al. (2016) on Su and Judd (2012):
+
+  Iskhakov, F., Lee, J., Rust, J., Schjerning, B., & Seo, K. (2016). `Comment on
+  “constrained optimization approaches to estimation of structural models”. <https://doi.org/10.3982/ECTA12605>`_
+  *Econometrica, 84* (1), 365-370.
 
 So far, there has been only one research project based on this code. Numerical
 experiments for a robust decision rule for Harold Zurcher can be found in this online
 `organisation. <https://github.com/robustzurcher>`_
 
-Using the code needs this `dependencies
-<https://github.com/OpenSourceEconomics/ruspy/blob/master/environment.yml>`_ After
-cloning the repository, you can install the ruspy package via pip locally. This can
-easily be done by
+ruspy can be installed via conda with:
 
 .. code-block:: bash
 
-      $ pip install -e ruspy
+      $ conda config --add channels conda-forge
+      $ conda install -c opensourceeconomics ruspy
 
 
 

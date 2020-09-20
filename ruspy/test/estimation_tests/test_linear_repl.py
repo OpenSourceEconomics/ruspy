@@ -38,7 +38,7 @@ def inputs():
             "maint_cost_func": "linear",
             "cost_scale": scale,
         },
-        "optimizer": {"algorithm": "scipy_L-BFGS-B"},
+        "optimizer": {"approach": "NFXP", "algorithm": "scipy_L-BFGS-B"},
     }
     df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
     result_trans, result_fixp = estimate(init_dict, df)
@@ -110,4 +110,4 @@ def test_ll_params_derivative(inputs, outputs):
 
 
 def test_success(inputs):
-    assert inputs["status"] == "success"
+    assert inputs["status"] == 1

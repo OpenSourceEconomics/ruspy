@@ -56,7 +56,7 @@ def test_create_trans_mat(inputs, outputs):
 
 def test_fixp(inputs, outputs):
     assert_array_almost_equal(
-        calc_fixp(outputs["trans_mat"], outputs["costs"], inputs["disc_fac"]),
+        calc_fixp(outputs["trans_mat"], outputs["costs"], inputs["disc_fac"])[0],
         outputs["fixp"],
     )
 

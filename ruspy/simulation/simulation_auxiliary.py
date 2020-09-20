@@ -54,6 +54,7 @@ def simulate_strategy(
     decisions = np.zeros((num_buses, num_periods), dtype=numba.b1)
     utilities = np.zeros((num_buses, num_periods), dtype=numba.float32)
     usage = np.zeros((num_buses, num_periods), dtype=numba.u1)
+    absorbing_state = 0
     for bus in range(num_buses):
         for period in range(num_periods):
             old_state = states[bus, period]
@@ -66,12 +67,16 @@ def simulate_strategy(
             decisions[bus, period] = decision
             utilities[bus, period] = utility
             new_state = intermediate_state + state_increase
+            if new_state > num_states:
+                new_state = num_states
+                state_increase = num_states - intermediate_state
             usage[bus, period] = state_increase
             if period < num_periods - 1:
                 states[bus, period + 1] = new_state
-            if new_state > num_states - 10:
-                raise ValueError("State space is too small.")
-    return states, decisions, utilities, usage
+            if new_state == num_states:
+                absorbing_state = 1
+
+    return states, decisions, utilities, usage, absorbing_state
 
 
 @numba.jit(nopython=True)

@@ -34,10 +34,9 @@ def estimate_transitions(df):
     number = np.arange(1, len(transition_count) + 1)
     index = pd.MultiIndex.from_product([name, number], names=["name", "number"])
     params = pd.DataFrame(
-        np.full(len(transition_count), 1 / len(transition_count)),
-        columns=["value"],
-        index=index,
+        transition_count / sum(transition_count), columns=["value"], index=index,
     )
+    params.loc[params["value"] == 0] = 1e-20
     constr = [{"loc": "trans_prob", "type": "probability"}]
 
     raw_result_trans = minimize(
@@ -55,27 +54,79 @@ def estimate_transitions(df):
     return result_transitions
 
 
-def loglike_trans(params, transition_count):
+def loglike_trans_individual(params, transition_count):
     """
-    Log-likelihood function of transition probability estimation.
+    Individual negative Log-likelihood function of transition probability estimation.
 
     Parameters
     ----------
-    p_raw : numpy.array
-        The raw values before reparametrization, on which there are no constraints
-        or bounds.
-    transition_count : numpy
+    p_raw : pandas.DataFrame
+        The untransformed transition probability guess.
+    transition_count : numpy.array
         The pooled count of state increases per period in the data.
 
     Returns
     -------
+    log_like_individual : numpy.array
+        The individual negative log-likelihood contributions of the transition probabilities
 
-    log_like : numpy.float
-        The negative log-likelihood value of the transition probabilities
     """
     p_raw = params.loc["trans_prob", "value"].to_numpy()
-    log_like = -np.sum(np.multiply(transition_count, np.log(p_raw)))
+    log_like_individual = -np.multiply(transition_count, np.log(p_raw))
+    return log_like_individual
+
+
+def loglike_trans(params, transition_count):
+    """
+    Sum the individual negative log-likelihood.
+
+    Parameters
+    ----------
+    params : pd.DataFrame
+        parameter guess of the transition probabilities.
+    transition_count : numpy.array
+        The pooled count of state increases per period in the data.
+
+    Returns
+    -------
+    log_like : float
+        the negative log likelihood given some transition probability guess.
+
+    """
+    log_like = loglike_trans_individual(params, transition_count).sum()
     return log_like
+
+
+def loglike_trans_individual_derivative(params, transition_count):
+    """
+    generates the jacobian of the individual log likelihood function of the
+    transition probabilities. This function is currently not used but is kept
+    for further development of the package when estimagic can handle constrains
+    with analytical derivatives.
+
+    Parameters
+    ----------
+    params : pd.DataFrame
+        parameter guess of the transition probabilities.
+    transition_count : numpy.array
+        The pooled count of state increases per period in the data.
+
+    Returns
+    -------
+    jacobian : np.array
+        a dim(params) x dim(params) matrix containing the Jacobian.
+
+    """
+    p_raw = params.loc["trans_prob", "value"].to_numpy()
+    diagonal = -np.multiply(transition_count, 1 / p_raw)
+    jacobian = diagonal * np.eye(len(p_raw))
+
+    return jacobian
+
+
+def loglike_trans_derivative(params, transition_count):
+    gradient = loglike_trans_individual_derivative(params, transition_count).sum(axis=1)
+    return gradient
 
 
 @numba.jit(nopython=True)

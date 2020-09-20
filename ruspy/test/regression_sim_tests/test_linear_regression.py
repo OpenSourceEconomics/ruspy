@@ -31,7 +31,7 @@ def test_regression_simulation(inputs):
 
     trans_mat = create_transition_matrix(num_states, probs)
     costs = calc_obs_costs(num_states, lin_cost, params, 0.001)
-    ev = calc_fixp(trans_mat, costs, disc_fac)
+    ev = calc_fixp(trans_mat, costs, disc_fac)[0]
 
     df = simulate(init_dict["simulation"], ev, costs, trans_mat)
 

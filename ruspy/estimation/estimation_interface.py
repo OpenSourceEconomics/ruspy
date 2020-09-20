@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 
 from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
+from ruspy.estimation.est_cost_params import derivative_loglike_cost_params_individual
+from ruspy.estimation.est_cost_params import loglike_cost_params
+from ruspy.estimation.est_cost_params import loglike_cost_params_individual
 from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import cubic_costs_dev
 from ruspy.model_code.cost_functions import hyperbolic_costs
@@ -21,7 +24,7 @@ def select_model_parameters(init_dict):
     Parameters
     ----------
     init_dict : dictionary
-        see ref:`init_dict`
+        see :ref:`init_dict`
 
     Returns
     -------
@@ -80,50 +83,93 @@ def select_cost_function(maint_cost_func_name):
     return maint_func, maint_func_dev, num_params
 
 
-def select_optimizer_options(init_dict, num_params_costs):
+def select_optimizer_options(init_dict, num_params_costs, num_states):
     """
-        Creating the options for the scipy optimizer.
+        Creating the options for estimagic, ipopt and nlopt.
 
     Parameters
     ----------
     init_dict : dictionary
-        see ref:`init_dict`
+        see :ref:`init_dict`
     num_params_costs : int
         Length of cost parameter vector.
+    num_states: int
+        The size of the state space.
 
     Returns
     -------
     optimizer_options : dictionary
-        A dictionary with keywords for the scipy optimizer.
+        A dictionary with keywords for the optimizer.
 
     """
 
-    optimizer_options = {} if "optimizer" not in init_dict else init_dict["optimizer"]
+    if "optimizer" not in init_dict:
+        raise ValueError("the dictionairy 'optimizer' must be in init_dict")
+
+    optimizer_options = init_dict["optimizer"].copy()
 
     if "algorithm" not in optimizer_options:
-        optimizer_options["algorithm"] = "scipy_L-BFGS-B"
-    else:
-        pass
+        raise ValueError("An 'algorithm' must be specified")
 
     if "params" not in optimizer_options:
-        optimizer_options["params"] = pd.DataFrame(
-            np.power(
-                np.full(num_params_costs, 10, dtype=float),
-                np.arange(1, -num_params_costs + 1, -1),
-            ),
-            columns=["value"],
-        )
-    else:
-        pass
+        if optimizer_options["approach"] == "NFXP":
+            optimizer_options["params"] = pd.DataFrame(
+                np.power(
+                    np.full(num_params_costs, 10, dtype=float),
+                    np.arange(1, -num_params_costs + 1, -1),
+                ),
+                columns=["value"],
+            )
+        else:
+            optimizer_options["params"] = np.concatenate(
+                (
+                    np.zeros(num_states),
+                    np.power(
+                        np.full(num_params_costs, 10, dtype=float),
+                        np.arange(1, -num_params_costs + 1, -1),
+                    ),
+                )
+            )
 
-    if "gradient" not in optimizer_options:
-        optimizer_options["gradient"] = derivative_loglike_cost_params
-    else:
-        pass
+    if "gradient" not in optimizer_options or optimizer_options["gradient"] == "Yes":
+        if optimizer_options["approach"] == "NFXP":
+            if optimizer_options["algorithm"] == "estimagic_bhhh":
+                optimizer_options[
+                    "gradient"
+                ] = derivative_loglike_cost_params_individual
+            else:
+                optimizer_options["gradient"] = derivative_loglike_cost_params
+        else:
+            optimizer_options["gradient"] = "Yes"
 
-    if "logging" not in optimizer_options:
+    if optimizer_options["gradient"] == "No":
+        if optimizer_options["approach"] == "NFXP":
+            optimizer_options["gradient"] = None
+        else:
+            pass
+
+    if optimizer_options["approach"] == "NFXP":
+        if optimizer_options["algorithm"] == "estimagic_bhhh":
+            optimizer_options["criterion"] = loglike_cost_params_individual
+        else:
+            optimizer_options["criterion"] = loglike_cost_params
+
+    if optimizer_options["approach"] == "NFXP" and "logging" not in optimizer_options:
         optimizer_options["logging"] = False
-    else:
-        pass
+
+    if (
+        optimizer_options["approach"] == "MPEC"
+        and optimizer_options["algorithm"] == "ipopt"
+    ):
+        if "set_lower_bounds" not in optimizer_options:
+            optimizer_options["set_lower_bounds"] = np.full(
+                num_params_costs + num_states, -np.Inf
+            )
+        if "set_upper_bounds" not in optimizer_options:
+            optimizer_options["set_upper_bounds"] = np.full(
+                num_params_costs + num_states, np.Inf
+            )
+
+    del optimizer_options["approach"]
 
     return optimizer_options

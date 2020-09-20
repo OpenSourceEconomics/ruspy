@@ -18,7 +18,8 @@ dependencies:
   - numba
   - mpmath
   - pip
-  - estimagic>=0.0.30
+  - estimagic=0.0.30
+  - nlopt
   - pip:
       - flake8
       - black

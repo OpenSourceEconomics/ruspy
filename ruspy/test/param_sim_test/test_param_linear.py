@@ -30,7 +30,7 @@ def inputs():
             "maint_cost_func": "linear",
             "cost_scale": scale,
         },
-        "optimizer": {"algorithm": "scipy_L-BFGS-B"},
+        "optimizer": {"approach": "NFXP", "algorithm": "scipy_L-BFGS-B"},
         "simulation": {
             "discount_factor": disc_fac,
             "seed": 123,
@@ -42,7 +42,7 @@ def inputs():
     out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_params_linear.txt")
     trans_mat = create_transition_matrix(num_states, out["trans_base"])
     costs = calc_obs_costs(num_states, lin_cost, out["params_base"], scale)
-    ev_known = calc_fixp(trans_mat, costs, disc_fac)
+    ev_known = calc_fixp(trans_mat, costs, disc_fac)[0]
     df = simulate(init_dict["simulation"], ev_known, costs, trans_mat)
     result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]
