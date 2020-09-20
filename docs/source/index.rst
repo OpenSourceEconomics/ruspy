@@ -27,9 +27,9 @@ as well as the comment by Iskakhov et al. (2016) on Su and Judd (2012):
   “constrained optimization approaches to estimation of structural models”. <https://doi.org/10.3982/ECTA12605>`_
   *Econometrica, 84* (1), 365-370.
 
-So far, there has been only one research project based on this code. Numerical
-experiments for a robust decision rule for Harold Zurcher can be found in this online
-`organisation. <https://github.com/robustzurcher>`_
+So far, there has been only one research project based on this code. The promotional
+material for this project can be found
+`here. <https://github.com/robustzurcher/promotion>`_
 
 ruspy can be installed via conda with:
 
@@ -50,3 +50,4 @@ ruspy can be installed via conda with:
    estimation
    simulation
    references
+   credits
