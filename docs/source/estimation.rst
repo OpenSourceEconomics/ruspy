@@ -424,11 +424,10 @@ Demonstration
 ****************
 
 In the promotion folder of the repository are two demonstration jupyter notebooks. The
-`replication <https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion
+`replication <https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion
 /replication/replication.ipynb>`_ notebook allows to easily experiment with the
 methods described here as well as the implied demand function. If you have have
 everything setup, then it should be easy to run it. For a more advanced set up have
 a look at the `replication of Iskhakov et al. (2016)
-<https://github.com/OpenSourceEconomics/ruspy/
-blob/replication_notebook_and_documentation/promotion/replication/
-replication_iskhakov_et_al_2016.ipynb>`_.
+<https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/replication
+/replication_iskhakov_et_al_2016.ipynb>`_.
