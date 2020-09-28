@@ -39,16 +39,18 @@ ruspy can be installed via conda with:
       $ conda install -c opensourceeconomics ruspy
 
 
-After going through the documentation you can familiarize yourself with the tools
-of ruspy and its interface by going through
-the `simulation <https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion
-/simulation/simulation_convergence.ipynb>`_ notebook and the `replication <https://
+After installing ruspy, you can familiarize yourself with ruspy's tools and
+interface by exploring multiple tutorial notebooks. Note that for a full
+comprehension, you should read the papers above or study at least the economics
+section of this documentation. We provide a `simulation <https://github
+.com/OpenSourceEconomics/ruspy/blob/master/promotion
+/simulation/simulation_convergence.ipynb>`_ and `replication <https://
 github.com/OpenSourceEconomics/ruspy/blob/master/promotion
-/replication/replication.ipynb>`_ notebook which we created for this purpose.
-The first one puts more focus on the simulation function of ruspy while the latter
-has a closer look at the estimation function. Lastly, for a combination of both
-you can further dive into the `replication of Iskhakov et al. (2016)
-<https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/replication
+/replication/replication.ipynb>`_. The first one puts more focus on the simulation
+function of ruspy while the latter has a closer look at the estimation function.
+Lastly, for a combination of both you can further dive into the `replication of
+Iskhakov et al. (2016) <https://github
+.com/OpenSourceEconomics/ruspy/blob/master/promotion/replication
 /replication_iskhakov_et_al_2016.ipynb>`_ notebook which allows to replicate this paper
 using ruspy.
 
