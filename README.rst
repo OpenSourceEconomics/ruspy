@@ -45,9 +45,9 @@ If you use ruspy for your research, do not forget to cite it with
 
 .. code-block:: bash
 
-    @Unpublished{ruspy-1.0,
+    @Unpublished{ruspy-1.1,
         Author = {Maximilian Blesch},
-        Title  = {robupy - An open-source package for the simulation and estimation of a prototypical infinite-horizon dynamic discrete choice model based on Rust (1987)},
-        Year   = {2019},
+        Title  = {ruspy - An open-source package for the simulation and estimation of a prototypical infinite-horizon dynamic discrete choice model based on Rust (1987)},
+        Year   = {2020},
         Url    = {https://github.com/OpenSourceEconomics/ruspy},
         }
