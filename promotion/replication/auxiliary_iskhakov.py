@@ -28,7 +28,9 @@ def process_result(approach, transition_result, cost_result, number_states):
 
 
 def check_simulated_data(
-    simulated_data, discount_factor, number_runs,
+    simulated_data,
+    discount_factor,
+    number_runs,
 ):
     """
     generates some key statistics of the simulated data set.

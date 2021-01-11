@@ -4,7 +4,13 @@ import numpy as np
 
 @numba.jit(nopython=True)
 def simulate_strategy(
-    num_periods, num_buses, costs, ev, trans_mat, disc_fac, seed,
+    num_periods,
+    num_buses,
+    costs,
+    ev,
+    trans_mat,
+    disc_fac,
+    seed,
 ):
     """
     Simulating the decision process.
@@ -60,7 +66,10 @@ def simulate_strategy(
             old_state = states[bus, period]
 
             intermediate_state, decision, utility = decide(
-                old_state, costs, disc_fac, ev,
+                old_state,
+                costs,
+                disc_fac,
+                ev,
             )
 
             state_increase = draw_increment(intermediate_state, trans_mat)
@@ -81,7 +90,10 @@ def simulate_strategy(
 
 @numba.jit(nopython=True)
 def decide(
-    old_state, costs, disc_fac, ev,
+    old_state,
+    costs,
+    disc_fac,
+    ev,
 ):
     """
     Choosing action in current state.

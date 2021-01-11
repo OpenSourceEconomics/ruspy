@@ -48,7 +48,13 @@ def simulate(init_dict, ev_known, costs, trans_mat):
             "need to have the same size."
         )
     states, decisions, utilities, usage, absorbing_state = simulate_strategy(
-        num_periods, num_buses, costs, ev_known, trans_mat, disc_fac, seed,
+        num_periods,
+        num_buses,
+        costs,
+        ev_known,
+        trans_mat,
+        disc_fac,
+        seed,
     )
     bus_ids = np.arange(num_buses) + 1
     periods = np.arange(num_periods)
