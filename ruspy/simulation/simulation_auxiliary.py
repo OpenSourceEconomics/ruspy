@@ -80,6 +80,64 @@ def simulate_strategy(
 
 
 @numba.jit(nopython=True)
+def simulate_strategy_reduced_data_utilities(
+    num_periods, num_buses, costs, ev, trans_mat, disc_fac, seed,
+):
+    """
+    Simulating the decision process with reduced data usage.
+
+    This function simulates the decision strategy, as long as the current period is
+    below the number of periods and the current highest state of a bus is in the
+    first half of the state space.
+
+    Parameters
+    ----------
+    num_periods : int
+         The number of periods to be simulated.
+    num_buses : int
+        The number of buses to be simulated.
+    costs : numpy.array
+        see :ref:`costs`
+    ev : numpy.array
+        see :ref:`ev`
+    trans_mat : numpy.array
+        see :ref:`trans_mat`
+    disc_fac : float
+        see :ref:`disc_fac`
+    seed : int
+        A positive integer setting the random seed for drawing random numbers.
+
+    Returns
+    -------
+    utilities : numpy.array
+        A two dimensional numpy array containing for each bus in each period the
+        utility as a float.
+    """
+    np.random.seed(seed)
+    num_states = ev.shape[0]
+    utilities = np.zeros((num_buses, num_periods), dtype=numba.float32)
+    new_state = 0
+    absorbing_state = 0
+    for bus in range(num_buses):
+        for period in range(num_periods):
+            old_state = new_state
+
+            intermediate_state, decision, utility = decide(
+                old_state, costs, disc_fac, ev,
+            )
+
+            state_increase = draw_increment(intermediate_state, trans_mat)
+
+            new_state = intermediate_state + state_increase
+            if new_state > num_states:
+                new_state = num_states
+            if new_state == num_states:
+                absorbing_state = 1
+
+    return utilities, absorbing_state
+
+
+@numba.jit(nopython=True)
 def decide(
     old_state, costs, disc_fac, ev,
 ):
