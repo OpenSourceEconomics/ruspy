@@ -62,6 +62,6 @@ def test_regression_simulation_reduced_data(inputs):
         init_dict["simulation"], ev, costs, trans_mat, reduced_data="utility"
     )
 
-    v_disc = disc_ut_loop(utilities, disc_fac,)
+    v_disc = disc_ut_loop(utilities, disc_fac)
 
     assert_allclose(v_disc / ev[0], 1, rtol=1e-02)
