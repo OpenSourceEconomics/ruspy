@@ -10,11 +10,9 @@ def discount_utility(df, disc_fac):
 
 
 @numba.jit(nopython=True)
-def disc_ut_loop(gridsize, num_buses, num_points, utilities, disc_fac):
-    v_disc = np.zeros(num_points, dtype=numba.float64)
-    for point in range(num_points):
-        v = 0.0
-        for i in range(point * gridsize):
-            v += (disc_fac ** i) * np.sum(utilities[:, i])
-        v_disc[point] = v / num_buses
-    return v_disc
+def disc_ut_loop(utilities, disc_fac):
+    num_buses, num_periods = utilities.shape
+    v = 0.0
+    for i in range(num_periods):
+        v += (disc_fac ** i) * np.sum(utilities[:, i])
+    return v / num_buses

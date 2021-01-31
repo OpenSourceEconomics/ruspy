@@ -71,13 +71,13 @@ def create_output_by_keyword(
         out, absorbing_state = create_standard_output(
             num_periods, num_buses, costs, ev_known, trans_mat, disc_fac, seed
         )
-    elif reduced_data == "utilities":
+    elif reduced_data == "utility":
         out, absorbing_state = simulate_strategy_reduced_data_utilities(
             num_periods, num_buses, costs, ev_known, trans_mat, disc_fac, seed,
         )
     else:
         raise ValueError(
-            f"utilities is the only valid keyword for reduced_data. You "
+            f"utility is the only valid keyword for reduced_data. You "
             f"provided {reduced_data} "
         )
 
