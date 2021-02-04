@@ -8,9 +8,9 @@ dependencies:
   - sphinx
   - pandas
   - statsmodels
-  - pytest
-  - pytest-xdist
-  - pytest-cov
+  - pytest=5.4.2
+  - pytest-xdist=1.32.0
+  - pytest-cov=2.8.1
   - scipy
   - matplotlib
   - numpydoc
