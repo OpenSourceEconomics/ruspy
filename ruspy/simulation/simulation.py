@@ -73,7 +73,13 @@ def create_output_by_keyword(
         )
     elif reduced_data == "utility":
         out, absorbing_state = simulate_strategy_reduced_data_utilities(
-            num_periods, num_buses, costs, ev_known, trans_mat, disc_fac, seed,
+            num_periods,
+            num_buses,
+            costs,
+            ev_known,
+            trans_mat,
+            disc_fac,
+            seed,
         )
     else:
         raise ValueError(

@@ -81,7 +81,13 @@ def simulate_strategy(
 
 @numba.jit(nopython=True)
 def simulate_strategy_reduced_data_utilities(
-    num_periods, num_buses, costs, ev, trans_mat, disc_fac, seed,
+    num_periods,
+    num_buses,
+    costs,
+    ev,
+    trans_mat,
+    disc_fac,
+    seed,
 ):
     """
     Simulating the decision process with reduced data usage.
@@ -123,7 +129,10 @@ def simulate_strategy_reduced_data_utilities(
             old_state = new_state
 
             intermediate_state, decision, utility = decide(
-                old_state, costs, disc_fac, ev,
+                old_state,
+                costs,
+                disc_fac,
+                ev,
             )
 
             state_increase = draw_increment(intermediate_state, trans_mat)
