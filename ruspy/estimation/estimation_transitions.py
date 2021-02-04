@@ -34,7 +34,9 @@ def estimate_transitions(df):
     number = np.arange(1, len(transition_count) + 1)
     index = pd.MultiIndex.from_product([name, number], names=["name", "number"])
     params = pd.DataFrame(
-        transition_count / sum(transition_count), columns=["value"], index=index,
+        transition_count / sum(transition_count),
+        columns=["value"],
+        index=index,
     )
     params.loc[params["value"] == 0] = 1e-20
     constr = [{"loc": "trans_prob", "type": "probability"}]

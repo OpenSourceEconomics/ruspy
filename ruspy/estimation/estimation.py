@@ -37,7 +37,8 @@ from ruspy.estimation.mpec import wrap_mpec_loglike
 
 
 def estimate(
-    init_dict, df,
+    init_dict,
+    df,
 ):
     """
     Estimation function of ruspy.
@@ -195,7 +196,10 @@ def estimate_nfxp(
 
     tic = time.perf_counter()
     min_result = minimize(
-        criterion, criterion_kwargs=kwargs, gradient_kwargs=kwargs, **optimizer_options,
+        criterion,
+        criterion_kwargs=kwargs,
+        gradient_kwargs=kwargs,
+        **optimizer_options,
     )
     toc = time.perf_counter()
     timing = toc - tic
@@ -309,7 +313,8 @@ def estimate_mpec_nlopt(
     )
     opt.set_min_objective(partial_loglike_mpec)
     opt.add_equality_mconstraint(
-        partial_constr_mpec, np.full(num_states, 1e-6),
+        partial_constr_mpec,
+        np.full(num_states, 1e-6),
     )
 
     # supply user choices
