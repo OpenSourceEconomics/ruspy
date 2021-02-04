@@ -9,7 +9,7 @@ dependencies:
   - pandas
   - statsmodels
   - pre-commit
-  - pytest=6.2.1
+  - pytest>=6.2.1
   - pytest-xdist
   - pytest-cov
   - scipy
