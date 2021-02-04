@@ -34,21 +34,3 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: df3e71e7-316d-4a04-b4d1-f76b90dfced7
-
-  pre-commit:
-
-    name: Run pre-commit.
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-
-      - name: Run pre-commit
-        run: |
-          pre-commit install -f --install-hooks
-          pre-commit run --all-files
