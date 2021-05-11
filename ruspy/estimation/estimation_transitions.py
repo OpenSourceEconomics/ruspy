@@ -44,15 +44,13 @@ def estimate_transitions(df):
     raw_result_trans = minimize(
         criterion=loglike_trans,
         params=params,
-        algorithm="scipy_L-BFGS-B",
+        algorithm="scipy_lbfgsb",
         constraints=constr,
         criterion_kwargs={"transition_count": transition_count},
         logging=False,
     )
-
-    result_transitions["x"] = raw_result_trans[1]["value"].to_numpy()
-    result_transitions["fun"] = raw_result_trans[0]["fitness"]
-
+    result_transitions["x"] = raw_result_trans["solution_params"]["value"].to_numpy()
+    result_transitions["fun"] = raw_result_trans["solution_criterion"]
     return result_transitions
 
 

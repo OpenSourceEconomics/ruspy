@@ -131,20 +131,23 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
                 )
             )
 
-    if "gradient" not in optimizer_options or optimizer_options["gradient"] == "Yes":
+    if (
+        "derivative" not in optimizer_options
+        or optimizer_options["derivative"] == "Yes"
+    ):
         if optimizer_options["approach"] == "NFXP":
             if optimizer_options["algorithm"] == "estimagic_bhhh":
                 optimizer_options[
-                    "gradient"
+                    "derivative"
                 ] = derivative_loglike_cost_params_individual
             else:
-                optimizer_options["gradient"] = derivative_loglike_cost_params
+                optimizer_options["derivative"] = derivative_loglike_cost_params
         else:
-            optimizer_options["gradient"] = "Yes"
+            optimizer_options["derivative"] = "Yes"
 
-    if optimizer_options["gradient"] == "No":
+    if optimizer_options["derivative"] == "No":
         if optimizer_options["approach"] == "NFXP":
-            optimizer_options["gradient"] = None
+            optimizer_options["derivative"] = None
         else:
             pass
 
