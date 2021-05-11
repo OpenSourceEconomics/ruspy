@@ -131,9 +131,9 @@ def simulate_strategy_reduced_data_utilities(
     np.random.seed(seed)
     num_states = ev.shape[0]
     utilities = np.zeros((num_buses, num_periods), dtype=numba.float32)
-    new_state = 0
     absorbing_state = 0
     for bus in range(num_buses):
+        new_state = 0
         for period in range(num_periods):
             old_state = new_state
 
