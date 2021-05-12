@@ -1,6 +1,8 @@
-from numpy.testing import assert_array_equal, assert_almost_equal
-import pytest
 import numpy as np
+import pytest
+from numpy.testing import assert_almost_equal
+from numpy.testing import assert_array_equal
+
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import lin_cost
@@ -8,6 +10,7 @@ from ruspy.model_code.fix_point_alg import calc_fixp
 from ruspy.simulation.simulation import simulate
 from ruspy.test.ranodm_init import random_init
 from ruspy.test.regression_sim_tests.regression_aux import discount_utility
+
 
 @pytest.fixture(scope="module")
 def inputs_sim(inputs):
@@ -32,9 +35,7 @@ def inputs_sim(inputs):
         costs,
         trans_mat,
     )
-    out["v_disc"] = discount_utility(
-        df, disc_fac
-    )
+    out["v_disc"] = discount_utility(df, disc_fac)
     return out
 
 
@@ -48,11 +49,7 @@ def test_regression_simulation_reduced_data_discounted_utility(inputs_sim):
         reduced_data="discounted utility",
     )
 
-    assert_almost_equal(
-        utility,
-        inputs_sim["v_disc"],
-        decimal=4
-    )
+    assert_almost_equal(utility, inputs_sim["v_disc"], decimal=4)
 
 
 def test_regression_simulation_reduced_data_utility(inputs_sim):

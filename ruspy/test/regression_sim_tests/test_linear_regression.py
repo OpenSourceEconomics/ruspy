@@ -52,6 +52,3 @@ def test_regression_simulation(inputs_sim):
     )
 
     assert_allclose(v_disc / inputs_sim["ev"][0], 1, rtol=1e-02)
-
-
-

@@ -1,7 +1,8 @@
 import numba
 import numpy as np
 
-from ruspy.simulation.simulation_model import decide, draw_increment
+from ruspy.simulation.simulation_model import decide
+from ruspy.simulation.simulation_model import draw_increment
 
 
 @numba.jit(nopython=True)
@@ -200,7 +201,7 @@ def simulate_strategy_reduced_data_disc_utility(
     """
     np.random.seed(seed)
     num_states = ev.shape[0]
-    disc_utility = 0.
+    disc_utility = 0.0
     absorbing_state = 0
     for bus in range(num_buses):
         new_state = 0
@@ -215,7 +216,7 @@ def simulate_strategy_reduced_data_disc_utility(
             )
 
             state_increase = draw_increment(intermediate_state, trans_mat)
-            disc_utility += disc_fac**period * utility
+            disc_utility += disc_fac ** period * utility
 
             new_state = intermediate_state + state_increase
             if new_state > num_states:
@@ -224,6 +225,7 @@ def simulate_strategy_reduced_data_disc_utility(
                 absorbing_state = 1
     disc_utility /= num_buses
     return disc_utility, absorbing_state
+
 
 # This was an old attempt to implement more shocks than the standard gumbel. Would do
 # this much different now!!!! Just keep it for further work!

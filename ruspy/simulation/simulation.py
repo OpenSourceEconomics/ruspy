@@ -11,7 +11,10 @@ import pandas as pd
 
 from ruspy.simulation.simulation_funtions import simulate_strategy
 from ruspy.simulation.simulation_funtions import (
-    simulate_strategy_reduced_data_utilities,simulate_strategy_reduced_data_disc_utility
+    simulate_strategy_reduced_data_disc_utility,
+)
+from ruspy.simulation.simulation_funtions import (
+    simulate_strategy_reduced_data_utilities,
 )
 
 
@@ -94,7 +97,7 @@ def create_output_by_keyword(
 
     else:
         raise ValueError(
-            f"\"utility\" or \"discounted utility\" are the only valid keyword for "
+            f'"utility" or "discounted utility" are the only valid keyword for '
             f"reduced_data. You "
             f"provided {reduced_data} "
         )
