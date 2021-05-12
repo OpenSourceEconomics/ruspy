@@ -9,9 +9,9 @@ import warnings
 import numpy as np
 import pandas as pd
 
-from ruspy.simulation.simulation_auxiliary import simulate_strategy
-from ruspy.simulation.simulation_auxiliary import (
-    simulate_strategy_reduced_data_utilities,
+from ruspy.simulation.simulation_funtions import simulate_strategy
+from ruspy.simulation.simulation_funtions import (
+    simulate_strategy_reduced_data_utilities,simulate_strategy_reduced_data_disc_utility
 )
 
 
@@ -81,9 +81,21 @@ def create_output_by_keyword(
             disc_fac,
             seed,
         )
+    elif reduced_data == "discounted utility":
+        out, absorbing_state = simulate_strategy_reduced_data_disc_utility(
+            num_periods,
+            num_buses,
+            costs,
+            ev_known,
+            trans_mat,
+            disc_fac,
+            seed,
+        )
+
     else:
         raise ValueError(
-            f"utility is the only valid keyword for reduced_data. You "
+            f"\"utility\" or \"discounted utility\" are the only valid keyword for "
+            f"reduced_data. You "
             f"provided {reduced_data} "
         )
 
