@@ -2,7 +2,7 @@
 exclude: ^\.
 repos:
 -   repo: https://github.com/asottile/reorder_python_imports
-    rev: v2.4.0
+    rev: v2.5.0
     hooks:
     -   id: reorder-python-imports
         files: '(\.pyi?|wscript)$'
@@ -21,7 +21,7 @@ repos:
         args: [--autofix, --no-sort-keys]
     -   id: trailing-whitespace
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.10.0
+    rev: v2.15.0
     hooks:
     -   id: pyupgrade
         args: [
@@ -34,7 +34,7 @@ repos:
         additional_dependencies: [black==19.3b0]
         files: '(\.md|\.rst)$'
 -   repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.5b1
     hooks:
     -   id: black
         files: '(\.pyi?|wscript)$'
@@ -44,8 +44,8 @@ repos:
     hooks:
         -   id: doc8
             args: [--max-line-length, "88"]
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.0
+-   repo: https://github.com/PyCQA/flake8
+    rev: 3.9.2
     hooks:
     -   id: flake8
         files: '(\.py|wscript)$'
