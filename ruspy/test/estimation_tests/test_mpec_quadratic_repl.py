@@ -30,7 +30,7 @@ def inputs():
         "optimizer": {
             "approach": "MPEC",
             "algorithm": "LD_SLSQP",
-            "gradient": "Yes",
+            "derivative": "Yes",
             "params": np.concatenate(
                 (np.full(num_states, 0.0), np.array([4.0]), np.ones(num_params - 1))
             ),

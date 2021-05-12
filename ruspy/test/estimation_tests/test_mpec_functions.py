@@ -37,7 +37,7 @@ def inputs():
     out["decision_matrix"] = np.vstack(((1 - endog), endog))
     out["disc_fac"] = 0.9999
     out["scale"] = 0.001
-    out["gradient"] = "Yes"
+    out["derivative"] = "Yes"
     out["params"] = np.ones(out["num_states"] + out["num_params"])
     return out
 
@@ -71,7 +71,7 @@ def test_mpec_likelihood(inputs, outputs):
             inputs["decision_matrix"],
             inputs["disc_fac"],
             inputs["scale"],
-            inputs["gradient"],
+            inputs["derivative"],
             inputs["params"],
             np.zeros(inputs["num_states"] + inputs["num_params"]),
         ),
@@ -106,7 +106,7 @@ def test_mpec_constraint(inputs, outputs):
             inputs["trans_matrix"],
             inputs["disc_fac"],
             inputs["scale"],
-            inputs["gradient"],
+            inputs["derivative"],
             np.zeros(inputs["num_states"]),
             inputs["params"],
             np.zeros(

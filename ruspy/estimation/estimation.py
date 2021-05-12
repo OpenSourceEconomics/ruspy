@@ -198,22 +198,22 @@ def estimate_nfxp(
     min_result = minimize(
         criterion,
         criterion_kwargs=kwargs,
-        gradient_kwargs=kwargs,
+        derivative_kwargs=kwargs,
         **optimizer_options,
     )
     toc = time.perf_counter()
     timing = toc - tic
 
-    result_cost_params["x"] = min_result[1]["value"].to_numpy()
-    result_cost_params["fun"] = min_result[0]["fitness"]
-    if min_result[0]["status"] == "success":
+    result_cost_params["x"] = min_result["solution_params"]["value"].to_numpy()
+    result_cost_params["fun"] = min_result["solution_criterion"]
+    if min_result["success"]:
         result_cost_params["status"] = 1
     else:
         result_cost_params["status"] = 0
-    result_cost_params["message"] = min_result[0]["message"]
-    result_cost_params["jac"] = min_result[0]["jacobian"]
-    result_cost_params["n_evaluations"] = min_result[0]["n_evaluations"]
-    result_cost_params["n_iterations"] = min_result[0]["n_iterations"]
+    result_cost_params["message"] = min_result["message"]
+    result_cost_params["jac"] = min_result["solution_derivative"]
+    result_cost_params["n_evaluations"] = min_result["n_criterion_evaluations"]
+    result_cost_params["n_iterations"] = min_result["n_iterations"]
     result_cost_params["n_contraction_steps"] = config.total_contr_count
     result_cost_params["n_newt_kant_steps"] = config.total_newt_kant_count
     result_cost_params["time"] = timing
@@ -278,7 +278,7 @@ def estimate_mpec_nlopt(
 
     """
 
-    gradient = optimizer_options.pop("gradient")
+    gradient = optimizer_options.pop("derivative")
 
     # Calculate partial functions needed for nlopt
     n_evaluations, partial_loglike_mpec = wrap_mpec_loglike(
@@ -424,7 +424,7 @@ def estimate_mpec_ipopt(
         )
 
     del optimizer_options["algorithm"]
-    gradient = optimizer_options.pop("gradient")
+    gradient = optimizer_options.pop("derivative")
     params = optimizer_options.pop("params")
     lower_bounds = optimizer_options.pop("set_lower_bounds")
     upper_bounds = optimizer_options.pop("set_upper_bounds")

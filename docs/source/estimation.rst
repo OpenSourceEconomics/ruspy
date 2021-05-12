@@ -95,8 +95,8 @@ is specific to the general approach.
 
 Optionally, irrespective of the approach chosen, one can specify the following:
 
-**gradient :** *(string)* (optional) Information on whether to use analytical or
-numerical gradients. Enter "Yes" for analytical and "No" or numerical gradients.
+**derivative :** *(string)* (optional) Information on whether to use analytical or
+numerical derivatives. Enter "Yes" for analytical and "No" or numerical derivatives.
 *Default is "Yes"*.
 
 As the optimization problem in the NFXP and MPEC are quite different, also in the
@@ -122,8 +122,8 @@ In general any argument that can be chosen in the estimagic function `minimize
 passed in as a key in the **optimizer** subdictionary. For example one could specify
 the key "logging" and specify the name of the logging database ("logging_nfxp.db").
 For performance reasons the logging in ruspy is switched off if not specified
-differently. Only the arguments criterion, criterion_kwargs, gradient and
-gradient_kwargs cannot be set by the user.
+differently. Only the arguments criterion, criterion_kwargs, derivative and
+derivative_kwargs cannot be set by the user.
 
 Additionally, the subdictionairy **alg_details** can be used to specify options
 for the fixed point algorithm. See :ref:`alg_details` for the possible keys
