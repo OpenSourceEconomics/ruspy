@@ -1,12 +1,8 @@
-######################
+###
 API
-######################
-This is the APi.
+###
 
-**********
-Estimation
-**********
-This is the APi.
+Here the API of ruspy is documented.
 
 
 .. autosummary::
