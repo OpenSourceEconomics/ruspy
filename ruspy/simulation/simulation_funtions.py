@@ -1,6 +1,9 @@
 import numba
 import numpy as np
 
+from ruspy.simulation.simulation_model import decide
+from ruspy.simulation.simulation_model import draw_increment
+
 
 @numba.jit(nopython=True)
 def simulate_strategy(
@@ -157,71 +160,71 @@ def simulate_strategy_reduced_data_utilities(
 
 
 @numba.jit(nopython=True)
-def decide(
-    old_state,
+def simulate_strategy_reduced_data_disc_utility(
+    num_periods,
+    num_buses,
     costs,
-    disc_fac,
     ev,
+    trans_mat,
+    disc_fac,
+    seed,
 ):
     """
-    Choosing action in current state.
+    Simulating the decision process with reduced data usage.
+
+    This function simulates the decision strategy, as long as the current period is
+    below the number of periods and the current highest state of a bus is in the
+    first half of the state space.
 
     Parameters
     ----------
-    old_state: int
-        Current state.
+    num_periods : int
+         The number of periods to be simulated.
+    num_buses : int
+        The number of buses to be simulated.
     costs : numpy.array
         see :ref:`costs`
-    disc_fac : float
-        see :ref:`disc_fac`
     ev : numpy.array
         see :ref:`ev`
-
-    Returns
-    -------
-    intermediate_state : int
-        State before transition.
-    decision : int
-        Decision of this period.
-    utility : float
-        Utility of this period.
-    """
-    unobs = np.random.gumbel(-np.euler_gamma, 1, size=2)
-
-    value_replace = -costs[0, 0] - costs[0, 1] + unobs[1] + disc_fac * ev[0]
-    value_maintain = -costs[old_state, 0] + unobs[0] + disc_fac * ev[old_state]
-    if value_maintain > value_replace:
-        decision = False
-        utility = -costs[old_state, 0] + unobs[0]
-        intermediate_state = old_state
-    else:
-        decision = True
-        utility = -costs[0, 0] - costs[0, 1] + unobs[1]
-        intermediate_state = 0
-    return intermediate_state, decision, utility
-
-
-@numba.jit(nopython=True)
-def draw_increment(state, trans_mat):
-    """
-    Drawing a random increase.
-
-    Parameters
-    ----------
-    state : int
-        Current state.
     trans_mat : numpy.array
         see :ref:`trans_mat`
+    disc_fac : float
+        see :ref:`disc_fac`
+    seed : int
+        A positive integer setting the random seed for drawing random numbers.
 
     Returns
     -------
-    increase : int
-        Number of state increase.
+    utilities : numpy.array
+        A two dimensional numpy array containing for each bus in each period the
+        utility as a float.
     """
-    max_state = np.max(np.nonzero(trans_mat[state, :])[0])
-    p = trans_mat[state, state : (max_state + 1)]  # noqa: E203
-    increase = np.argmax(np.random.multinomial(1, p))
-    return increase
+    np.random.seed(seed)
+    num_states = ev.shape[0]
+    disc_utility = 0.0
+    absorbing_state = 0
+    for _ in range(num_buses):
+        new_state = 0
+        for period in range(num_periods):
+            old_state = new_state
+
+            intermediate_state, decision, utility = decide(
+                old_state,
+                costs,
+                disc_fac,
+                ev,
+            )
+
+            state_increase = draw_increment(intermediate_state, trans_mat)
+            disc_utility += disc_fac ** period * utility
+
+            new_state = intermediate_state + state_increase
+            if new_state > num_states:
+                new_state = num_states
+            if new_state == num_states:
+                absorbing_state = 1
+    disc_utility /= num_buses
+    return disc_utility, absorbing_state
 
 
 # This was an old attempt to implement more shocks than the standard gumbel. Would do

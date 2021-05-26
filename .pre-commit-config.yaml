@@ -7,7 +7,7 @@ repos:
     -   id: reorder-python-imports
         files: '(\.pyi?|wscript)$'
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
     -   id: check-yaml
         exclude: 'meta\.yaml'
@@ -21,7 +21,7 @@ repos:
         args: [--autofix, --no-sort-keys]
     -   id: trailing-whitespace
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.15.0
+    rev: v2.18.2
     hooks:
     -   id: pyupgrade
         args: [
