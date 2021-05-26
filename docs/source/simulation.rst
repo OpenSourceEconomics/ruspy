@@ -44,7 +44,7 @@ The simulation process
 
 After all inputs are read in, the actual simulation starts. This is coordinated by:
 
-.. currentmodule:: ruspy.simulation.simulation_auxiliary
+.. currentmodule:: ruspy.simulation.simulation_functions
 
 .. autosummary::
     :toctree: _generated/
@@ -54,7 +54,7 @@ After all inputs are read in, the actual simulation starts. This is coordinated 
 The function calls in each period for each bus the following function, to choose the
 optimal decision:
 
-.. currentmodule:: ruspy.simulation.simulation_auxiliary
+.. currentmodule:: ruspy.simulation.simulation_model
 
 .. autosummary::
     :toctree: _generated/
@@ -63,7 +63,7 @@ optimal decision:
 
 Then the mileage state increase is drawn:
 
-.. currentmodule:: ruspy.simulation.simulation_auxiliary
+.. currentmodule:: ruspy.simulation.simulation_model
 
 .. autosummary::
     :toctree: _generated/

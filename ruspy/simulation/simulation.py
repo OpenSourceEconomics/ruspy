@@ -9,11 +9,11 @@ import warnings
 import numpy as np
 import pandas as pd
 
-from ruspy.simulation.simulation_funtions import simulate_strategy
-from ruspy.simulation.simulation_funtions import (
+from ruspy.simulation.simulation_functions import simulate_strategy
+from ruspy.simulation.simulation_functions import (
     simulate_strategy_reduced_data_disc_utility,
 )
-from ruspy.simulation.simulation_funtions import (
+from ruspy.simulation.simulation_functions import (
     simulate_strategy_reduced_data_utilities,
 )
 
