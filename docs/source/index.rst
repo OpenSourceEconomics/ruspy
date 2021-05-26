@@ -66,3 +66,4 @@ using ruspy.
    simulation
    references
    credits
+   _generated/
