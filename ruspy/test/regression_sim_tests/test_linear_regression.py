@@ -8,7 +8,6 @@ calculated by the NFXP.
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
-from numpy.testing import assert_array_equal
 
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import calc_obs_costs

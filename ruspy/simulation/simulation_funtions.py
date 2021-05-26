@@ -203,7 +203,7 @@ def simulate_strategy_reduced_data_disc_utility(
     num_states = ev.shape[0]
     disc_utility = 0.0
     absorbing_state = 0
-    for bus in range(num_buses):
+    for _ in range(num_buses):
         new_state = 0
         for period in range(num_periods):
             old_state = new_state
