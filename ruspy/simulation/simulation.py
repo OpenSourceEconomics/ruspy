@@ -3,6 +3,7 @@ This module contains the main function to manage the simulation process. To simu
 a decision process in the model of John Rust's 1987 paper, it is sufficient to import
 the function from this module and feed it with a init dictionary containing the
 relevant variables.
+TEST
 """
 import warnings
 
