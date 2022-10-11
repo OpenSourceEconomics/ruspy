@@ -14,6 +14,7 @@ dependencies:
   - numpydoc
   - sphinx-autobuild
   - sphinx-autoapi
+  - numba
 
   - pip:
     - sphinx_rtd_theme
