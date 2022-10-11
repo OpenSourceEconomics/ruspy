@@ -8,13 +8,10 @@ dependencies:
   - python=3.9
   - pip
   - sphinx
-  - numpydoc
-
 
   - ipython
   - nbsphinx
   - numpydoc
-  - sphinx
   - sphinx-autobuild
   - sphinx-autoapi
 
