@@ -102,8 +102,8 @@ def cubic_costs(num_states, params, scale):
     states = np.arange(num_states)
     costs = (
         params[0] * scale * states
-        + params[1] * scale * (states ** 2)
-        + params[2] * scale * (states ** 3)
+        + params[1] * scale * (states**2)
+        + params[2] * scale * (states**3)
     )
     return costs
 
@@ -127,7 +127,7 @@ def cubic_costs_dev(num_states, scale):
 
     """
     states = np.arange(num_states)
-    dev = np.array([states * scale, scale * (states ** 2), scale * (states ** 3)]).T
+    dev = np.array([states * scale, scale * (states**2), scale * (states**3)]).T
     return dev
 
 
@@ -153,7 +153,7 @@ def quadratic_costs(num_states, params, scale):
 
     """
     states = np.arange(num_states)
-    costs = params[0] * scale * states + params[1] * scale * (states ** 2)
+    costs = params[0] * scale * states + params[1] * scale * (states**2)
     return costs
 
 
@@ -177,7 +177,7 @@ def quadratic_costs_dev(num_states, scale):
 
     """
     states = np.arange(num_states)
-    dev = np.array([scale * states, scale * (states ** 2)]).T
+    dev = np.array([scale * states, scale * (states**2)]).T
     return dev
 
 
