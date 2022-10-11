@@ -15,6 +15,10 @@ dependencies:
   - sphinx-autobuild
   - sphinx-autoapi
   - numba
+  - numpy
+  - nlopt
+  - pytest
+  - estimagic
 
   - pip:
     - sphinx_rtd_theme
