@@ -7,16 +7,14 @@ dependencies:
   - numpy
   - pandas
   - pre-commit
-  - pytest>=6.2.1
+  - pytest
   - pytest-xdist
   - pytest-cov
   - scipy
-  - numpydoc
   - jupyter
   - numba
   - pip
   - estimagic
   - black
   - flake8
-  - pdbpp
   - nlopt
