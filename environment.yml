@@ -5,16 +5,22 @@ channels:
 dependencies:
   - python=3.9
   - numpy
+  - sphinx
   - pandas
   - pre-commit
   - pytest
   - pytest-xdist
   - pytest-cov
   - scipy
+  - numpydoc
   - jupyter
   - numba
   - pip
   - estimagic
   - black
   - flake8
+  - pdbpp
   - nlopt
+  - pip:
+      - jupyter_contrib_nbextensions
+      - sphinx_rtd_theme
