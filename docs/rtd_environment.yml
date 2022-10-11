@@ -1,0 +1,22 @@
+name: rtd_ruspy
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - python=3.9
+  - pip
+  - sphinx
+  - numpydoc
+
+
+  - ipython
+  - nbsphinx
+  - numpydoc
+  - sphinx
+  - sphinx-autobuild
+  - sphinx-autoapi
+
+  - pip:
+    - sphinx_rtd_theme
