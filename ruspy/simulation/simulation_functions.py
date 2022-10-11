@@ -216,7 +216,7 @@ def simulate_strategy_reduced_data_disc_utility(
             )
 
             state_increase = draw_increment(intermediate_state, trans_mat)
-            disc_utility += disc_fac ** period * utility
+            disc_utility += disc_fac**period * utility
 
             new_state = intermediate_state + state_increase
             if new_state > num_states:

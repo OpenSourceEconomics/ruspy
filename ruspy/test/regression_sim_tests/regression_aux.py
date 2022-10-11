@@ -14,5 +14,5 @@ def disc_ut_loop(utilities, disc_fac):
     num_buses, num_periods = utilities.shape
     v = 0.0
     for i in range(num_periods):
-        v += (disc_fac ** i) * np.sum(utilities[:, i])
+        v += (disc_fac**i) * np.sum(utilities[:, i])
     return v / num_buses
