@@ -8,8 +8,8 @@ import yaml
 def random_init(constr=None):
     """
     The module provides a random dictionary generating process for test purposes.
+
     """
-    # Check for pre specified constraints
     if constr is not None:
         pass
     else:
@@ -69,7 +69,8 @@ def random_init(constr=None):
 
 def print_dict(init_dict, file_name="test"):
     """
-    This function prints the initialization dict to a *.yml file.
+    This function prints the initialization dict to a yaml file.
+
     """
     ordered_dict = collections.OrderedDict()
     order = ["simulation", "estimation"]

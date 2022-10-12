@@ -8,7 +8,7 @@ DESCRIPTION = (
     " infinite-horizon dynamic discrete choice model based on Rust (1987)."
 )
 URL = ""
-EMAIL = "s6mables@uni-bonn.de"
+EMAIL = "maximilian.blesch@hu-berlin.de"
 AUTHOR = "Maximilian Blesch"
 
 

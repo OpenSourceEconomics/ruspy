@@ -1,0 +1,24 @@
+name: rtd_ruspy
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - python=3.8
+  - pip
+  - sphinx
+
+  - ipython
+  - nbsphinx
+  - numpydoc
+  - sphinx-autobuild
+  - sphinx-autoapi
+  - numba
+  - numpy
+  - nlopt
+  - pytest
+  - estimagic
+
+  - pip:
+    - sphinx_rtd_theme

@@ -427,7 +427,7 @@ def wrap_nlopt_likelihood(function, args):
 def wrap_nlopt_constraint(function, args):
     def function_wrapper(mpec_params):
         result = function(
-            result=np.array([]), mpec_params=mpec_params, *args, grad=np.array([])
+            *args, result=np.array([]), mpec_params=mpec_params, grad=np.array([])
         )
         return result
 

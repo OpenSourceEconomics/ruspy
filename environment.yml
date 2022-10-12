@@ -3,25 +3,21 @@ channels:
   - opensourceeconomics
   - conda-forge
 dependencies:
-  - python>=3.6
+  - python=3.9
   - numpy
-  - sphinx
   - pandas
-  - statsmodels
   - pre-commit
-  - pytest>=6.2.1
+  - pytest
   - pytest-xdist
   - pytest-cov
   - scipy
-  - matplotlib
-  - numpydoc
   - jupyter
   - numba
   - pip
   - estimagic
+  - black
+  - flake8
+  - pdbpp
   - nlopt
   - pip:
-      - flake8
-      - black
       - jupyter_contrib_nbextensions
-      - sphinx_rtd_theme
