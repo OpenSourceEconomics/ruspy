@@ -27,11 +27,11 @@ Furthermore the DataFrame has to include the following information as columns:
 +----------+-----------------------------------------------------------------------+
 | Variable | Description                                                           |
 +==========+=======================================================================+
-| state    | Discretized mileage state of the bus                                  |
+| state    | Discretized mileage state of the bus.                                 |
 +----------+-----------------------------------------------------------------------+
-| decision | Containing 0 for decision of maintenance and 1 for replacement        |
+| decision | Containing 0 for decision of maintenance and 1 for replacement.       |
 +----------+-----------------------------------------------------------------------+
-| usage    | Last month mileage usage as discretized state increase                |
+| usage    | Last month mileage usage as discretized state increase.               |
 +----------+-----------------------------------------------------------------------+
 
 If you want to replicate Rust (1987) you can download the raw data from John Rust`s
