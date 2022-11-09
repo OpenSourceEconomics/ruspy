@@ -78,7 +78,6 @@ def estimate(
     state_mat = create_state_matrix(states, num_states)
 
     optimizer_options = select_optimizer_options(init_dict, num_params, num_states)
-    breakpoint()
 
     if "approach" in init_dict["optimizer"]:
         approach = init_dict["optimizer"]["approach"]

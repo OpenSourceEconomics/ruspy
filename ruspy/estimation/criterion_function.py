@@ -96,21 +96,6 @@ def get_criterion_function(
 
         alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
 
-        # optimizer_options["criterion"] = loglike_cost_params
-        # optimizer_options["criterion_dev"] = derivative_loglike_cost_params
-        #
-        # criterion_temp = optimizer_options.pop("criterion")  # removes and returns an element from a dictionary having the given key.
-        # n_evaluations, criterion = wrap_nfxp_criterion(criterion_temp)
-        #
-        # criterion_dev_temp = optimizer_options.pop("criterion_dev")
-        # n_evaluations, criterion_dev = wrap_nfxp_criterion(criterion_dev_temp)
-
-        # kann man auch einfacher schreiben:
-        # criterion_temp = loglike_cost_params  # removes and returns an element from a dictionary having the given key.
-        # n_evaluations, criterion_func = wrap_nfxp_criterion(criterion_temp)
-        # criterion_dev_temp = derivative_loglike_cost_params
-        # n_evaluations, criterion_dev = wrap_nfxp_criterion(criterion_dev_temp)
-
         criterion_func = loglike_cost_params
         criterion_dev = derivative_loglike_cost_params
 
