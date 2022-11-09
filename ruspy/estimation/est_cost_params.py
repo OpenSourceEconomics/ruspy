@@ -180,7 +180,7 @@ def derivative_loglike_cost_params_individual(
 
 
     """
-    # das brauchen wir wieder nicht
+
     # params = params["value"].to_numpy()
     dev = np.zeros((decision_mat.shape[1], len(params)))
     obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
