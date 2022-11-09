@@ -108,6 +108,11 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
 
     optimizer_options = init_dict["optimizer"].copy()
 
+    # warum wird nicht abgefragt, ob approach in optimizer_options ist?
+    # wird schon in estimation.py gemacht
+    # if "approach" not in optimizer_options:
+    #     raise ValueError("An 'approach' must be specified")
+
     if "algorithm" not in optimizer_options:
         raise ValueError("An 'algorithm' must be specified")
 
@@ -120,6 +125,7 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
                 ),
                 columns=["value"],
             )
+
         else:
             optimizer_options["params"] = np.concatenate(
                 (
@@ -152,7 +158,7 @@ def select_optimizer_options(init_dict, num_params_costs, num_states):
             pass
 
     if optimizer_options["approach"] == "NFXP":
-        if optimizer_options["algorithm"] == "estimagic_bhhh":
+        if optimizer_options["algorithm"] == "estimagic_bhhh":  # was soll das sein??
             optimizer_options["criterion"] = loglike_cost_params_individual
         else:
             optimizer_options["criterion"] = loglike_cost_params

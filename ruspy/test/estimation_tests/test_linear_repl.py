@@ -40,6 +40,7 @@ def inputs():
         },
         "optimizer": {"approach": "NFXP", "algorithm": "scipy_lbfgsb"},
     }
+
     df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
     result_trans, result_fixp = estimate(init_dict, df)
     out["trans_est"] = result_trans["x"]
@@ -63,6 +64,7 @@ def outputs():
     out["transition_count"] = np.loadtxt(TEST_FOLDER + "transition_count.txt")
     out["trans_ll"] = 3140.570557
     out["cost_ll"] = 163.584
+
     return out
 
 

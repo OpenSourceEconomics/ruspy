@@ -38,7 +38,7 @@ def loglike_cost_params_individual(
 
     Parameters
     ----------
-    params : pandas.DataFrame
+    params : numpy.array
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -61,7 +61,8 @@ def loglike_cost_params_individual(
 
 
     """
-    params = params["value"].to_numpy()
+
+    # params = params["value"].to_numpy()
     costs = calc_obs_costs(num_states, maint_func, params, scale)
 
     ev, contr_step_count, newt_kant_step_count = get_ev(
@@ -93,7 +94,7 @@ def loglike_cost_params(
 
     Parameters
     ----------
-    params : pandas.DataFrame
+    params : numpy.array
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -155,7 +156,7 @@ def derivative_loglike_cost_params_individual(
 
     Parameters
     ----------
-    params : pandas.DataFrame
+    params : numpy.array
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -179,7 +180,8 @@ def derivative_loglike_cost_params_individual(
 
 
     """
-    params = params["value"].to_numpy()
+    # das brauchen wir wieder nicht
+    # params = params["value"].to_numpy()
     dev = np.zeros((decision_mat.shape[1], len(params)))
     obs_costs = calc_obs_costs(num_states, maint_func, params, scale)
 

@@ -22,6 +22,7 @@ ruspy.rst
 modules.rst
 _generated
 *.db
+*.DS_Store
 results_ipopt.txt
 get_iskhakov_results
 
