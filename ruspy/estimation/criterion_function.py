@@ -52,7 +52,8 @@ def get_criterion_function(
     ) = select_model_parameters(init_dict)
 
     decision_mat = np.vstack(((1 - endog), endog))
-    trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
+
+    trans_mat = create_transition_matrix(num_states, transition_results["x"])
     state_mat = create_state_matrix(states, num_states)
 
     alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]

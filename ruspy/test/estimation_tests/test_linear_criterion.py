@@ -47,29 +47,41 @@ def inputs():
 def outputs():
     out = {}
     out["cost_ll_linear"] = 163.584
+    out["cost_ll_quad"] = 163.402
     out["cost_ll_cubic"] = 164.632939  # 162.885
+    out["cost_ll_hyper"] = 165.11428  # 165.423
+    out["cost_ll_sqrt"] = 163.390  # 163.395.
 
     return out
 
 
-TEST_SPECIFICATIONS = [("linear", 1e-3, 2), ("cubic", 1e-8, 4)]
+TEST_SPECIFICATIONS = [
+    ("linear", "linear", 1e-3, 2),
+    ("quadratic", "quad", 1e-5, 3),
+    ("cubic", "cubic", 1e-8, 4),
+    ("hyperbolic", "hyper", 1e-1, 2),
+    ("square_root", "sqrt", 0.01, 2),
+]
 
 
 @pytest.mark.parametrize("specification", TEST_SPECIFICATIONS)
 def test_criterion_function(inputs, outputs, specification):
-    cost_func_name, scale, num_params = specification
-
+    cost_func_name, cost_func_name_short, scale, num_params = specification
     df = inputs["input data"]
-    init_dict = inputs["init_dict"]
 
+    init_dict = inputs["init_dict"]
     init_dict["model_specifications"]["maint_cost_func"] = cost_func_name
     init_dict["model_specifications"]["cost_scale"] = scale
 
-    criterion_func, criterion_dev = get_criterion_function(init_dict, df)
+    criterion_func, criterion_dev, transition_results = get_criterion_function(
+        init_dict, df
+    )
 
     assert_array_almost_equal(
-        criterion_func(np.loadtxt(TEST_FOLDER + f"repl_params_{cost_func_name}.txt")),
-        outputs["cost_ll_" + cost_func_name],
+        criterion_func(
+            np.loadtxt(TEST_FOLDER + f"repl_params_{cost_func_name_short}.txt")
+        ),
+        outputs["cost_ll_" + cost_func_name_short],
         decimal=3,
     )
 

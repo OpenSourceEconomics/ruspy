@@ -116,7 +116,7 @@ def create_transition_matrix(num_states, trans_prob):
     ----------
     num_states : int
         The size of the state space.
-    trans_prob : numpy.array
+    trans_prob : numpy.ndarray
         The probabilities of an state increase.
 
     Returns
