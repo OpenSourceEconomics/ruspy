@@ -26,13 +26,10 @@ def inputs():
     out = {}
     disc_fac = 0.9999
     num_states = 90
-    scale = 1e-3
     init_dict = {
         "model_specifications": {
             "discount_factor": disc_fac,
             "number_states": num_states,
-            "maint_cost_func": "linear",
-            "cost_scale": scale,
         },
         "method": "NFXP",
         "alg_details": {},
@@ -40,9 +37,8 @@ def inputs():
 
     df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
 
-    criterion_func, criterion_dev = get_criterion_function(init_dict, df)
-    out["criterion_function"] = criterion_func
-    out["criterion_derivative"] = criterion_dev
+    out["input data"] = df
+    out["init_dict"] = init_dict
     return out
 
 
@@ -50,28 +46,41 @@ def inputs():
 @pytest.fixture(scope="module")
 def outputs():
     out = {}
-    out["params_base"] = np.loadtxt(TEST_FOLDER + "repl_params_linear.txt")
-    out["cost_ll"] = 163.584
+    out["cost_ll_linear"] = 163.584
+    out["cost_ll_cubic"] = 164.632939  # 162.885
 
     return out
 
 
-def test_criterion_function(inputs, outputs):
-    criterion_function = inputs["criterion_function"]
-    true_params = outputs["params_base"]
+TEST_SPECIFICATIONS = [("linear", 1e-3, 2), ("cubic", 1e-8, 4)]
+
+
+@pytest.mark.parametrize("specification", TEST_SPECIFICATIONS)
+def test_criterion_function(inputs, outputs, specification):
+    cost_func_name, scale, num_params = specification
+
+    df = inputs["input data"]
+    init_dict = inputs["init_dict"]
+
+    init_dict["model_specifications"]["maint_cost_func"] = cost_func_name
+    init_dict["model_specifications"]["cost_scale"] = scale
+
+    criterion_func, criterion_dev = get_criterion_function(init_dict, df)
 
     assert_array_almost_equal(
-        criterion_function(true_params),
-        outputs["cost_ll"],
+        criterion_func(np.loadtxt(TEST_FOLDER + f"repl_params_{cost_func_name}.txt")),
+        outputs["cost_ll_" + cost_func_name],
         decimal=3,
     )
 
 
-def test_criterion_derivative(inputs, outputs):
-    criterion_derivative = inputs["criterion_derivative"]
-    true_params = outputs["params_base"]
-    assert_array_almost_equal(
-        criterion_derivative(true_params),
-        np.array([0, 0]),
-        decimal=2,
-    )
+#
+# @pytest.mark.parametrize("specification", TEST_SPECIFICATIONS)
+# def test_criterion_derivative(inputs, outputs, specification):
+#     criterion_derivative = inputs["criterion_derivative"]
+#     true_params = outputs["params_base"]
+#     assert_array_almost_equal(
+#         criterion_derivative(true_params),
+#         np.array([0, 0]),
+#         decimal=2,
+#     )
