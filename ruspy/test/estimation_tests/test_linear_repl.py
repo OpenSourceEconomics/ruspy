@@ -48,6 +48,8 @@ def inputs():
         derivative=criterion_dev,
     )
     out["params_est"] = result_fixp.params
+    out["cost_ll"] = result_fixp.criterion
+    out["success"] = result_fixp.success
 
     return out
 
@@ -75,4 +77,4 @@ def test_cost_ll(inputs, outputs):
 
 
 def test_success(inputs):
-    assert inputs["status"] == 1
+    assert inputs["success"]
