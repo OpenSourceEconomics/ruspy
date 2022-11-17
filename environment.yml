@@ -1,6 +1,6 @@
 name: ruspy
 channels:
-  - opensourceeconomics
+  - defaults
   - conda-forge
 dependencies:
   - python=3.9

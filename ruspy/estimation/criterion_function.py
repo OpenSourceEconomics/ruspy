@@ -37,6 +37,7 @@ def get_criterion_function(
     criterion_dev :
         see :ref:`criterion_dev`
     """
+
     transition_results = estimate_transitions(df)
     endog = df.loc[(slice(None), slice(1, None)), "decision"].to_numpy(int)
     states = df.loc[(slice(None), slice(1, None)), "state"].to_numpy(int)
@@ -93,7 +94,7 @@ def get_criterion_function(
             f"{method} is not implemented. Only MPEC or NFXP are valid choices"
         )
 
-    return criterion_function, criterion_derivative
+    return criterion_function, criterion_derivative, transition_results
 
 
 def get_criterion_function_nfxp(
