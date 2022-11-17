@@ -31,18 +31,11 @@ def inputs():
     }
 
     df = pd.read_pickle(TEST_FOLDER + "group_4.pkl")
-    (
-        criterion_func,
-        criterion_kwargs,
-        criterion_dev,
-        criterion_dev_kwargs,
-    ) = get_criterion_function(init_dict, df)
+
+    criterion_func, criterion_dev = get_criterion_function(init_dict, df)
 
     out["criterion_function"] = criterion_func
     out["criterion_derivative"] = criterion_dev
-    out["criterion_kwargs"] = criterion_kwargs
-    out["criterion_derivative_kwargs"] = criterion_dev_kwargs
-
     return out
 
 
@@ -56,28 +49,21 @@ def outputs():
 
 def test_criterion_function(inputs, outputs):
     criterion_function = inputs["criterion_function"]
-    criterion_kwargs = inputs["criterion_kwargs"]
-    # true_params = np.loadtxt(TEST_FOLDER + "repl_params_linear.txt")
     true_params = outputs["params_base"]
 
     assert_array_almost_equal(
-        criterion_function(true_params, **criterion_kwargs),
+        criterion_function(true_params),
         outputs["cost_ll"],
-        decimal=2,
+        decimal=3,
     )
-
-
-# here we test the derivative of the criterion function
-# at the optimum , the derivative should be equal to zero
 
 
 def test_criterion_derivative(inputs, outputs):
     criterion_derivative = inputs["criterion_derivative"]
-    criterion_derivative_kwargs = inputs["criterion_derivative_kwargs"]
     true_params = outputs["params_base"]
 
     assert_array_almost_equal(
-        criterion_derivative(true_params, **criterion_derivative_kwargs),
+        criterion_derivative(true_params),
         np.array([0, 0, 0]),
-        decimal=2,
+        decimal=3,
     )

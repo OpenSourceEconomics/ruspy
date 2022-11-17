@@ -1,8 +1,6 @@
 """
 This module contains all the key functions used to estimate the model using MPEC.
 """
-from functools import partial
-
 import numpy as np
 from scipy.optimize._numdiff import approx_derivative
 
@@ -10,19 +8,96 @@ from ruspy.estimation.est_cost_params import like_hood_data
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 
+#
+# def mpec_loglike_cost_params(
+#     maint_func,
+#     maint_func_dev,
+#     num_states,
+#     num_params,
+#     state_mat,
+#     decision_mat,
+#     disc_fac,
+#     scale,
+#     gradient,
+#     mpec_params,
+#     grad,
+# ):
+#     """
+#     Calculate the negative partial log likelihood for MPEC depending on cost parameters
+#     as well as the discretized expected values.
+#
+#     Parameters
+#     ----------
+#     maint_func: func
+#         see :ref:`maint_func`
+#     maint_func_dev: func
+#         see :ref:`maint_func`
+#     num_states : int
+#         The size of the state space.
+#     num_params : int
+#         Length of cost parameter vector.
+#     state_mat : numpy.array
+#         see :ref:`state_mat`
+#     decision_mat : numpy.array
+#         see :ref:`decision_mat`
+#     disc_fac : numpy.float
+#         see :ref:`disc_fac`
+#     scale : numpy.float
+#         see :ref:`scale`
+#     gradient : str
+#         Indicates whether analytical or numerical gradient should be used.
+#     mpec_params : numpy.array
+#         see :ref:`mpec_params`
+#     grad : numpy.array, optional
+#         The gradient of the function. The default is np.array([]).
+#
+#     Returns
+#     -------
+#     log_like: float
+#         Contains the negative partial log likelihood for the given parameters.
+#
+#     """
+#     if grad.size > 0:
+#         if gradient == "No":
+#             # numerical gradient
+#             partial_loglike_mpec = partial(
+#                 mpec_loglike_cost_params,
+#                 maint_func,
+#                 maint_func_dev,
+#                 num_states,
+#                 num_params,
+#                 state_mat,
+#                 decision_mat,
+#                 disc_fac,
+#                 scale,
+#                 gradient,
+#                 grad=np.array([]),
+#             )
+#             grad[:] = approx_derivative(
+#                 partial_loglike_mpec, mpec_params, method="2-point"
+#             )
+#         else:
+#             # analytical gradient
+#             grad[:] = mpec_loglike_cost_params_derivative(
+#                 maint_func,
+#                 maint_func_dev,
+#                 num_states,
+#                 num_params,
+#                 disc_fac,
+#                 scale,
+#                 decision_mat,
+#                 state_mat,
+#                 mpec_params,
+#             )
+#
+#     costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
+#     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
+#     log_like = like_hood_data(np.log(p_choice), decision_mat, state_mat)
+#     return float(log_like)
+
 
 def mpec_loglike_cost_params(
-    maint_func,
-    maint_func_dev,
-    num_states,
-    num_params,
-    state_mat,
-    decision_mat,
-    disc_fac,
-    scale,
-    gradient,
-    mpec_params,
-    grad,
+    maint_func, num_states, state_mat, decision_mat, disc_fac, scale, mpec_params
 ):
     """
     Calculate the negative partial log likelihood for MPEC depending on cost parameters
@@ -32,12 +107,8 @@ def mpec_loglike_cost_params(
     ----------
     maint_func: func
         see :ref:`maint_func`
-    maint_func_dev: func
-        see :ref:`maint_func`
     num_states : int
         The size of the state space.
-    num_params : int
-        Length of cost parameter vector.
     state_mat : numpy.array
         see :ref:`state_mat`
     decision_mat : numpy.array
@@ -46,51 +117,14 @@ def mpec_loglike_cost_params(
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
-    gradient : str
-        Indicates whether analytical or numerical gradient should be used.
     mpec_params : numpy.array
         see :ref:`mpec_params`
-    grad : numpy.array, optional
-        The gradient of the function. The default is np.array([]).
 
     Returns
     -------
     log_like: float
         Contains the negative partial log likelihood for the given parameters.
-
     """
-    if grad.size > 0:
-        if gradient == "No":
-            # numerical gradient
-            partial_loglike_mpec = partial(
-                mpec_loglike_cost_params,
-                maint_func,
-                maint_func_dev,
-                num_states,
-                num_params,
-                state_mat,
-                decision_mat,
-                disc_fac,
-                scale,
-                gradient,
-                grad=np.array([]),
-            )
-            grad[:] = approx_derivative(
-                partial_loglike_mpec, mpec_params, method="2-point"
-            )
-        else:
-            # analytical gradient
-            grad[:] = mpec_loglike_cost_params_derivative(
-                maint_func,
-                maint_func_dev,
-                num_states,
-                num_params,
-                disc_fac,
-                scale,
-                decision_mat,
-                state_mat,
-                mpec_params,
-            )
 
     costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
@@ -112,7 +146,7 @@ def mpec_constraint(
     grad,
 ):
     """
-    Calulate the constraint of MPEC.
+    Calculate the constraint of MPEC.
 
     Parameters
     ----------
