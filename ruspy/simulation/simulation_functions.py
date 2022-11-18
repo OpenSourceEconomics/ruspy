@@ -28,11 +28,11 @@ def simulate_strategy(
          The number of periods to be simulated.
     num_buses : int
         The number of buses to be simulated.
-    costs : numpy.array
+    costs : numpy.ndarray
         see :ref:`costs`
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
     disc_fac : float
         see :ref:`disc_fac`
@@ -41,19 +41,19 @@ def simulate_strategy(
 
     Returns
     -------
-    states : numpy.array
+    states : numpy.ndarray
         A two dimensional numpy array containing for each bus in each period the
         state as an integer.
 
-    decisions : numpy.array
+    decisions : numpy.ndarray
         A two dimensional numpy array containing for each bus in each period the
         decision as an integer.
 
-    utilities : numpy.array
+    utilities : numpy.ndarray
         A two dimensional numpy array containing for each bus in each period the
         utility as a float.
 
-    usage : numpy.array
+    usage : numpy.ndarray
         A two dimensional numpy array containing for each bus in each period the
         mileage usage of last period as integer.
     """
@@ -114,11 +114,11 @@ def simulate_strategy_reduced_data_utilities(
          The number of periods to be simulated.
     num_buses : int
         The number of buses to be simulated.
-    costs : numpy.array
+    costs : numpy.ndarray
         see :ref:`costs`
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
     disc_fac : float
         see :ref:`disc_fac`
@@ -127,7 +127,7 @@ def simulate_strategy_reduced_data_utilities(
 
     Returns
     -------
-    utilities : numpy.array
+    utilities : numpy.ndarray
         A two dimensional numpy array containing for each bus in each period the
         utility as a float.
     """
@@ -182,11 +182,11 @@ def simulate_strategy_reduced_data_disc_utility(
          The number of periods to be simulated.
     num_buses : int
         The number of buses to be simulated.
-    costs : numpy.array
+    costs : numpy.ndarray
         see :ref:`costs`
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
     disc_fac : float
         see :ref:`disc_fac`
@@ -195,7 +195,7 @@ def simulate_strategy_reduced_data_disc_utility(
 
     Returns
     -------
-    utilities : numpy.array
+    utilities : numpy.ndarray
         A two dimensional numpy array containing for each bus in each period the
         utility as a float.
     """

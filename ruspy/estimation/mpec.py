@@ -22,15 +22,15 @@ def mpec_loglike_cost_params(
         see :ref:`maint_func`
     num_states : int
         The size of the state space.
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
     disc_fac : numpy.float
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
-    mpec_params : numpy.array
+    mpec_params : numpy.ndarray
         see :ref:`mpec_params`
 
     Returns
@@ -71,7 +71,7 @@ def mpec_constraint(
         The size of the state space.
     num_params : int
         The number of parameters to be estimated.
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
     disc_fac : numpy.float
         see :ref:`disc_fac`
@@ -79,12 +79,12 @@ def mpec_constraint(
         see :ref:`scale`
     gradient : str
         Indicates whether analytical or numerical gradient should be used.
-    result : numpy.array
+    result : numpy.ndarray
         Contains the left hand side of the constraint minus the right hand side
         for the nlopt solver. This should be zero for the constraint to hold.
-    mpec_params : numpy.array
+    mpec_params : numpy.ndarray
         see :ref:`mpec_params`
-    grad : numpy.array, optional
+    grad : numpy.ndarray, optional
         The gradient of the function. The default is np.array([]).
 
     Returns
@@ -172,16 +172,16 @@ def mpec_loglike_cost_params_derivative(
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
-    mpec_params : numpy.array
+    mpec_params : numpy.ndarray
         see :ref:`mpec_params`
 
     Returns
     -------
-    gradient : numpy.array
+    gradient : numpy.ndarray
         Vector that holds the derivative of the negative log likelihood function
         to the parameters.
 
@@ -243,14 +243,14 @@ def mpec_constraint_derivative(
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    mpec_params : numpy.array
+    mpec_params : numpy.ndarray
         see :ref:`mpec_params`
 
     Returns
     -------
-    jacobian : numpy.array
+    jacobian : numpy.ndarray
         Jacobian of the MPEC constraint.
 
     """
@@ -325,13 +325,13 @@ def mpec_loglike_cost_params_derivative_model(
         see :ref:`scale`
     maint_func_dev : func
         see :ref:`maint_func`
-    p_choice : np.array
+    p_choice numpy.ndarray
         num_states x 2 matrix that contains the calculated conditional choice
         probabilities.
 
     Returns
     -------
-    derivative_both : np.array
+    derivative_both numpy.ndarray
         gives out the derivative of the log likelihood function depending
         on the model characteristics.
 

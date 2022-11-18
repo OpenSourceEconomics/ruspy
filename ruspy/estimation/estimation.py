@@ -153,11 +153,11 @@ def estimate_nfxp(
         The number of parameters to be estimated.
     scale : numpy.float
         see :ref:`scale`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
     optimizer_options : dict
         The options chosen for the optimization algorithm in the initialization
@@ -256,11 +256,11 @@ def estimate_mpec_nlopt(
         The number of parameters to be estimated.
     scale : numpy.float
         see :ref:`scale`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
     optimizer_options : dict
         The options chosen for the optimization algorithm in the initialization
@@ -393,11 +393,11 @@ def estimate_mpec_ipopt(
         The number of parameters to be estimated.
     scale : numpy.float
         see :ref:`scale`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
     optimizer_options : dict
         The options chosen for the optimization algorithm in the initialization

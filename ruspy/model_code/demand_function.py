@@ -22,7 +22,7 @@ def get_demand(init_dict, demand_dict, demand_params):
         see :ref:`init_dict`.
     demand_dict : dict
         see :ref:`demand_dict`.
-    demand_params : np.array
+    demand_params : numpy.ndarray
         see :ref:`demand_params`
 
     Returns

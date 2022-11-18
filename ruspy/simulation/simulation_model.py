@@ -16,11 +16,11 @@ def decide(
     ----------
     old_state: int
         Current state.
-    costs : numpy.array
+    costs : numpy.ndarray
         see :ref:`costs`
     disc_fac : float
         see :ref:`disc_fac`
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
 
     Returns
@@ -56,7 +56,7 @@ def draw_increment(state, trans_mat):
     ----------
     state : int
         Current state.
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
 
     Returns
