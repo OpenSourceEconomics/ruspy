@@ -107,6 +107,36 @@ def test_nfxp(inputs, outputs, specification):
     assert result_fixp.success
 
 
+#
+# @pytest.mark.parametrize("specification", TEST_SPECIFICATIONS)
+# def test_bhhh(inputs, outputs, specification):
+#     cost_func_name, init_params, scale = specification
+#     # specify init_dict with cost function and cost scale as well as input data
+#     df = inputs["input data"]
+#     init_dict = inputs["init_dict"]
+#     init_dict["model_specifications"]["maint_cost_func"] = cost_func_name
+#     init_dict["model_specifications"]["cost_scale"] = scale
+#     init_dict["method"] = "NFXP_BHHH"
+#     # specify criterion function
+#     criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
+#     # minimize criterion function
+#     result_fixp = minimize(
+#         criterion=criterion_func,
+#         params=init_params,
+#         algorithm="bhhh",
+#         derivative=criterion_dev,
+#     )
+#     # compare estimated cost parameters to true parameters
+#     assert_allclose(result_fixp.params, outputs["params_" + cost_func_name], atol=1e-1)
+#     # compare computed minimum neg log-likelihood to true minimum neg log-likelihood
+#     assert_allclose(
+#         result_fixp.criterion, outputs["cost_ll_" + cost_func_name], atol=1e-3
+#     )
+#
+#     # test success of algorithm
+#     assert result_fixp.success
+
+
 @pytest.mark.parametrize("specification", TEST_SPECIFICATIONS)
 def test_mpec(inputs, outputs, specification):
     cost_func_name, init_params, scale = specification

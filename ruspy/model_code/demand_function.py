@@ -72,7 +72,7 @@ def get_demand(init_dict, demand_dict, demand_params):
                 + np.dot(np.tile(trans_mat[0, :], (num_states, 1)).T, pi[:, 1])
             ).reshape((num_states, 1))
             tol = np.max(np.abs(pi_new - pi))
-            iteration = +1
+            iteration += 1
             if iteration > 200:
                 break
             if tol < demand_dict["tolerance"]:

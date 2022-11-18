@@ -13,7 +13,9 @@ from ruspy.estimation.mpec import mpec_loglike_cost_params
 from ruspy.estimation.mpec import mpec_loglike_cost_params_derivative
 from ruspy.estimation.nfxp import create_state_matrix
 from ruspy.estimation.nfxp import derivative_loglike_cost_params
+from ruspy.estimation.nfxp import derivative_loglike_cost_params_individual
 from ruspy.estimation.nfxp import loglike_cost_params
+from ruspy.estimation.nfxp import loglike_cost_params_individual
 from ruspy.estimation.pre_processing import select_model_parameters
 
 
@@ -92,17 +94,33 @@ def get_criterion_function(
 
         return criterion_function_nfxp, criterion_derivative_nfxp, transition_results
 
+    elif method == "NFXP_BHHH":
+
+        bhhh_kwargs = {
+            **basic_kwargs,
+            "trans_mat": trans_mat,
+            "state_mat": state_mat,
+            "decision_mat": decision_mat,
+            "alg_details": alg_details,
+        }
+
+        criterion_function_bhhh = partial(loglike_cost_params_individual, **bhhh_kwargs)
+        criterion_derivative_bhhh = partial(
+            derivative_loglike_cost_params_individual, **bhhh_kwargs
+        )
+
+        return criterion_function_bhhh, criterion_derivative_bhhh, transition_results
     elif method == "MPEC":
 
-        mpec_kwargs = {
+        mpec_crit_kwargs = {
             **basic_kwargs,
             "state_mat": state_mat,
             "decision_mat": decision_mat,
         }
 
-        criterion_function_mpec = partial(mpec_loglike_cost_params, **mpec_kwargs)
+        criterion_function_mpec = partial(mpec_loglike_cost_params, **mpec_crit_kwargs)
         criterion_derivative_mpec = partial(
-            mpec_loglike_cost_params_derivative, **mpec_kwargs
+            mpec_loglike_cost_params_derivative, **mpec_crit_kwargs
         )
 
         constraint_kwargs = {

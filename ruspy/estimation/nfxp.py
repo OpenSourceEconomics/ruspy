@@ -227,7 +227,7 @@ def derivative_loglike_cost_params(
 
     Parameters
     ----------
-    params : pandas.DataFrame
+    params : numpy.ndarray
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
