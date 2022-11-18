@@ -36,6 +36,8 @@ def get_criterion_function(
         see :ref:`criterion_func`
     criterion_dev :
         see :ref:`criterion_dev`
+    transition_results : dictionary
+        see :ref:`result_trans`
     """
 
     transition_results = estimate_transitions(df)
