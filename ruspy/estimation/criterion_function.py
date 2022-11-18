@@ -67,7 +67,10 @@ def get_criterion_function(
 
     if method == "NFXP":
 
-        (criterion_function, criterion_derivative) = get_criterion_function_nfxp(
+        (
+            criterion_function_nfxp,
+            criterion_derivative_nfxp,
+        ) = get_criterion_function_nfxp(
             disc_fac,
             num_states,
             maint_func,
@@ -78,10 +81,14 @@ def get_criterion_function(
             state_mat,
             alg_details,
         )
+        return criterion_function_nfxp, criterion_derivative_nfxp, transition_results
 
     elif method == "MPEC":
 
-        (criterion_function, criterion_derivative) = get_criterion_function_mpec(
+        (
+            criterion_function_mpec,
+            criterion_derivative_mpec,
+        ) = get_criterion_function_mpec(
             disc_fac,
             num_states,
             maint_func,
@@ -91,13 +98,12 @@ def get_criterion_function(
             decision_mat,
             state_mat,
         )
+        return criterion_function_mpec, criterion_derivative_mpec, transition_results
 
     else:
         raise ValueError(
             f"{method} is not implemented. Only MPEC or NFXP are valid choices"
         )
-
-    return criterion_function, criterion_derivative, transition_results
 
 
 def get_criterion_function_nfxp(

@@ -26,7 +26,6 @@ def inputs():
             "cost_scale": scale,
         },
         "method": "NFXP",
-        "alg_details": {},
     }
     demand_dict = {
         "RC_lower_bound": 2,
