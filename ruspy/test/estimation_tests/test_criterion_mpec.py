@@ -14,8 +14,8 @@ from numpy.testing import assert_array_almost_equal
 
 from ruspy.config import TEST_RESOURCES_DIR
 from ruspy.estimation.criterion_function import get_criterion_function
-from ruspy.estimation.est_cost_params import get_ev
 from ruspy.estimation.estimation_transitions import create_transition_matrix
+from ruspy.estimation.nfxp import get_ev
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import hyperbolic_costs
@@ -133,6 +133,6 @@ def test_criterion_function(inputs, outputs, specification):
 #     )
 #     true_mpec_params = np.concatenate((ev[0], true_params))
 #     assert_array_almost_equal(
-#         criterion_dev(mpec_params=true_mpec_params), np.zeros(num_params),
+#         criterion_dev(mpec_params=true_mpec_params)[90:], np.zeros(num_params),
 #         decimal=2,
 #     )

@@ -3,13 +3,13 @@ This module contains all the key functions used to estimate the model using MPEC
 """
 import numpy as np
 
-from ruspy.estimation.est_cost_params import like_hood_data
+from ruspy.estimation.nfxp import like_hood_data
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 
 
 def mpec_loglike_cost_params(
-    maint_func, num_states, state_mat, decision_mat, disc_fac, scale, mpec_params
+    mpec_params, maint_func, num_states, state_mat, decision_mat, disc_fac, scale
 ):
     """
     Calculate the negative partial log likelihood for MPEC depending on cost parameters
@@ -17,6 +17,8 @@ def mpec_loglike_cost_params(
 
     Parameters
     ----------
+    mpec_params : numpy.ndarray
+        see :ref:`mpec_params`
     maint_func: func
         see :ref:`maint_func`
     num_states : int
@@ -29,8 +31,6 @@ def mpec_loglike_cost_params(
         see :ref:`disc_fac`
     scale : numpy.float
         see :ref:`scale`
-    mpec_params : numpy.ndarray
-        see :ref:`mpec_params`
 
     Returns
     -------
@@ -57,6 +57,8 @@ def mpec_constraint(
 
     Parameters
     ----------
+    mpec_params : numpy.ndarray
+        see :ref:`mpec_params`
     maint_func: func
         see :ref:`maint_func`
     num_states : int
@@ -70,9 +72,6 @@ def mpec_constraint(
     result : numpy.ndarray
         Contains the left hand side of the constraint minus the right hand side
         for the nlopt solver. This should be zero for the constraint to hold.
-    mpec_params : numpy.ndarray
-        see :ref:`mpec_params`
-
     Returns
     -------
     None.
@@ -169,6 +168,7 @@ def mpec_loglike_cost_params_derivative(
 
 
 def mpec_constraint_derivative(
+    mpec_params,
     maint_func,
     maint_func_dev,
     num_states,
@@ -176,13 +176,14 @@ def mpec_constraint_derivative(
     disc_fac,
     scale,
     trans_mat,
-    mpec_params,
 ):
     """
     Calculating the analytical Jacobian of the MPEC constraint.
 
     Parameters
     ----------
+    mpec_params : numpy.ndarray
+        see :ref:`mpec_params`
     maint_func: func
         see :ref:`maint_func`
     maint_func_dev: func
@@ -197,8 +198,6 @@ def mpec_constraint_derivative(
         see :ref:`scale`
     trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    mpec_params : numpy.ndarray
-        see :ref:`mpec_params`
 
     Returns
     -------

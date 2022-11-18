@@ -14,7 +14,6 @@ from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_params
 from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_rc
 from ruspy.model_code.fix_point_alg import solve_equ_system_fixp
 
-
 ev_intermed = None
 current_params = None
 
@@ -272,41 +271,6 @@ def derivative_loglike_cost_params(
     return dev
 
 
-def get_ev(params, trans_mat, obs_costs, disc_fac, alg_details):
-    """
-    A auxiliary function, which allows the log-likelihood function as well as its
-    derivative to share the same fixed point and to avoid the need to execute the
-    computation double.
-
-    Parameters
-    ----------
-    params : numpy.ndarray
-        see :ref:`params`
-    trans_mat : numpy.ndarray
-        see :ref:`trans_mat`
-    obs_costs : numpy.ndarray
-        see :ref:`costs`
-    disc_fac : numpy.float
-        see :ref:`disc_fac`
-
-    Returns
-    -------
-    ev : numpy.ndarray
-        see :ref:`ev`
-
-    """
-    global ev_intermed
-    global current_params
-    if (ev_intermed is not None) & np.array_equal(current_params, params):
-        ev = ev_intermed
-        ev_intermed = None
-    else:
-        ev = calc_fixp(trans_mat, obs_costs, disc_fac, **alg_details)
-        ev_intermed = ev
-        current_params = params
-    return ev
-
-
 def log_like_values_param(ev, costs, p_choice, trans_mat, cost_dev, disc_fac):
     dev_contr_op_params = contr_op_dev_wrt_params(trans_mat, p_choice[:, 0], cost_dev)
     dev_ev_params = solve_equ_system_fixp(
@@ -390,3 +354,38 @@ def create_state_matrix(states, num_states):
     for i, value in enumerate(states):
         state_mat[value, i] = 1.0
     return state_mat
+
+
+def get_ev(params, trans_mat, obs_costs, disc_fac, alg_details):
+    """
+    A auxiliary function, which allows the log-likelihood function as well as its
+    derivative to share the same fixed point and to avoid the need to execute the
+    computation double.
+
+    Parameters
+    ----------
+    params : numpy.ndarray
+        see :ref:`params`
+    trans_mat : numpy.ndarray
+        see :ref:`trans_mat`
+    obs_costs : numpy.ndarray
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+
+    Returns
+    -------
+    ev : numpy.ndarray
+        see :ref:`ev`
+
+    """
+    global ev_intermed
+    global current_params
+    if (ev_intermed is not None) & np.array_equal(current_params, params):
+        ev = ev_intermed
+        ev_intermed = None
+    else:
+        ev = calc_fixp(trans_mat, obs_costs, disc_fac, **alg_details)
+        ev_intermed = ev
+        current_params = params
+    return ev

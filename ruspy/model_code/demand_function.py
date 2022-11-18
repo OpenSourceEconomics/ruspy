@@ -4,8 +4,8 @@ Calculates the implied demand function as suggested in Rust (1987).
 import numpy as np
 import pandas as pd
 
-from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_transitions import create_transition_matrix
+from ruspy.estimation.pre_processing import select_model_parameters
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.fix_point_alg import calc_fixp

@@ -11,13 +11,13 @@ from numpy.testing import assert_almost_equal
 from numpy.testing import assert_array_almost_equal
 
 from ruspy.config import TEST_RESOURCES_DIR
-from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.estimation.mpec import mpec_constraint
 from ruspy.estimation.mpec import mpec_constraint_derivative
 from ruspy.estimation.mpec import mpec_loglike_cost_params
 from ruspy.estimation.mpec import mpec_loglike_cost_params_derivative
+from ruspy.estimation.nfxp import create_state_matrix
 from ruspy.model_code.cost_functions import lin_cost
 from ruspy.model_code.cost_functions import lin_cost_dev
 
@@ -69,13 +69,13 @@ def outputs():
 def test_mpec_likelihood(inputs, outputs):
     assert_almost_equal(
         mpec_loglike_cost_params(
+            inputs["params"],
             inputs["maint_func"],
             inputs["num_states"],
             inputs["state_matrix"],
             inputs["decision_matrix"],
             inputs["disc_fac"],
             inputs["scale"],
-            inputs["params"],
         ),
         outputs["mpec_likelihood"],
     )
@@ -84,6 +84,7 @@ def test_mpec_likelihood(inputs, outputs):
 def test_like_dev(inputs, outputs):
     assert_array_almost_equal(
         mpec_loglike_cost_params_derivative(
+            inputs["params"],
             inputs["maint_func"],
             inputs["maint_func_dev"],
             inputs["num_states"],
@@ -92,7 +93,6 @@ def test_like_dev(inputs, outputs):
             inputs["scale"],
             inputs["decision_matrix"],
             inputs["state_matrix"],
-            inputs["params"],
         ),
         outputs["mpec_like_dev"],
     )
@@ -101,19 +101,12 @@ def test_like_dev(inputs, outputs):
 def test_mpec_constraint(inputs, outputs):
     assert_array_almost_equal(
         mpec_constraint(
+            inputs["params"],
             inputs["maint_func"],
-            inputs["maint_func_dev"],
             inputs["num_states"],
-            inputs["num_params"],
             inputs["trans_matrix"],
             inputs["disc_fac"],
             inputs["scale"],
-            inputs["derivative"],
-            np.zeros(inputs["num_states"]),
-            inputs["params"],
-            np.zeros(
-                (inputs["num_states"], inputs["num_states"] + inputs["num_params"])
-            ),
         ),
         outputs["mpec_constraint"],
     )
@@ -122,6 +115,7 @@ def test_mpec_constraint(inputs, outputs):
 def test_mpec_constraint_dev(inputs, outputs):
     assert_array_almost_equal(
         mpec_constraint_derivative(
+            inputs["params"],
             inputs["maint_func"],
             inputs["maint_func_dev"],
             inputs["num_states"],
@@ -129,7 +123,6 @@ def test_mpec_constraint_dev(inputs, outputs):
             inputs["disc_fac"],
             inputs["scale"],
             inputs["trans_matrix"],
-            inputs["params"],
         ),
         outputs["mpec_constr_dev"],
     )
