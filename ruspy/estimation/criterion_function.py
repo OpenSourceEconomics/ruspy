@@ -8,7 +8,7 @@ import numpy as np
 from ruspy.estimation.est_cost_params import create_state_matrix
 from ruspy.estimation.est_cost_params import derivative_loglike_cost_params
 from ruspy.estimation.est_cost_params import loglike_cost_params
-from ruspy.estimation.estimation_interface_new import select_model_parameters
+from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
 from ruspy.estimation.mpec import mpec_loglike_cost_params
