@@ -62,6 +62,14 @@ def get_criterion_function(
 
     alg_details = {} if "alg_details" not in init_dict else init_dict["alg_details"]
 
+    basic_kwargs = {
+        "maint_func": maint_func,
+        "maint_func_dev": maint_func_dev,
+        "num_states": num_states,
+        "disc_fac": disc_fac,
+        "scale": scale,
+    }
+
     if "method" in init_dict:
         method = init_dict["method"]
     else:
@@ -70,14 +78,10 @@ def get_criterion_function(
     if method == "NFXP":
 
         nfxp_kwargs = {
-            "maint_func": maint_func,
-            "maint_func_dev": maint_func_dev,
-            "num_states": num_states,
+            **basic_kwargs,
             "trans_mat": trans_mat,
             "state_mat": state_mat,
             "decision_mat": decision_mat,
-            "disc_fac": disc_fac,
-            "scale": scale,
             "alg_details": alg_details,
         }
 
@@ -91,13 +95,9 @@ def get_criterion_function(
     elif method == "MPEC":
 
         mpec_kwargs = {
-            "maint_func": maint_func,
-            "maint_func_dev": maint_func_dev,
-            "num_states": num_states,
+            **basic_kwargs,
             "state_mat": state_mat,
             "decision_mat": decision_mat,
-            "disc_fac": disc_fac,
-            "scale": scale,
         }
 
         criterion_function_mpec = partial(mpec_loglike_cost_params, **mpec_kwargs)
@@ -106,12 +106,8 @@ def get_criterion_function(
         )
 
         constraint_kwargs = {
-            "maint_func": maint_func,
-            "maint_func_dev": maint_func_dev,
-            "num_states": num_states,
+            **basic_kwargs,
             "trans_mat": trans_mat,
-            "disc_fac": disc_fac,
-            "scale": scale,
         }
 
         constraint = partial(mpec_constraint, **constraint_kwargs)
