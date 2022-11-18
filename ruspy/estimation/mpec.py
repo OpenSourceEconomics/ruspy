@@ -9,7 +9,14 @@ from ruspy.model_code.cost_functions import calc_obs_costs
 
 
 def mpec_loglike_cost_params(
-    mpec_params, maint_func, num_states, state_mat, decision_mat, disc_fac, scale
+    mpec_params,
+    maint_func,
+    maint_func_dev,
+    num_states,
+    disc_fac,
+    scale,
+    decision_mat,
+    state_mat,
 ):
     """
     Calculate the negative partial log likelihood for MPEC depending on cost parameters
@@ -44,63 +51,11 @@ def mpec_loglike_cost_params(
     return float(log_like)
 
 
-def mpec_constraint(
-    mpec_params,
-    maint_func,
-    num_states,
-    trans_mat,
-    disc_fac,
-    scale,
-):
-    """
-    Calculate the constraint of MPEC.
-
-    Parameters
-    ----------
-    mpec_params : numpy.ndarray
-        see :ref:`mpec_params`
-    maint_func: func
-        see :ref:`maint_func`
-    num_states : int
-        The size of the state space.
-    trans_mat : numpy.ndarray
-        see :ref:`trans_mat`
-    disc_fac : numpy.float
-        see :ref:`disc_fac`
-    scale : numpy.float
-        see :ref:`scale`
-    result : numpy.ndarray
-        Contains the left hand side of the constraint minus the right hand side
-        for the nlopt solver. This should be zero for the constraint to hold.
-    Returns
-    -------
-    None.
-
-    """
-    ev = mpec_params[0:num_states]
-    obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
-
-    maint_value = disc_fac * ev - obs_costs[:, 0]
-    repl_value = disc_fac * ev[0] - obs_costs[0, 1] - obs_costs[0, 0]
-
-    # Select the minimal absolute value to rescale the value vector for the
-    # exponential function.
-    ev_max = np.max(np.array(maint_value, repl_value))
-
-    log_sum = ev_max + np.log(
-        np.exp(maint_value - ev_max) + np.exp(repl_value - ev_max)
-    )
-
-    ev_new = np.dot(trans_mat, log_sum)
-    return ev_new - ev
-
-
 def mpec_loglike_cost_params_derivative(
     mpec_params,
     maint_func,
     maint_func_dev,
     num_states,
-    num_params,
     disc_fac,
     scale,
     decision_mat,
@@ -119,8 +74,6 @@ def mpec_loglike_cost_params_derivative(
         see :ref:`maint_func`
     num_states : int
         The size of the state space.
-    num_params : int
-        Length of cost parameter vector.
     disc_fac : numpy.float
         see :ref:`disc_fac`
     scale : numpy.float
@@ -137,6 +90,7 @@ def mpec_loglike_cost_params_derivative(
         to the parameters.
 
     """
+    num_params = mpec_params[num_states:].shape[0]
     # Calculate choice probabilities
     costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
     p_choice = choice_prob_gumbel(mpec_params[0:num_states], costs, disc_fac)
@@ -167,12 +121,63 @@ def mpec_loglike_cost_params_derivative(
     return gradient
 
 
+def mpec_constraint(
+    mpec_params,
+    maint_func,
+    maint_func_dev,
+    num_states,
+    disc_fac,
+    scale,
+    trans_mat,
+):
+    """
+    Calculate the constraint of MPEC.
+
+    Parameters
+    ----------
+    mpec_params : numpy.ndarray
+        see :ref:`mpec_params`
+    maint_func: func
+        see :ref:`maint_func`
+    maint_func_dev: func
+        see :ref:`maint_func`
+    num_states : int
+        The size of the state space.
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+    scale : numpy.float
+        see :ref:`scale`
+    trans_mat : numpy.ndarray
+        see :ref:`trans_mat`
+
+    Returns
+    -------
+    None.
+
+    """
+    ev = mpec_params[0:num_states]
+    obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
+
+    maint_value = disc_fac * ev - obs_costs[:, 0]
+    repl_value = disc_fac * ev[0] - obs_costs[0, 1] - obs_costs[0, 0]
+
+    # Select the minimal absolute value to rescale the value vector for the
+    # exponential function.
+    ev_max = np.max(np.array(maint_value, repl_value))
+
+    log_sum = ev_max + np.log(
+        np.exp(maint_value - ev_max) + np.exp(repl_value - ev_max)
+    )
+
+    ev_new = np.dot(trans_mat, log_sum)
+    return ev_new - ev
+
+
 def mpec_constraint_derivative(
     mpec_params,
     maint_func,
     maint_func_dev,
     num_states,
-    num_params,
     disc_fac,
     scale,
     trans_mat,
@@ -190,8 +195,6 @@ def mpec_constraint_derivative(
         see :ref:`maint_func`
     num_states : int
         The size of the state space.
-    num_params : int
-        Length of cost parameter vector.
     disc_fac : numpy.float
         see :ref:`disc_fac`
     scale : numpy.float
@@ -207,6 +210,7 @@ def mpec_constraint_derivative(
     """
     # Calculate a vector representing 1 divided by the right hand side of the MPEC
     # constraint
+    num_params = mpec_params[num_states:].shape[0]
     ev = mpec_params[0:num_states]
     obs_costs = calc_obs_costs(num_states, maint_func, mpec_params[num_states:], scale)
 

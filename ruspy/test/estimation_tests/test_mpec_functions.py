@@ -35,7 +35,6 @@ def inputs():
     out["maint_func"] = lin_cost
     out["maint_func_dev"] = lin_cost_dev
     out["num_states"] = num_states
-    out["num_params"] = 2
     out["trans_matrix"] = create_transition_matrix(
         num_states, np.array(transition_results["x"])
     )
@@ -44,7 +43,7 @@ def inputs():
     out["disc_fac"] = 0.9999
     out["scale"] = 0.001
     out["derivative"] = "Yes"
-    out["params"] = np.ones(out["num_states"] + out["num_params"])
+    out["params"] = np.ones(out["num_states"] + 2)
     return out
 
 
@@ -71,11 +70,12 @@ def test_mpec_likelihood(inputs, outputs):
         mpec_loglike_cost_params(
             inputs["params"],
             inputs["maint_func"],
+            inputs["maint_func_dev"],
             inputs["num_states"],
-            inputs["state_matrix"],
-            inputs["decision_matrix"],
             inputs["disc_fac"],
             inputs["scale"],
+            inputs["decision_matrix"],
+            inputs["state_matrix"],
         ),
         outputs["mpec_likelihood"],
     )
@@ -88,7 +88,6 @@ def test_like_dev(inputs, outputs):
             inputs["maint_func"],
             inputs["maint_func_dev"],
             inputs["num_states"],
-            inputs["num_params"],
             inputs["disc_fac"],
             inputs["scale"],
             inputs["decision_matrix"],
@@ -103,10 +102,11 @@ def test_mpec_constraint(inputs, outputs):
         mpec_constraint(
             inputs["params"],
             inputs["maint_func"],
+            inputs["maint_func_dev"],
             inputs["num_states"],
-            inputs["trans_matrix"],
             inputs["disc_fac"],
             inputs["scale"],
+            inputs["trans_matrix"],
         ),
         outputs["mpec_constraint"],
     )
@@ -119,7 +119,6 @@ def test_mpec_constraint_dev(inputs, outputs):
             inputs["maint_func"],
             inputs["maint_func_dev"],
             inputs["num_states"],
-            inputs["num_params"],
             inputs["disc_fac"],
             inputs["scale"],
             inputs["trans_matrix"],

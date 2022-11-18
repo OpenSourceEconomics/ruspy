@@ -67,47 +67,55 @@ def get_criterion_function(
     else:
         raise ValueError("The key 'method' must be in init_dict")
 
-    kwargs = {
-        "disc_fac": disc_fac,
-        "num_states": num_states,
-        "maint_func": maint_func,
-        "maint_func_dev": maint_func_dev,
-        "scale": scale,
-        "decision_mat": decision_mat,
-        "trans_mat": trans_mat,
-        "state_mat": state_mat,
-        "alg_details": alg_details,
-    }
-
     if method == "NFXP":
-        criterion_function_nfxp = partial(loglike_cost_params, **kwargs)
-        criterion_derivative_nfxp = partial(derivative_loglike_cost_params, **kwargs)
+
+        nfxp_kwargs = {
+            "maint_func": maint_func,
+            "maint_func_dev": maint_func_dev,
+            "num_states": num_states,
+            "trans_mat": trans_mat,
+            "state_mat": state_mat,
+            "decision_mat": decision_mat,
+            "disc_fac": disc_fac,
+            "scale": scale,
+            "alg_details": alg_details,
+        }
+
+        criterion_function_nfxp = partial(loglike_cost_params, **nfxp_kwargs)
+        criterion_derivative_nfxp = partial(
+            derivative_loglike_cost_params, **nfxp_kwargs
+        )
+
         return criterion_function_nfxp, criterion_derivative_nfxp, transition_results
 
     elif method == "MPEC":
 
-        (
-            criterion_function_mpec,
-            criterion_derivative_mpec,
-        ) = get_criterion_function_mpec(
-            disc_fac,
-            num_states,
-            maint_func,
-            maint_func_dev,
-            num_params,
-            scale,
-            decision_mat,
-            state_mat,
+        mpec_kwargs = {
+            "maint_func": maint_func,
+            "maint_func_dev": maint_func_dev,
+            "num_states": num_states,
+            "state_mat": state_mat,
+            "decision_mat": decision_mat,
+            "disc_fac": disc_fac,
+            "scale": scale,
+        }
+
+        criterion_function_mpec = partial(mpec_loglike_cost_params, **mpec_kwargs)
+        criterion_derivative_mpec = partial(
+            mpec_loglike_cost_params_derivative, **mpec_kwargs
         )
-        constraint, constraint_dev = get_constraint_mpec(
-            disc_fac,
-            num_states,
-            maint_func,
-            trans_mat,
-            maint_func_dev,
-            num_params,
-            scale,
-        )
+
+        constraint_kwargs = {
+            "maint_func": maint_func,
+            "maint_func_dev": maint_func_dev,
+            "num_states": num_states,
+            "trans_mat": trans_mat,
+            "disc_fac": disc_fac,
+            "scale": scale,
+        }
+
+        constraint = partial(mpec_constraint, **constraint_kwargs)
+        constraint_dev = partial(mpec_constraint_derivative, **constraint_kwargs)
         return (
             criterion_function_mpec,
             criterion_derivative_mpec,
@@ -120,74 +128,3 @@ def get_criterion_function(
         raise ValueError(
             f"{method} is not implemented. Only MPEC or NFXP are valid choices"
         )
-
-
-# def get_likelihood_bhhh()
-
-
-def get_constraint_mpec(
-    disc_fac,
-    num_states,
-    maint_func,
-    trans_mat,
-    maint_func_dev,
-    num_params,
-    scale,
-):
-
-    constraint = partial(
-        mpec_constraint,
-        maint_func=maint_func,
-        num_states=num_states,
-        trans_mat=trans_mat,
-        disc_fac=disc_fac,
-        scale=scale,
-    )
-    constraint_dev = partial(
-        mpec_constraint_derivative,
-        maint_func=maint_func,
-        maint_func_dev=maint_func_dev,
-        num_states=num_states,
-        trans_mat=trans_mat,
-        disc_fac=disc_fac,
-        scale=scale,
-        num_params=num_params,
-    )
-    return constraint, constraint_dev
-
-
-def get_criterion_function_mpec(
-    disc_fac,
-    num_states,
-    maint_func,
-    maint_func_dev,
-    num_params,
-    scale,
-    decision_mat,
-    state_mat,
-):
-    mpec_criterion_kwargs = {
-        "maint_func": maint_func,
-        "num_states": num_states,
-        "state_mat": state_mat,
-        "decision_mat": decision_mat,
-        "disc_fac": disc_fac,
-        "scale": scale,
-    }
-
-    mpec_criterion_dev_kwargs = {
-        "maint_func": maint_func,
-        "maint_func_dev": maint_func_dev,
-        "num_states": num_states,
-        "num_params": num_params,
-        "state_mat": state_mat,
-        "decision_mat": decision_mat,
-        "disc_fac": disc_fac,
-        "scale": scale,
-    }
-
-    criterion_function = partial(mpec_loglike_cost_params, **mpec_criterion_kwargs)
-    criterion_derivative = partial(
-        mpec_loglike_cost_params_derivative, **mpec_criterion_dev_kwargs
-    )
-    return criterion_function, criterion_derivative
