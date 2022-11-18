@@ -7,8 +7,6 @@ The estimated parameters and likelihood are compared to the true parameters and
 the true likelihood saved in resources/estimation_test.
 Moreover, the convergence of the algorithm is tested.
 """
-from functools import partial
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -17,10 +15,6 @@ from numpy.testing import assert_allclose
 
 from ruspy.config import TEST_RESOURCES_DIR
 from ruspy.estimation.criterion_function import get_criterion_function
-from ruspy.estimation.estimation_transitions import create_transition_matrix
-from ruspy.estimation.mpec import mpec_constraint
-from ruspy.estimation.mpec import mpec_constraint_derivative
-from ruspy.estimation.pre_processing import select_cost_function
 
 TEST_FOLDER = TEST_RESOURCES_DIR + "replication_test/"
 
@@ -33,7 +27,7 @@ def inputs():
     init_dict = {
         "model_specifications": {
             "discount_factor": disc_fac,
-            "number_states": num_states,
+            "num_states": num_states,
         },
         "alg_details": {},
     }
@@ -121,33 +115,18 @@ def test_mpec(inputs, outputs, specification):
     init_dict = inputs["init_dict"]
     init_dict["model_specifications"]["maint_cost_func"] = cost_func_name
     init_dict["model_specifications"]["cost_scale"] = scale
-    num_states = 90
+    num_states = init_dict["model_specifications"]["num_states"]
     init_dict["method"] = "MPEC"
     # specify criterion function
-    criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
-    maint_func, maint_func_dev, num_cost_params = select_cost_function(cost_func_name)
-    trans_mat = create_transition_matrix(90, result_trans["x"])
+    (
+        criterion_func,
+        criterion_dev,
+        constraint,
+        constraint_dev,
+        result_trans,
+    ) = get_criterion_function(init_dict, df)
 
-    constraint_kwargs = {
-        "maint_func": maint_func,
-        "num_states": init_dict["model_specifications"]["number_states"],
-        "trans_mat": trans_mat,
-        "disc_fac": init_dict["model_specifications"]["discount_factor"],
-        "scale": scale,
-    }
-    part_constr = partial(mpec_constraint, **constraint_kwargs)
-    jacobian_func = partial(
-        mpec_constraint_derivative,
-        maint_func=maint_func,
-        maint_func_dev=maint_func_dev,
-        num_states=90,
-        num_params=num_cost_params,
-        disc_fac=init_dict["model_specifications"]["discount_factor"],
-        scale=scale,
-        trans_mat=trans_mat,
-    )
-
-    x0 = np.zeros(90 + num_cost_params, dtype=float)
+    x0 = np.zeros(num_states + init_params.shape[0], dtype=float)
     x0[num_states:] = init_params
     # minimize criterion function
     result_mpec = minimize(
@@ -157,9 +136,9 @@ def test_mpec(inputs, outputs, specification):
         derivative=criterion_dev,
         constraints={
             "type": "nonlinear",
-            "func": part_constr,
-            "derivative": jacobian_func,
-            "value": np.zeros(90, dtype=float),
+            "func": constraint,
+            "derivative": constraint_dev,
+            "value": np.zeros(num_states, dtype=float),
         },
     )
     # compare computed minimum neg log-likelihood to true minimum neg log-likelihood

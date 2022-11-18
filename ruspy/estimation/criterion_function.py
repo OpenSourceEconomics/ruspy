@@ -7,6 +7,8 @@ import numpy as np
 
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.estimation.estimation_transitions import estimate_transitions
+from ruspy.estimation.mpec import mpec_constraint
+from ruspy.estimation.mpec import mpec_constraint_derivative
 from ruspy.estimation.mpec import mpec_loglike_cost_params
 from ruspy.estimation.mpec import mpec_loglike_cost_params_derivative
 from ruspy.estimation.nfxp import create_state_matrix
@@ -98,12 +100,59 @@ def get_criterion_function(
             decision_mat,
             state_mat,
         )
-        return criterion_function_mpec, criterion_derivative_mpec, transition_results
+        constraint, constraint_dev = get_constraint_mpec(
+            disc_fac,
+            num_states,
+            maint_func,
+            trans_mat,
+            maint_func_dev,
+            num_params,
+            scale,
+        )
+        return (
+            criterion_function_mpec,
+            criterion_derivative_mpec,
+            constraint,
+            constraint_dev,
+            transition_results,
+        )
 
     else:
         raise ValueError(
             f"{method} is not implemented. Only MPEC or NFXP are valid choices"
         )
+
+
+def get_constraint_mpec(
+    disc_fac,
+    num_states,
+    maint_func,
+    trans_mat,
+    maint_func_dev,
+    num_params,
+    scale,
+):
+    constraint_kwargs = {
+        "maint_func": maint_func,
+        "num_states": num_states,
+        "trans_mat": trans_mat,
+        "disc_fac": disc_fac,
+        "scale": scale,
+    }
+
+    mpec_derivative_kwargs = {
+        "maint_func": maint_func,
+        "maint_func_dev": maint_func_dev,
+        "num_states": num_states,
+        "trans_mat": trans_mat,
+        "disc_fac": disc_fac,
+        "scale": scale,
+        "num_params": num_params,
+    }
+
+    constraint = partial(mpec_constraint, **constraint_kwargs)
+    constraint_dev = partial(mpec_constraint_derivative, **mpec_derivative_kwargs)
+    return constraint, constraint_dev
 
 
 def get_criterion_function_nfxp(

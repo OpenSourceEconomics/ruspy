@@ -25,7 +25,7 @@ def inputs():
     init_dict = {
         "model_specifications": {
             "discount_factor": disc_fac,
-            "number_states": num_states,
+            "num_states": num_states,
             "maint_cost_func": "linear",
             "cost_scale": scale,
         },

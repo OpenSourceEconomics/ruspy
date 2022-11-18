@@ -35,7 +35,7 @@ def inputs():
     init_dict = {
         "model_specifications": {
             "discount_factor": disc_fac,
-            "number_states": num_states,
+            "num_states": num_states,
         },
         "method": "MPEC",
         "alg_details": alg_details,
@@ -81,14 +81,17 @@ def test_criterion_function(inputs, outputs, specification):
     init_dict = inputs["init_dict"]
     init_dict["model_specifications"]["maint_cost_func"] = cost_func_name
     init_dict["model_specifications"]["cost_scale"] = scale
+    num_states = init_dict["model_specifications"]["num_states"]
 
-    criterion_func, criterion_dev, transition_results = get_criterion_function(
-        init_dict, df
-    )
+    (
+        criterion_func,
+        criterion_dev,
+        constraint,
+        _,
+        transition_results,
+    ) = get_criterion_function(init_dict, df)
     true_params = np.loadtxt(TEST_FOLDER + f"repl_params_{cost_func_name_short}.txt")
-    trans_mat = create_transition_matrix(
-        inputs["num_states"], np.array(transition_results["x"])
-    )
+    trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     obs_costs = calc_obs_costs(
         num_states=inputs["num_states"],
         maint_func=cost_func,
@@ -102,6 +105,11 @@ def test_criterion_function(inputs, outputs, specification):
     assert_array_almost_equal(
         criterion_func(mpec_params=true_mpec_params),
         outputs["cost_ll_" + cost_func_name_short],
+        decimal=3,
+    )
+    assert_array_almost_equal(
+        constraint(mpec_params=true_mpec_params),
+        np.zeros(num_states, dtype=float),
         decimal=3,
     )
 
