@@ -83,11 +83,10 @@ def test_repl_params(inputs, outputs, specification):
     init_dict["model_specifications"]["cost_scale"] = scale
     # specify criterion function
     criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
-    # minimize criterion function to get estimated parameters
-    # using estimagic.minimize and bfgs algorithm
+    # minimize criterion function
     result_fixp = minimize(
         criterion=criterion_func,
-        params=init_params,  # first guess for parameters
+        params=init_params,
         algorithm="scipy_lbfgsb",
         derivative=criterion_dev,
     )
@@ -108,11 +107,10 @@ def test_cost_ll(inputs, outputs, specification):
     init_dict["model_specifications"]["cost_scale"] = scale
     # specify criterion function
     criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
-    # minimize criterion function to get estimated parameters using
-    # estimagic.minimize and bfgs algorithm
+    # minimize criterion function
     result_fixp = minimize(
         criterion=criterion_func,
-        params=init_params,  # first guess for parameters
+        params=init_params,
         algorithm="scipy_lbfgsb",
         derivative=criterion_dev,
     )
@@ -133,11 +131,10 @@ def test_success(inputs, specification):
     df = inputs["input data"]
     # specify criterion function
     criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
-    # minimize criterion function to get estimated parameters using
-    # estimagic.minimize and bfgs algorithm
+    # minimize criterion function
     result_fixp = minimize(
         criterion=criterion_func,
-        params=init_params,  # first guess for parameters
+        params=init_params,
         algorithm="scipy_lbfgsb",
         derivative=criterion_dev,
     )
