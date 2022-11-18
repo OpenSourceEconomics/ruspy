@@ -1,3 +1,9 @@
+"""
+This module contains unit tests, for the most important functions of
+ruspy.estimation.mpec. The values to compare the results with
+are saved in resources/estimation_test. The setting of the test is documented in the
+inputs section in test module.
+"""
 import numpy as np
 import pandas as pd
 import pytest
@@ -64,16 +70,12 @@ def test_mpec_likelihood(inputs, outputs):
     assert_almost_equal(
         mpec_loglike_cost_params(
             inputs["maint_func"],
-            inputs["maint_func_dev"],
             inputs["num_states"],
-            inputs["num_params"],
             inputs["state_matrix"],
             inputs["decision_matrix"],
             inputs["disc_fac"],
             inputs["scale"],
-            inputs["derivative"],
             inputs["params"],
-            np.zeros(inputs["num_states"] + inputs["num_params"]),
         ),
         outputs["mpec_likelihood"],
     )

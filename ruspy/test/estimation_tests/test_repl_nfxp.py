@@ -1,5 +1,11 @@
 """
-replication test for NFXP
+This module contains unit tests for the estimation process for different
+cost functions using the NFXP method.
+The parameters and likelihood are estimated by minimizing the criterion
+function using the minimize function from estimagic with scipy_lbgfsb algorithm.
+The estimated parameters and likelihood are compared to the true parameters and
+the true likelihood saved in resources/estimation_test.
+Moreover, the convergence of the algorithm is tested.
 """
 import numpy as np
 import pandas as pd

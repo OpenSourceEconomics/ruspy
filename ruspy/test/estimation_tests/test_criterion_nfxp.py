@@ -1,5 +1,12 @@
 """
-test get_criterion_function for NFXP
+This module contains unit tests for the function get_criterion_function of
+ruspy.estimation.criterion_function for the NFXP method and different
+cost functions.The true values of the parameters and the likelihood are saved
+in resources/estimation_test.
+The criterion function is tested by inserting the true parameters in the
+criterion function and comparing the result to the true likelihood.
+Its derivative is tested by inserting the true parameters in the derivative
+of the criterion function and comparing the result to zero.
 """
 import numpy as np
 import pandas as pd

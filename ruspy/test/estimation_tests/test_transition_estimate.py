@@ -1,3 +1,9 @@
+"""
+This module contains unit tests for the function estimate_transitions from
+ruspy.estimation.estimation_transitions. The values to compare the results with
+are saved in resources/estimation_test. The setting of the test is documented in the
+inputs section in test module.
+"""
 import numpy as np
 import pandas as pd
 import pytest

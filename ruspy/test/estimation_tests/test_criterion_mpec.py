@@ -1,5 +1,11 @@
 """
-test get_criterion_function for MPEC
+This module contains unit tests for the function get_criterion_function of
+ruspy.estimation.criterion_function for the MPEC method and different
+cost functions.The true values of the parameters and the likelihood are saved
+in resources/estimation_test.
+The criterion function is tested by calculating the true expected value,
+inserting the true expected value and the true parameters in the
+criterion function and comparing the result to the true likelihood.
 """
 import numpy as np
 import pandas as pd
