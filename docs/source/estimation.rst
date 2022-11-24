@@ -48,12 +48,7 @@ The estimation function
 
 The estimation process is coordinated by the function estimate:
 
-.. currentmodule:: ruspy.estimation.estimation
-
-.. autosummary::
-    :toctree: _generated/
-
-    estimate
+!!!There were functions imported here before.!!!
 
 
 Besides the :ref:`df`, the function needs the following initialization dictionary
