@@ -2,7 +2,7 @@
 exclude: ^\.
 repos:
 -   repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.8.3
+    rev: v3.9.0
     hooks:
     -   id: reorder-python-imports
         files: '(\.pyi?|wscript)$'
@@ -21,7 +21,7 @@ repos:
         args: [--autofix, --no-sort-keys]
     -   id: trailing-whitespace
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v3.0.0
+    rev: v3.2.2
     hooks:
     -   id: pyupgrade
         args: [
