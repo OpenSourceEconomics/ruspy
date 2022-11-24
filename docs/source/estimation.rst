@@ -272,10 +272,10 @@ The cost parameters for the NFXP are estimated directly by minimizing the log-li
 the minimize function from the `estimagic library
 <https://estimagic.readthedocs.io/en/latest/index.html>`_. The objective function
 as well as its analytical derivative can be found in
-``ruspy.estimation.est_cost_params``:
+``ruspy.estimation.nfxp``:
 
 
-.. currentmodule:: ruspy.estimation.est_cost_params
+.. currentmodule:: ruspy.estimation.nfxp
 
 .. autosummary::
   :toctree: _generated/
@@ -298,7 +298,7 @@ derivative with different cost parameters. Together with the constant held
 arguments, the expected value is calculated by fixed point algorithm. Double
 calculation of the same fixed point is avoided by the following function:
 
-.. currentmodule:: ruspy.estimation.est_cost_params
+.. currentmodule:: ruspy.estimation.nfxp
 
 .. autosummary::
     :toctree: _generated/
@@ -378,15 +378,7 @@ of the log likelihood function and the constraints.
 The function ``estimate`` calls some sub functions depending on whether NFXP, MPEC
 with IPOPT or MPEC with NLOPT is selected. Those functions can be inspected below:
 
-.. currentmodule:: ruspy.estimation.estimation
-
-.. autosummary::
-    :toctree: _generated/
-
-    estimate_nfxp
-    estimate_mpec_ipopt
-    estimate_mpec_nlopt
-
+!!!Here were functions imported before!!!
 
 Auxiliary objects
 =====================
@@ -401,7 +393,7 @@ A :math:`num\_obs \times num\_states` dimensional *bool numpy.array* containing 
 single TRUE in each row at the column in which the bus was in that observation. It is
 used in the matrix multiplication of the likelihood function. It is created by
 
-.. currentmodule:: ruspy.estimation.est_cost_params
+.. currentmodule:: ruspy.estimation.nfxp
 
 .. autosummary::
     :toctree: _generated/
