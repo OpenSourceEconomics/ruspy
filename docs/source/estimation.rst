@@ -48,7 +48,7 @@ The estimation function
 
 The estimation process is coordinated by the function estimate:
 
-!!!There were functions imported here before.!!!
+!!!There was the estimate function imported here before.!!!
 
 
 Besides the :ref:`df`, the function needs the following initialization dictionary
@@ -162,13 +162,7 @@ specify bounds for IPOPT then use also the notation of NLOPT as outlined above.
 
 For further details see the selection function itself:
 
-
-.. currentmodule:: ruspy.estimation.estimation_interface
-
-.. autosummary::
-    :toctree: _generated/
-
-    select_optimizer_options
+!!!There was the select_optimzer function imported here before!!!
 
 
 For both NFXP and MPEC, following the separability of the estimation process
