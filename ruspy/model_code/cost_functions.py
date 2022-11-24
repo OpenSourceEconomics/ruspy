@@ -11,14 +11,14 @@ def calc_obs_costs(num_states, maint_func, params, scale):
         The size of the state space.
     maint_func : callable
         see :ref:`maint_func`
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     scale : numpy.float
         see :ref:`scale`
 
     Returns
     -------
-    obs_costs : numpy.array
+    obs_costs : numpy.ndarray
         see :ref:`costs`
 
 
@@ -39,14 +39,14 @@ def lin_cost(num_states, params, scale):
     ----------
     num_states : int
         The size of the state space.
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     scale : numpy.float
         see :ref:`scale`
 
     Returns
     -------
-    costs : numpy.array
+    costs : numpy.ndarray
         A num_states sized one dimensional numpy array containing the maintenance
         costs for each state.
 
@@ -69,7 +69,7 @@ def lin_cost_dev(num_states, scale):
 
     Returns
     -------
-    dev : numpy.array
+    dev : numpy.ndarray
         A num_states sized one dimensional numpy array containing the derivative of the
         linear maintenance cost function for each state.
 
@@ -87,14 +87,14 @@ def cubic_costs(num_states, params, scale):
     ----------
     num_states : int
         The size of the state space.
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     scale : numpy.float
         see :ref:`scale`
 
     Returns
     -------
-    costs : numpy.array
+    costs : numpy.ndarray
         A num_states sized one dimensional numpy array containing the maintenance
         costs for each state.
 
@@ -121,7 +121,7 @@ def cubic_costs_dev(num_states, scale):
 
     Returns
     -------
-    dev : numpy.array
+    dev : numpy.ndarray
         A num_states x 3 dimensional numpy array containing the derivative of
         the cubic maintenance cost function for each state.
 
@@ -140,14 +140,14 @@ def quadratic_costs(num_states, params, scale):
     ----------
     num_states : int
         The size of the state space.
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     scale : numpy.float
         see :ref:`scale`
 
     Returns
     -------
-    costs : numpy.array
+    costs : numpy.ndarray
         A num_states sized one dimensional numpy array containing the maintenance
         costs for each state.
 
@@ -171,7 +171,7 @@ def quadratic_costs_dev(num_states, scale):
 
     Returns
     -------
-    dev : numpy.array
+    dev : numpy.ndarray
         A num_states x 2 dimensional numpy array containing the derivative of
         the quadratic maintenance cost function for each state.
 
@@ -190,14 +190,14 @@ def sqrt_costs(num_states, params, scale):
     ----------
     num_states : int
         The size of the state space.
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     scale : numpy.float
         see :ref:`scale`
 
     Returns
     -------
-    costs : numpy.array
+    costs : numpy.ndarray
         A num_states sized one dimensional numpy array containing the maintenance
         costs for each state.
 
@@ -221,7 +221,7 @@ def sqrt_costs_dev(num_states, scale):
 
     Returns
     -------
-    dev : numpy.array
+    dev : numpy.ndarray
         A num_states sized one dimensional numpy array containing the derivative of the
         square root maintenance cost function for each state.
 
@@ -240,14 +240,14 @@ def hyperbolic_costs(num_states, params, scale):
     ----------
     num_states : int
         The size of the state space.
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     scale : numpy.float
         see :ref:`scale`
 
     Returns
     -------
-    costs : numpy.array
+    costs : numpy.ndarray
         A num_states sized one dimensional numpy array containing the maintenance
         costs for each state.
 
@@ -271,7 +271,7 @@ def hyperbolic_costs_dev(num_states, scale):
 
     Returns
     -------
-    dev : numpy.array
+    dev : numpy.ndarray
         A num_states sized one dimensional numpy array containing the derivative of the
         hyperbolic maintenance cost function for each state.
 

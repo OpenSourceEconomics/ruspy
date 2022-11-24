@@ -90,7 +90,7 @@ def loglike_trans_individual_derivative(params, transition_count):
 
     Returns
     -------
-    jacobian : np.array
+    jacobian : numpy.ndarray
         a dim(params) x dim(params) matrix containing the Jacobian.
 
     """
@@ -121,7 +121,7 @@ def create_transition_matrix(num_states, trans_prob):
 
     Returns
     -------
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
 
     """

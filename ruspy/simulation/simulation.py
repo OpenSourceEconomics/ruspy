@@ -29,11 +29,11 @@ def simulate(init_dict, ev_known, costs, trans_mat, reduced_data=None):
     ----------
     init_dict : dictionary
         See :ref:`sim_init_dict`
-    ev_known : numpy.array
+    ev_known : numpy.ndarray
         See :ref:`ev`
-    costs : numpy.array
+    costs : numpy.ndarray
         See ref:`costs`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         See ref:`trans_mat`
     reduced_data : string
         Keyword for simulation with reduced data usage.

@@ -9,6 +9,7 @@ dependencies:
   - pandas
   - pre-commit
   - pytest
+  - matplotlib
   - pytest-xdist
   - pytest-cov
   - scipy

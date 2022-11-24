@@ -34,7 +34,7 @@ def select_model_parameters(init_dict):
     model_specification = init_dict["model_specifications"]
 
     disc_fac = model_specification["discount_factor"]
-    num_states = model_specification["number_states"]
+    num_states = model_specification["num_states"]
     scale = model_specification["cost_scale"]
 
     maint_func, maint_func_dev, num_params = select_cost_function(

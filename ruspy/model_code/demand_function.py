@@ -4,14 +4,14 @@ Calculates the implied demand function as suggested in Rust (1987).
 import numpy as np
 import pandas as pd
 
-from ruspy.estimation.estimation_interface import select_model_parameters
 from ruspy.estimation.estimation_transitions import create_transition_matrix
+from ruspy.estimation.pre_processing import select_model_parameters
 from ruspy.model_code.choice_probabilities import choice_prob_gumbel
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.fix_point_alg import calc_fixp
 
 
-def get_demand(init_dict, demand_dict, demand_params):
+def get_demand(init_dict, demand_dict, demand_params, max_num_iterations=2000):
     """
     Calculates the implied demand for a range of replacement costs
     for a certain number of buses over a certain time period.
@@ -22,7 +22,7 @@ def get_demand(init_dict, demand_dict, demand_params):
         see :ref:`init_dict`.
     demand_dict : dict
         see :ref:`demand_dict`.
-    demand_params : np.array
+    demand_params : numpy.ndarray
         see :ref:`demand_params`
 
     Returns
@@ -72,8 +72,8 @@ def get_demand(init_dict, demand_dict, demand_params):
                 + np.dot(np.tile(trans_mat[0, :], (num_states, 1)).T, pi[:, 1])
             ).reshape((num_states, 1))
             tol = np.max(np.abs(pi_new - pi))
-            iteration = +1
-            if iteration > 200:
+            iteration += 1
+            if iteration > max_num_iterations:
                 break
             if tol < demand_dict["tolerance"]:
                 demand_results.loc[(rc), "success"] = "Yes"
