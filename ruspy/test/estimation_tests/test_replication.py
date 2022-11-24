@@ -70,8 +70,8 @@ def outputs():
 
 TEST_SPECIFICATIONS = [
     ("linear", np.array([2, 10]), 1e-3),
-    # ("quadratic", np.array([11, 476.3, -2.3]), 1e-5, 3),
-    # ("cubic", np.array([8.3, 1, 0.5, 26]), 1e-8, 4),
+    # ("quadratic", np.array([11, 476.3, -2.3]), 1e-5),
+    # ("cubic", np.array([8.3, 1, 0.5, 26]), 1e-8),
     ("hyperbolic", np.array([8, 23]), 1e-1),
     ("square_root", np.array([11, 3]), 0.01),
 ]
