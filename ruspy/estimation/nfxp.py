@@ -61,7 +61,6 @@ def loglike_cost_params_individual(
 
     """
 
-    # params = params["value"].to_numpy()
     costs = calc_obs_costs(num_states, maint_func, params, scale)
 
     ev, contr_step_count, newt_kant_step_count = get_ev(
