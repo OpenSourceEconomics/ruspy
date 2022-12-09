@@ -96,6 +96,7 @@ def test_repl_params(inputs, outputs, specification):
         algorithm="scipy_lbfgsb",
         derivative=criterion_dev,
     )
+    breakpoint()
     # compare estimated cost parameters to true parameters
     assert_allclose(
         result_fixp.params, outputs["params_" + cost_func_name_short], atol=1e-1
