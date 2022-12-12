@@ -76,7 +76,7 @@ The simulation
 --------------
 After the simulation process the observed states, decisions and mileage uses are
 returned. Additionally the agent's utility. They are all stored in pandas.DataFrame with
-column names **states**, **decisions**, **utilities** and **usage**.Hence, the observed
+column names **states**, **decisions**, **utilities** and **usage**. Hence, the observed
 data is a subset of the returned Dataframe.
 
 Demonstration
