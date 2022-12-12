@@ -14,7 +14,6 @@ from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_params
 from ruspy.model_code.fix_point_alg import contr_op_dev_wrt_rc
 from ruspy.model_code.fix_point_alg import solve_equ_system_fixp
 
-
 ev_intermed = None
 current_params = None
 
@@ -38,7 +37,7 @@ def loglike_cost_params_individual(
 
     Parameters
     ----------
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -46,23 +45,22 @@ def loglike_cost_params_individual(
         The size of the state space.
     disc_fac : numpy.float
         see :ref:`disc_fac`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
 
     Returns
     -------
-    log_like : numpy.array
+    log_like : numpy.ndarray
         A num_buses times num_periods dimensional array containing the negative
         log-likelihood contributions of the individuals.
 
 
     """
 
-    # params = params["value"].to_numpy()
     costs = calc_obs_costs(num_states, maint_func, params, scale)
 
     ev, contr_step_count, newt_kant_step_count = get_ev(
@@ -94,7 +92,7 @@ def loglike_cost_params(
 
     Parameters
     ----------
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -102,11 +100,11 @@ def loglike_cost_params(
         see :ref:`maint_func`
     num_states : int
         The size of the state space.
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
     disc_fac : numpy.float
         see :ref:`disc_fac`
@@ -156,7 +154,7 @@ def derivative_loglike_cost_params_individual(
 
     Parameters
     ----------
-    params : numpy.array
+    params : numpy.ndarray
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -164,16 +162,16 @@ def derivative_loglike_cost_params_individual(
         The size of the state space.
     disc_fac : numpy.float
         see :ref:`disc_fac`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
 
     Returns
     -------
-    dev : numpy.array
+    dev : numpy.ndarray
         A num_buses + num_periods x dim(params) matrix in form of numpy array
         containing the derivative of the individual log-likelihood function for
         every cost parameter.
@@ -228,7 +226,7 @@ def derivative_loglike_cost_params(
 
     Parameters
     ----------
-    params : pandas.DataFrame
+    params : numpy.ndarray
         see :ref:`params`
     maint_func: func
         see :ref:`maint_func`
@@ -236,11 +234,11 @@ def derivative_loglike_cost_params(
         see :ref:`maint_func`
     num_states : int
         The size of the state space.
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
     disc_fac : numpy.float
         see :ref:`disc_fac`
@@ -251,7 +249,7 @@ def derivative_loglike_cost_params(
 
     Returns
     -------
-    dev : np.array
+    dev numpy.ndarray
         A dimension(params) sized vector containing the gradient of the negative
         likelihood function.
 
@@ -270,41 +268,6 @@ def derivative_loglike_cost_params(
     ).sum(axis=0)
 
     return dev
-
-
-def get_ev(params, trans_mat, obs_costs, disc_fac, alg_details):
-    """
-    A auxiliary function, which allows the log-likelihood function as well as its
-    derivative to share the same fixed point and to avoid the need to execute the
-    computation double.
-
-    Parameters
-    ----------
-    params : numpy.array
-        see :ref:`params`
-    trans_mat : numpy.array
-        see :ref:`trans_mat`
-    obs_costs : numpy.array
-        see :ref:`costs`
-    disc_fac : numpy.float
-        see :ref:`disc_fac`
-
-    Returns
-    -------
-    ev : numpy.array
-        see :ref:`ev`
-
-    """
-    global ev_intermed
-    global current_params
-    if (ev_intermed is not None) & np.array_equal(current_params, params):
-        ev = ev_intermed
-        ev_intermed = None
-    else:
-        ev = calc_fixp(trans_mat, obs_costs, disc_fac, **alg_details)
-        ev_intermed = ev
-        current_params = params
-    return ev
 
 
 def log_like_values_param(ev, costs, p_choice, trans_mat, cost_dev, disc_fac):
@@ -338,11 +301,11 @@ def like_hood_data_individual(l_values, decision_mat, state_mat):
 
     Parameters
     ----------
-    l_values : np.array
+    l_values numpy.ndarray
         the raw log likelihood per state.
-    decision_mat : numpy.array
+    decision_mat : numpy.ndarray
         see :ref:`decision_mat`
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
 
     Returns
@@ -374,14 +337,14 @@ def create_state_matrix(states, num_states):
 
     Parameters
     ----------
-    states : numpy.array
+    states : numpy.ndarray
         All mileage state observations.
     num_states : int
         The size of the state space.
 
     Returns
     -------
-    state_mat : numpy.array
+    state_mat : numpy.ndarray
         see :ref:`state_mat`
 
     """
@@ -390,3 +353,38 @@ def create_state_matrix(states, num_states):
     for i, value in enumerate(states):
         state_mat[value, i] = 1.0
     return state_mat
+
+
+def get_ev(params, trans_mat, obs_costs, disc_fac, alg_details):
+    """
+    A auxiliary function, which allows the log-likelihood function as well as its
+    derivative to share the same fixed point and to avoid the need to execute the
+    computation double.
+
+    Parameters
+    ----------
+    params : numpy.ndarray
+        see :ref:`params`
+    trans_mat : numpy.ndarray
+        see :ref:`trans_mat`
+    obs_costs : numpy.ndarray
+        see :ref:`costs`
+    disc_fac : numpy.float
+        see :ref:`disc_fac`
+
+    Returns
+    -------
+    ev : numpy.ndarray
+        see :ref:`ev`
+
+    """
+    global ev_intermed
+    global current_params
+    if (ev_intermed is not None) & np.array_equal(current_params, params):
+        ev = ev_intermed
+        ev_intermed = None
+    else:
+        ev = calc_fixp(trans_mat, obs_costs, disc_fac, **alg_details)
+        ev_intermed = ev
+        current_params = params
+    return ev

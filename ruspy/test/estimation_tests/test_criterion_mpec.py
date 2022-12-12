@@ -14,8 +14,8 @@ from numpy.testing import assert_array_almost_equal
 
 from ruspy.config import TEST_RESOURCES_DIR
 from ruspy.estimation.criterion_function import get_criterion_function
-from ruspy.estimation.est_cost_params import get_ev
 from ruspy.estimation.estimation_transitions import create_transition_matrix
+from ruspy.estimation.nfxp import get_ev
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import hyperbolic_costs
@@ -35,7 +35,7 @@ def inputs():
     init_dict = {
         "model_specifications": {
             "discount_factor": disc_fac,
-            "number_states": num_states,
+            "num_states": num_states,
         },
         "method": "MPEC",
         "alg_details": alg_details,
@@ -81,14 +81,17 @@ def test_criterion_function(inputs, outputs, specification):
     init_dict = inputs["init_dict"]
     init_dict["model_specifications"]["maint_cost_func"] = cost_func_name
     init_dict["model_specifications"]["cost_scale"] = scale
+    num_states = init_dict["model_specifications"]["num_states"]
 
-    criterion_func, criterion_dev, transition_results = get_criterion_function(
-        init_dict, df
-    )
+    (
+        criterion_func,
+        criterion_dev,
+        constraint,
+        _,
+        transition_results,
+    ) = get_criterion_function(init_dict, df)
     true_params = np.loadtxt(TEST_FOLDER + f"repl_params_{cost_func_name_short}.txt")
-    trans_mat = create_transition_matrix(
-        inputs["num_states"], np.array(transition_results["x"])
-    )
+    trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     obs_costs = calc_obs_costs(
         num_states=inputs["num_states"],
         maint_func=cost_func,
@@ -102,6 +105,11 @@ def test_criterion_function(inputs, outputs, specification):
     assert_array_almost_equal(
         criterion_func(mpec_params=true_mpec_params),
         outputs["cost_ll_" + cost_func_name_short],
+        decimal=3,
+    )
+    assert_array_almost_equal(
+        constraint(mpec_params=true_mpec_params),
+        np.zeros(num_states, dtype=float),
         decimal=3,
     )
 
@@ -133,6 +141,6 @@ def test_criterion_function(inputs, outputs, specification):
 #     )
 #     true_mpec_params = np.concatenate((ev[0], true_params))
 #     assert_array_almost_equal(
-#         criterion_dev(mpec_params=true_mpec_params), np.zeros(num_params),
+#         criterion_dev(mpec_params=true_mpec_params)[90:], np.zeros(num_params),
 #         decimal=2,
 #     )
