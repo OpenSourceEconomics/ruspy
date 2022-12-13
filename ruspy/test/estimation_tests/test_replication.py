@@ -96,7 +96,6 @@ def test_nfxp(inputs, outputs, specification):
         algorithm="scipy_lbfgsb",
         derivative=criterion_dev,
     )
-    breakpoint()
     # compare estimated cost parameters to true parameters
     assert_allclose(result_fixp.params, outputs["params_" + cost_func_name], atol=1e-1)
     # compare computed minimum neg log-likelihood to true minimum neg log-likelihood

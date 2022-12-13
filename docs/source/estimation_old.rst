@@ -2,13 +2,12 @@
 Estimation
 ######################
 
-Here the estimation process of the ruspy package is documented. The structure
-is the following: The first part documents in detail which format is required
-on the input data and how you can easily access this for the original data.
-Then the estimation process is documented and an introduction to the
-demonstration notebooks closes this part. Throughout this part, there are
-references to the functions in the ruspy package and in the end a summary of
-all APIs.
+Here the estimation process of the ruspy package is documented. The structure is the
+following: The first part documents in detail which format is required on the input data
+and how you can easily access this for the original data. Then the estimation process is
+documented and an introduction to the demonstration notebooks closes this part.
+Throughout this part, there are references to the functions in the ruspy package and in
+the end a summary of all APIs.
 
 
 .. _df:
@@ -18,9 +17,9 @@ The input data
 ****************
 
 The estimation package works with a `pandas.DataFrame
-<https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_
-asinput. Each observation in the DataFrame has to be indexed by the "Bus_ID" and
-the "period" of observation. These two identifiers have to be combined by the
+<https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_ as
+input. Each observation in the DataFrame has to be indexed by the "Bus_ID" and the
+"period" of observation. These two identifiers have to be combined by the
 `pandas.MultiIndex
 <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.MultiIndex.html>`_.
 Furthermore the DataFrame has to include the following information as columns:
@@ -62,17 +61,17 @@ Besides the :ref:`df`, the function needs the following initialization dictionar
 Estimation initialization dictionary
 *************************************
 
-The initialization dictionary contains model, method and optional algorithmic
-specific information. The information on theses three categories is saved under
-the key "method"and in subdictionairies under the keys **model_specifications**
-and **alg_details**.
-The model specific information as well as the method key are mandatory.
-
-The following inputs for the **model_specifications** are mandatory:
+The initialization dictionary contains model, optimizer and algorithmic specific
+information. The information on theses three categories is saved in subdictionaries
+under the keys **model_specifications**, **optimizer** and **alg_details**.  The
+model specific information as well as the optimizer key are mandatory.
+The options differ depending on whether NFXP or MPEC are chosen as estimation procedure.
+The following inputs for the **model_specifications** are mandatory for both
+estimation approaches:
 
 **discount_factor :** *(float)* The discount factor. See :ref:`disc_fac` for details.
 
-**num_states :** *(int)* The size of the state space as integer.
+**number_states :** *(int)* The size of the state space as integer.
 
 **maint_cost_func :** *(string)* The name of the maintenance cost function. See
 :ref:`maint_func` for details.
@@ -80,18 +79,20 @@ The following inputs for the **model_specifications** are mandatory:
 **cost_scale :** *(float)* The scale for the maintenance costs. See :ref:`scale` for
 details.
 
-In the key **method** the following has to be specified:
+In the subdictionary **optimizer** at least the following has to be specified:
 
-**method:** *(string)* The general approach chosen which is either "NFXP",
-"NFXP_BHHH" or "MPEC".
+**approach :** *(string)* The general approach chosen which is either "NFXP" or
+"MPEC".
 
-If "NFXP" or "NFXP_BHHH" are chosen as "method", then the additional subdictionairy
-**alg_details** can be used to specify options for the fixed point algorithm.
-See :ref:`alg_details` for the possible keys and the default values.
+**algorithm :** *(string)* The name of the optimization algorithm used to estimate
+the model with one of the above approaches. More details below as the selection
+is specific to the general approach.
 
+Optionally, irrespective of the approach chosen, one can specify the following:
 
-
-
+**derivative :** *(string)* (optional) Information on whether to use analytical or
+numerical derivatives. Enter "Yes" for analytical and "No" or numerical derivatives.
+*Default is "Yes"*.
 
 As the optimization problem in the NFXP and MPEC are quite different, also in the
 **init_dict** many different options are available depending on the approach.
@@ -256,10 +257,11 @@ The cost parameters are now estimated differently for NFXP and MPEC.
 NFXP
 =========================
 
-The cost parameters for the NFXP are estimated  by minimizing the
-log-likelihood using the minimize function from the `estimagic library
+The cost parameters for the NFXP are estimated directly by minimizing the log-likelihood
+the minimize function from the `estimagic library
 <https://estimagic.readthedocs.io/en/latest/index.html>`_. The objective function
-as well as its analytical derivative can be found in ``ruspy.estimation.nfxp``:
+as well as its analytical derivative can be found in
+``ruspy.estimation.nfxp``:
 
 
 .. currentmodule:: ruspy.estimation.nfxp
