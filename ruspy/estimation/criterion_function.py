@@ -24,8 +24,9 @@ def get_criterion_function(
     df,
 ):
     """
-    This function specifies the criterion function with its derivative
-    and arguments for NFXP and MPEC.
+    This function specifies the criterion function with its derivative,
+    transition probabilites (for NXFP and MPEC) as well as the contraint
+    function with its derivative (for MPEC).
 
     Parameters
     ----------

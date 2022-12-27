@@ -1,9 +1,6 @@
 """
 This module specifies the model specifications and the cost
 function from the initialisation dictionary init_dict.
-
-change to the previous version:
-select_optimizer_options is not needed
 """
 from ruspy.model_code.cost_functions import cubic_costs
 from ruspy.model_code.cost_functions import cubic_costs_dev

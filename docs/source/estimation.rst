@@ -43,13 +43,18 @@ the desired manner. Or you can use the functions in `zurcher-data
 tailored to the ruspy package. In the demonstration section these functions are used
 to replicate the results documented.
 
-************************
-The estimation function
-************************
+**********************
+The estimation process
+**********************
 
-The estimation process is coordinated by the function estimate:
+The estimation process is coordinated by the function ``get_criterion_function``:
 
-!!!There was the estimate function imported here before.!!!
+.. currentmodule:: ruspy.estimation.criterion_function
+
+.. autosummary::
+    :toctree: _generated/
+
+    get_criterion_function
 
 
 Besides the :ref:`df`, the function needs the following initialization dictionary
@@ -93,80 +98,10 @@ See :ref:`alg_details` for the possible keys and the default values.
 
 
 
-As the optimization problem in the NFXP and MPEC are quite different, also in the
-**init_dict** many different options are available depending on the approach.
-
-NFXP
-==========================
-
-In the **optimizer** subdictionary the following options are implemented:
-
-**algorithm :** *(string)* The algorithms available are those that are offered
-by `estimagic <https://estimagic.readthedocs.io/en/latest/>`_. Here, only one
-the names of one of `those
-<https://estimagic.readthedocs.io/en/latest/optimization/algorithms.html>`_
-has to be entered.
-
-**params :** *(pd.DataFrame)* (optional) The first guess of the cost parameter vector
-can be supplied. This has to be done according to the `conventions of estimagic
-<https://estimagic.readthedocs.io/en/latest/optimization/params.html>`_.
-
-In general any argument that can be chosen in the estimagic function `minimize
-<https://estimagic.readthedocs.io/en/latest/optimization/interface.html>`_ can be
-passed in as a key in the **optimizer** subdictionary. For example one could specify
-the key "logging" and specify the name of the logging database ("logging_nfxp.db").
-For performance reasons the logging in ruspy is switched off if not specified
-differently. Only the arguments criterion, criterion_kwargs, derivative and
-derivative_kwargs cannot be set by the user.
-
-Additionally, the subdictionairy **alg_details** can be used to specify options
-for the fixed point algorithm. See :ref:`alg_details` for the possible keys
-and the default values.
-
-
-.. _mpec_params:
-
-MPEC
-======================
-
-The **optimizer** subdictionary can contain the following:
-
-**algorithm :** *(string)* The constrained optimization algorithm chosen which
-can handle nonlinear equality constraints. So far, there is the option to use **IPOPT**
-by specifying "ipopt". For this `cyipopt <https://github.com/matthias-k/cyipopt>`_
-is built on which uses `the interface of scipy
-<https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
-. If you want to add extra options to the optimizer then you can do so by e.g.
-adding a key "options" which is itself a dictionairy as requested by the scipy
-interface. The arguments fun, x0, bounds, jac and constraints cannot be specified.
-As a second option one can use **NLOPT** by specifying the specific algorithm from
-the following `list <https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/>`_
-without the prefix "NLOPT", i.e. for example "LD_SLSQP" is a valid choice. Again,
-one can pass in extra options to the algorithm. The options available can be found
-`here <https://nlopt.readthedocs.io/en/latest/NLopt_Python_Reference/>`_. The
-options are passed in by their name without the prefix "opt.", i.e. a key could
-be for instance "set_lower_bounds" and the value is a numpy array specifying the
-lower bound. What cannot be used are set_min_objective and
-add_equality_mconstraint.
-
-**params :** *(numpy.array)* The starting values for MPEC consist of the cost
-parameters and the discretized expected values. The array has therefore a length
-of num_states plus num_params. Imagine the grid size is 90 and we have linear cost
-which means there are two cost parameters. Then the first 90 values are the
-starting values for the expected values in order of increasing state. The last two
-elements are :math:`RC` and :math:`\theta_1`, respectively.
-
-There is one special case regarding the interface for **IPOPT**. If you want to
-specify bounds for IPOPT then use also the notation of NLOPT as outlined above.
-
-For further details see the selection function itself:
-
-!!!There was the select_optimzer function imported here before!!!
-
 
 For both NFXP and MPEC, following the separability of the estimation process
-the ``estimate`` function first calls the estimation function for the transition
-probabilities.
+the function ``get_criterion_function`` first calls the estimation function for
+the transition probabilities.
 
 **********************************
 Transition probability estimation
@@ -217,8 +152,9 @@ which is conveniently implemented in estimagic using the `constraints argument
 
 
 The collected results of the transition estimation are collected in a dictionary
-descibed below and returned to the ``estimate`` function in which then the
-cost parameters are estimated using either NFXP or MPEC.
+descibed below and returned to the function ``get_criterion_function`` in which
+then the respective criterion function for the cost parameter estimation is
+specified.
 
 .. _result_trans:
 
@@ -256,11 +192,10 @@ The cost parameters are now estimated differently for NFXP and MPEC.
 NFXP
 =========================
 
-The cost parameters for the NFXP are estimated  by minimizing the
-log-likelihood using the minimize function from the `estimagic library
-<https://estimagic.readthedocs.io/en/latest/index.html>`_. The objective function
-as well as its analytical derivative can be found in ``ruspy.estimation.nfxp``:
-
+The cost parameters for the NFXP are estimated by minimizing the negative
+log-likelihood. The criterion function as well as its analytical derivative
+are returned by the function ``get_criterion_function`` and can be found
+in ``ruspy.estimation.nfxp``:
 
 .. currentmodule:: ruspy.estimation.nfxp
 
@@ -272,15 +207,42 @@ as well as its analytical derivative can be found in ``ruspy.estimation.nfxp``:
   loglike_cost_params
   derivative_loglike_cost_params
 
-As estimagic offers to use an implementation of the BHHH also used by Rust (1987)
-the first two functions above are needed. They work with the individual
+
+The minimization of the criterion function is not directly implemented in the
+ruspy package, so that any minimization rountine can be used. However, we recommend
+using the minimize function from the `estimagic library <https://estimagic.readthedocs.io/en/latest/>`_
+as estimagic offers to use an implementation of the BHHH also used by Rust (1987).
+They work with the individual
 log likelihood contributions of a bus at each time period. The two lower functions
 are needed for other algorithms such as the L-BFGS-B provided by estimagic.
-For this the previous functions are summed up to obtain to latter ones. The selection
+For this, the previous functions are summed up to obtain to latter ones. The selection
 of the correct functions is done by ruspy automatically depending on your choice
-of algorithm.
+of method ("NFXP" or "NFXP_BHHH").
 
-In the minimization proedure the optimizer calls the likelihood functions and its
+When calling the minimize function from estimagic, the following inputs are needed:
+
+**criterion :** *(callable)* (Negative) log-likelihood of the cost parameter
+estimation returned by ``get_criterion_function``.
+
+**algorithm :** *(string)* Algorithm used for optimization. If method is "NFXP_BHHH",
+then algorithm has to be "bhhh". If method is "NFXP", then any algorithm offered
+by `estimagic <https://estimagic.readthedocs.io/en/latest/>`_ can be used. Here, only one
+the names of one of `those
+<https://estimagic.readthedocs.io/en/latest/optimization/algorithms.html>`_
+has to be entered.
+
+**params :** *(numpy.float)* (optional) The first guess of the cost parameter vector
+can be supplied. This has to be done according to the `conventions of estimagic
+<https://estimagic.readthedocs.io/en/v0.0.28/optimization/params.html?highlight=params>`_.
+Note that the size of the vector has to match the number of the cost parameters
+of the considered cost function, i.e. if we specify a linear cost function in
+the initialization dictionary, there are two cost parameters, which are :math:`RC`
+and :math:`\theta_1`, respectively.
+
+**derivative :** *(numpy.float)* Derivative of the criterion function returned
+by ``get_criterion_function``.
+
+In the minimization procedure the optimizer calls the likelihood functions and its
 derivative with different cost parameters. Together with the constant held
 arguments, the expected value is calculated by fixed point algorithm. Double
 calculation of the same fixed point is avoided by the following function:
@@ -314,58 +276,25 @@ the analytical derivatives of the two.
     mpec_constraint_derivative
 
 
-For both NFXP and MPEC some of the results from the estimators estimagic, ipopt
-and nlopt are passed on to the user. The results are presented below.
+As for NFXP, the minimization of the criterion function is not directly implemented
+in the ruspy package, but again we recommend using the minimize function from the
+`estimagic library <https://estimagic.readthedocs.io/en/latest/>`_.
 
-.. _result_costs:
+For MPEC, the function ``get_criterion_function`` additionally returns the constraint
+function and its derivative, that can be passed to the ``minimize`` function in a
+dictionairy under the argument ``constraint`` (see `constraint argument
+<https://estimagic.readthedocs.io/en/
+v0.0.28/optimization/constraints/index.html#constraints>`_)
+beside the criterion function, its derivative, the algorithm and starting
+values ``params``. Note that the starting values for MPEC consist of the cost
+parameters and the discretized expected values. The array has therefore a length
+of num_states plus num_params. Imagine the grid size is 90 and we have linear cost
+which means there are two cost parameters. Then the first 90 values are the
+starting values for the expected values in order of increasing state. The last two
+elements are :math:`RC` and :math:`\theta_1`, respectively.
 
-******************************
-Cost parameters results
-******************************
 
-Again there are slight differences for NFXP and MPEC.
-The dictionary containing the cost parameter results has the following keys for both
-NFXP and MPEC:
 
-**fun :** *(numpy.float)* Log-likelihood of the cost parameter estimation.
-
-**x :** *(numpy.array)* Estimated cost parameters and in the case of MPEC also
-the estimated expected values.
-
-**status :** *(bool)* Evaluates to True if the optimizer converged and False
-if not.
-
-**n_iterations :** *(int)* Gives out the number of iterations needed by the
-algorithm.
-
-**n_evaluations :** *(int)* Gives out the number of function evaluations needed
-by the algorithm.
-
-**time :** *(float)* Indicates the time needed by the optimizer to obtain the final
-cost parameter estimates.
-
-For the **NFXP** there are also the following keys:
-
-**jac :** *(numpy.array)* The value of the estimates' jacobian.
-
-**message :** *(string)* The convergence message of estimagic.
-
-**n_contraction_steps :** *(int)* The number of contraction iterations needed in
-total during the optimization to calculate the fixed points.
-
-**n_newt_kant_steps :** *(int)* The number of Newton-Kantorovich iterations needed in
-total during the optimization to calculate the fixed points.
-
-When using **IPOPT** for **MPEC** the following key is included:
-
-**n_evaluations_total :** *(int)* The number of total function evaluations needed
-which is also including function evaluations made to approximate the derivatives
-of the log likelihood function and the constraints.
-
-The function ``estimate`` calls some sub functions depending on whether NFXP, MPEC
-with IPOPT or MPEC with NLOPT is selected. Those functions can be inspected below:
-
-!!!Here were functions imported before!!!
 
 Auxiliary objects
 =====================
