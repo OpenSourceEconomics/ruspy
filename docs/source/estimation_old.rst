@@ -55,7 +55,7 @@ Besides the :ref:`df`, the function needs the following initialization dictionar
 **init_dict**:
 
 
-.. _init_dict:
+.. _init_dict_old:
 
 *************************************
 Estimation initialization dictionary

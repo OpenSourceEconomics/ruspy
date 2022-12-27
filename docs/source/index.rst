@@ -67,3 +67,5 @@ using ruspy.
    references
    credits
    api
+   replication
+   notebooks/replication_iskhakov_et_al_2016

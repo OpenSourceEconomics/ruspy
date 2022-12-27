@@ -69,7 +69,7 @@ Estimation initialization dictionary
 
 The initialization dictionary contains model, method and optional algorithmic
 specific information. The information on theses three categories is saved under
-the key "method"and in subdictionairies under the keys **model_specifications**
+the key **method** and in subdictionairies under the keys **model_specifications**
 and **alg_details**.
 The model specific information as well as the method key are mandatory.
 
@@ -90,7 +90,7 @@ In the key **method** the following has to be specified:
 **method:** *(string)* The general approach chosen which is either "NFXP",
 "NFXP_BHHH" or "MPEC".
 
-If "NFXP" or "NFXP_BHHH" are chosen as "method", then the additional subdictionairy
+If "NFXP" or "NFXP_BHHH" are chosen as **method**, then the additional subdictionairy
 **alg_details** can be used to specify options for the fixed point algorithm.
 See :ref:`alg_details` for the possible keys and the default values.
 
