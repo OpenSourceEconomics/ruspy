@@ -19,7 +19,7 @@ The input data
 
 The estimation package works with a `pandas.DataFrame
 <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_
-asinput. Each observation in the DataFrame has to be indexed by the "Bus_ID" and
+as input. Each observation in the DataFrame has to be indexed by the "Bus_ID" and
 the "period" of observation. These two identifiers have to be combined by the
 `pandas.MultiIndex
 <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.MultiIndex.html>`_.
@@ -145,10 +145,11 @@ corresponding function in the code is:
 
 The ``estimate_transitions`` function minimizes now the ``loglike_trans_individual``
 function by calling the `BHHH of estimagic
-<https://estimagic.readthedocs.io/en/latest/optimization/algorithms.html>`_.
+<https://estimagic.readthedocs.io/en/stable/algorithms.html>`_.
 The transition probabilities need to add up to 1 and have to be positive
 which is conveniently implemented in estimagic using the `constraints argument
-<https://estimagic.readthedocs.io/en/latest/optimization/constraints/index.html>`_.
+<https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/
+how_to_specify_constraints.html>`_.
 
 
 The collected results of the transition estimation are collected in a dictionary
@@ -210,7 +211,8 @@ in ``ruspy.estimation.nfxp``:
 
 The minimization of the criterion function is not directly implemented in the
 ruspy package, so that any minimization rountine can be used. However, we recommend
-using the minimize function from the `estimagic library <https://estimagic.readthedocs.io/en/latest/>`_
+using the minimize function from the
+`estimagic library <https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_,
 as estimagic offers to use an implementation of the BHHH also used by Rust (1987).
 They work with the individual
 log likelihood contributions of a bus at each time period. The two lower functions
@@ -228,7 +230,8 @@ estimation returned by ``get_criterion_function``.
 then algorithm has to be "bhhh". If method is "NFXP", then any algorithm offered
 by `estimagic <https://estimagic.readthedocs.io/en/latest/>`_ can be used. Here, only one
 the names of one of `those
-<https://estimagic.readthedocs.io/en/latest/optimization/algorithms.html>`_
+<https://estimagic.readthedocs.io/en/v0.0.28/optimization/
+algorithms.html#list-of-algorithms>`_
 has to be entered.
 
 **params :** *(numpy.float)* (optional) The first guess of the cost parameter vector
@@ -278,13 +281,14 @@ the analytical derivatives of the two.
 
 As for NFXP, the minimization of the criterion function is not directly implemented
 in the ruspy package, but again we recommend using the minimize function from the
-`estimagic library <https://estimagic.readthedocs.io/en/latest/>`_.
+`estimagic library
+<https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_.
 
 For MPEC, the function ``get_criterion_function`` additionally returns the constraint
 function and its derivative, that can be passed to the ``minimize`` function in a
 dictionairy under the argument ``constraint`` (see `constraint argument
-<https://estimagic.readthedocs.io/en/
-v0.0.28/optimization/constraints/index.html#constraints>`_)
+<https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/
+how_to_specify_constraints.html>`_)
 beside the criterion function, its derivative, the algorithm and starting
 values ``params``. Note that the starting values for MPEC consist of the cost
 parameters and the discretized expected values. The array has therefore a length

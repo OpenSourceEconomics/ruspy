@@ -276,8 +276,9 @@ the following inputs:
 Initialization Dictionairy
 ---------------------------
 
-This is the :ref:`init_dict` needed for the ``estimate`` function. The ``get_demand``
-function draws the model specifications needed to calculate demand from this.
+This is the :ref:`init_dict` needed for the function ``get_criterion_function``.
+The ``get_demand`` function draws the model specifications needed to calculate
+demand from this.
 
 
 .. _demand_dict:
