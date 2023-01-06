@@ -233,7 +233,7 @@ looking like the following:
 
     \begin{equation}
       \max_{(\theta, EV)} \; log \; l^f_{aug}(a_1, ..., a_T, x_1, ...., x_T | a_0, x_0, \theta, EV) \\
-      \text{subject to } \; EV = T(EV, \theta).
+      \text{ subject to } \; EV = T(EV, \theta).
     \end{equation}
 
 The constraints are generally nonlinear functions which restricts the use of

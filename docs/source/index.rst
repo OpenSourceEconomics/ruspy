@@ -40,16 +40,10 @@ ruspy can be installed via conda with:
 
 
 After installing ruspy, you can familiarize yourself with ruspy's tools and
-interface by exploring multiple tutorial notebooks. Note that for a full
+interface by exploring multiple tutorial notebooks, which can be found
+`here <tutorials.html>`_. Note that for a full
 comprehension, you should read the papers above or study at least the economics
-section of this documentation. We provide a `simulation
-<notebooks/simulation_convergence.ipynb>`_ and
-`replication <notebooks/replication.ipynb>`_. The first one puts more focus on
-the simulation function of ruspy while the latter has a closer look at the
-estimation function. Lastly, for a combination of both you can further dive into the
-`replication of Iskhakov et al. (2016)
-<notebooks/replication_iskhakov_et_al_2016.ipynb>`_ notebook which allows to
-replicate this paper using ruspy.
+section of this documentation.
 
 
 .. toctree::
@@ -60,9 +54,7 @@ replicate this paper using ruspy.
    model_code
    estimation
    simulation
-   notebooks/replication
-   notebooks/simulation_convergence
-   notebooks/replication_iskhakov_et_al_2016
+   tutorials
    references
    credits
    api

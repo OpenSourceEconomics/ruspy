@@ -82,8 +82,8 @@ data is a subset of the returned Dataframe.
 Demonstration
 -------------
 
-In the promotion folder of the repository are two demonstration jupyter notebooks. The
-`simulation <https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion
-/simulation/simulation_convergence.ipynb>`_ notebook allows to easily
-experiment with the estimation methods described here. If you have have everything
+The `simulation <notebooks/simulation_convergence.ipynb>`_ notebook allows to easily
+experiment with the estimation methods described here. The notebook can be downloaded
+from the `repository <https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion
+/simulation/simulation_convergence.ipynb>`_. If you have have everything
 setup, then it should be easy to run it.

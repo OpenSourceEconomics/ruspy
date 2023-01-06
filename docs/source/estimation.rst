@@ -188,7 +188,7 @@ of using NFXP or MPEC.
 Cost parameter estimation
 ***************************
 
-The cost parameters are now estimated differently for NFXP and MPEC.
+The cost parameters are now estimated differently for NFXP, NFXP_BHHH and MPEC.
 
 NFXP
 =========================
@@ -203,47 +203,23 @@ in ``ruspy.estimation.nfxp``:
 .. autosummary::
   :toctree: _generated/
 
-  loglike_cost_params_individual
-  derivative_loglike_cost_params_individual
   loglike_cost_params
   derivative_loglike_cost_params
 
 
 The minimization of the criterion function is not directly implemented in the
-ruspy package, so that any minimization rountine can be used. However, we recommend
-using the minimize function from the
-`estimagic library <https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_,
-as estimagic offers to use an implementation of the BHHH also used by Rust (1987).
-They work with the individual
-log likelihood contributions of a bus at each time period. The two lower functions
-are needed for other algorithms such as the L-BFGS-B provided by estimagic.
-For this, the previous functions are summed up to obtain to latter ones. The selection
-of the correct functions is done by ruspy automatically depending on your choice
-of method ("NFXP" or "NFXP_BHHH").
-
-When calling the minimize function from estimagic, the following inputs are needed:
-
-**criterion :** *(callable)* (Negative) log-likelihood of the cost parameter
-estimation returned by ``get_criterion_function``.
-
-**algorithm :** *(string)* Algorithm used for optimization. If method is "NFXP_BHHH",
-then algorithm has to be "bhhh". If method is "NFXP", then any algorithm offered
-by `estimagic <https://estimagic.readthedocs.io/en/latest/>`_ can be used. Here, only one
-the names of one of `those
+ruspy package, so that any minimization rountine can be used. In the provided
+tutorials, we use the minimize function from the
+`estimagic library <https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_.
+Beside the criterion function and its derivative, an `algorithm
 <https://estimagic.readthedocs.io/en/v0.0.28/optimization/
-algorithms.html#list-of-algorithms>`_
-has to be entered.
-
-**params :** *(numpy.float)* (optional) The first guess of the cost parameter vector
-can be supplied. This has to be done according to the `conventions of estimagic
-<https://estimagic.readthedocs.io/en/v0.0.28/optimization/params.html?highlight=params>`_.
-Note that the size of the vector has to match the number of the cost parameters
-of the considered cost function, i.e. if we specify a linear cost function in
+algorithms.html#list-of-algorithms>`_ used for optimization
+has to be entered and a first guess of the cost params can be provided as inputs
+of the ``minimize``function.
+Depending on the form of the cost functions, the params argument is a vector of
+length ``num_params``, i.e. if we specify a linear cost function in
 the initialization dictionary, there are two cost parameters, which are :math:`RC`
 and :math:`\theta_1`, respectively.
-
-**derivative :** *(numpy.float)* Derivative of the criterion function returned
-by ``get_criterion_function``.
 
 In the minimization procedure the optimizer calls the likelihood functions and its
 derivative with different cost parameters. Together with the constant held
@@ -256,6 +232,34 @@ calculation of the same fixed point is avoided by the following function:
     :toctree: _generated/
 
     get_ev
+
+
+NFXP_BHHH
+=========================
+
+The cost parameter estimation for "NFXP_BHHH" is similar to the one for
+"NFXP" by using the individual log likelihood contributions of a bus at each
+time period. The criterion function as well as its analytical derivative
+are returned by the function ``get_criterion_function`` and can also be found
+in ``ruspy.estimation.nfxp``:
+
+.. currentmodule:: ruspy.estimation.nfxp
+
+.. autosummary::
+  :toctree: _generated/
+
+  loglike_cost_params_individual
+  derivative_loglike_cost_params_individual
+
+
+
+As for NFXP, the minimizer of the criterion function can be found using the
+minimize function of
+`estimagic <https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_,
+as the estimagic library offers to use an implementation of the BHHH also
+used by Rust (1987). The only difference to "NFXP" is the choice of the algorithm
+argument in the ``minimize`` function: Here, "bhhh" needs to the entered.
+
 
 
 MPEC
@@ -279,9 +283,9 @@ the analytical derivatives of the two.
     mpec_constraint_derivative
 
 
-As for NFXP, the minimization of the criterion function is not directly implemented
-in the ruspy package, but again we recommend using the minimize function from the
-`estimagic library
+As for NFXP and NFXP_BHHH, the minimization of the criterion function is not
+directly implemented in the ruspy package, but again we can use the
+``minimize`` function of `estimagic
 <https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_.
 
 For MPEC, the function ``get_criterion_function`` additionally returns the constraint
@@ -292,7 +296,8 @@ how_to_specify_constraints.html>`_)
 beside the criterion function, its derivative, the algorithm and starting
 values ``params``. Note that the starting values for MPEC consist of the cost
 parameters and the discretized expected values. The array has therefore a length
-of num_states plus num_params. Imagine the grid size is 90 and we have linear cost
+of :math:`num\_states + num\_params`.
+Imagine the grid size is 90 and we have linear cost
 which means there are two cost parameters. Then the first 90 values are the
 starting values for the expected values in order of increasing state. The last two
 elements are :math:`RC` and :math:`\theta_1`, respectively.
@@ -335,11 +340,11 @@ of the likelihood function.
 Demonstration
 ****************
 
-In the promotion folder of the repository are two demonstration jupyter notebooks. The
-`replication <https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion
-/replication/replication.ipynb>`_ notebook allows to easily experiment with the
-methods described here as well as the implied demand function. If you have have
-everything setup, then it should be easy to run it. For a more advanced set up have
-a look at the `replication of Iskhakov et al. (2016)
-<https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion/replication
-/replication_iskhakov_et_al_2016.ipynb>`_.
+In the tutorials are two demonstration jupyter notebooks of the cost estimation process.
+The `replication <notebooks/replication.ipynb>`_ notebook allows to easily experiment
+with the methods described here as well as the implied demand function.
+The notebook can also be downloaded from the promotion folder of the
+`repository <https://github.com/OpenSourceEconomics/ruspy/tree/master/promotion/replication>`_.
+If you have have everything setup, then it should be easy to run it.
+For a more advanced set up have a look at the `replication of Iskhakov et al. (2016)
+<notebooks/replication_iskhakov_et_al_2016.ipynb>`_.

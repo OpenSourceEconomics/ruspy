@@ -11,7 +11,8 @@ Iskhakov, F., Lee, J., Rust, J., Schjerning, B., & Seo, K. (2016). `Comment on
 Kantorovich, L. (1948). On Newton’s method for functional equations. *Doklady Akademii
 Nauk SSSR, 71* (1), 1237– 1240.
 
-Kraft, D. (1994). `Algorithm 733: TOMP–Fortran modules for optimal control calculations <https://doi.org/10.1145/192115.192124>`_
+Kraft, D. (1994). `Algorithm 733: TOMP–Fortran modules for optimal control calculations
+<https://doi.org/10.1145/192115.192124>`_
 *ACM Transactions on Mathematical Software, vol. 20*, no. 3, pp. 262-281.
 
 McFadden, D. (1973). `Conditional logit analysis of qualitative choice behavior

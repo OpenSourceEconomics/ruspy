@@ -340,6 +340,7 @@ and for the amount of buses in the fleet. It also contains a column *success*
 which indicates whether the fixed point algorithm converged successfully.
 
 
+
 The use of the ``get_demand`` function is shown in the following `replication
 <https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion
 /replication/replication.ipynb>`_ notebook.

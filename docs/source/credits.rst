@@ -21,7 +21,8 @@ Contributors
 ------------
 
 `Sebastian Becker <https://github.com/sebecker>`_, `Pascal Heid <https://github
-.com/Pascalheid>`_
+.com/Pascalheid>`_, `Viktoria Kleinschmidt <https://github.com/viktoriakleinschmidt>`_
+
 
 
 Master Theses
