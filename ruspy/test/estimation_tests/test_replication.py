@@ -88,7 +88,9 @@ def test_nfxp(inputs, outputs, specification):
     init_dict["model_specifications"]["cost_scale"] = scale
     init_dict["method"] = "NFXP"
     # specify criterion function
-    criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
+    func_dict, result_trans = get_criterion_function(init_dict, df)
+    criterion_func = func_dict["criterion_function"]
+    criterion_dev = func_dict["criterion_derivative"]
     # minimize criterion function
     result_fixp = minimize(
         criterion=criterion_func,
@@ -117,9 +119,10 @@ def test_bhhh(inputs, outputs, specification):
     init_dict["model_specifications"]["cost_scale"] = scale
     init_dict["method"] = "NFXP_BHHH"
     # specify criterion function
-    criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
+    func_dict, result_trans = get_criterion_function(init_dict, df)
+    criterion_func = func_dict["criterion_function"]
+    criterion_dev = func_dict["criterion_derivative"]
     # minimize criterion function
-    # ToDo: We start at optimum. This can't be the solution!
     result_fixp = minimize(
         criterion=criterion_func,
         params=outputs["params_" + cost_func_name],
@@ -148,17 +151,13 @@ def test_mpec(inputs, outputs, specification):
     num_states = init_dict["model_specifications"]["num_states"]
     init_dict["method"] = "MPEC"
     # specify criterion function
-    (
-        criterion_func,
-        criterion_dev,
-        constraint,
-        constraint_dev,
-        result_trans,
-    ) = get_criterion_function(init_dict, df)
-
+    func_dict, result_trans = get_criterion_function(init_dict, df)
+    criterion_func = func_dict["criterion_function"]
+    criterion_dev = func_dict["criterion_derivative"]
+    constraint = func_dict["constraint"]
+    constraint_dev = func_dict["constraint_dev"]
     x0 = np.zeros(num_states + init_params.shape[0], dtype=float)
     x0[num_states:] = init_params
-    # minimize criterion function
     result_mpec = minimize(
         criterion=criterion_func,
         params=x0,

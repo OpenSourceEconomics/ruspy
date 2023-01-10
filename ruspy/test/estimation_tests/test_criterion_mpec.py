@@ -83,13 +83,10 @@ def test_criterion_function(inputs, outputs, specification):
     init_dict["model_specifications"]["cost_scale"] = scale
     num_states = init_dict["model_specifications"]["num_states"]
 
-    (
-        criterion_func,
-        criterion_dev,
-        constraint,
-        _,
-        transition_results,
-    ) = get_criterion_function(init_dict, df)
+    func_dict, transition_results = get_criterion_function(init_dict, df)
+    criterion_func = func_dict["criterion_function"]
+    constraint = func_dict["constraint"]
+
     true_params = np.loadtxt(TEST_FOLDER + f"repl_params_{cost_func_name_short}.txt")
     trans_mat = create_transition_matrix(num_states, np.array(transition_results["x"]))
     obs_costs = calc_obs_costs(

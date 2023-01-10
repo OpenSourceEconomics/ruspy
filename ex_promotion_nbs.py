@@ -5,7 +5,7 @@ import glob
 import os
 import subprocess as sp
 
-os.chdir(os.environ["PROJECT_ROOT"] + "/promotion")
+os.chdir(os.environ["PROJECT_ROOT"] + "/tutorials")
 promotion_folders = ["replication", "simulation"]
 
 

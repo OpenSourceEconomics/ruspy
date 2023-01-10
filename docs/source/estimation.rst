@@ -341,10 +341,10 @@ Demonstration
 ****************
 
 In the tutorials are two demonstration jupyter notebooks of the cost estimation process.
-The `replication <notebooks/replication.ipynb>`_ notebook allows to easily experiment
-with the methods described here as well as the implied demand function.
+The `replication <tutorials/replication/replication.ipynb>`_ notebook allows to easily
+experiment with the methods described here as well as the implied demand function.
 The notebook can also be downloaded from the promotion folder of the
 `repository <https://github.com/OpenSourceEconomics/ruspy/tree/master/promotion/replication>`_.
 If you have have everything setup, then it should be easy to run it.
 For a more advanced set up have a look at the `replication of Iskhakov et al. (2016)
-<notebooks/replication_iskhakov_et_al_2016.ipynb>`_.
+<tutorials/replication/replication_iskhakov_et_al_2016.ipynb>`_.

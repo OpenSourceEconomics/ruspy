@@ -36,7 +36,9 @@ def inputs():
         "num_buses": 1,
     }
     df = pd.read_pickle(TEST_FOLDER + "/replication_test/group_4.pkl")
-    criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
+    func_dict, result_trans = get_criterion_function(init_dict, df)
+    criterion_func = func_dict["criterion_function"]
+    criterion_dev = func_dict["criterion_derivative"]
     result_fixp = minimize(
         criterion=criterion_func,
         params=np.zeros(2, dtype=float),

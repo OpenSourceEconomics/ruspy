@@ -43,7 +43,9 @@ def inputs():
     costs = calc_obs_costs(num_states, lin_cost, out["params_base"], scale)
     ev_known = calc_fixp(trans_mat, costs, disc_fac)[0]
     df = simulate(init_dict["simulation"], ev_known, costs, trans_mat)
-    criterion_func, criterion_dev, result_trans = get_criterion_function(init_dict, df)
+    func_dict, result_trans = get_criterion_function(init_dict, df)
+    criterion_func = func_dict["criterion_function"]
+    criterion_dev = func_dict["criterion_derivative"]
     result_fixp = minimize(
         criterion=criterion_func,
         params=np.zeros(2, dtype=float),

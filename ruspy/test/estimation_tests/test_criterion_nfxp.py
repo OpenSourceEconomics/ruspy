@@ -71,12 +71,10 @@ def test_criterion_function(inputs, outputs, specification):
     init_dict["model_specifications"]["maint_cost_func"] = cost_func_name
     init_dict["model_specifications"]["cost_scale"] = scale
 
-    criterion_func, criterion_dev, transition_results = get_criterion_function(
-        init_dict, df
-    )
+    crit_func_dict, transition_results = get_criterion_function(init_dict, df)
 
     assert_array_almost_equal(
-        criterion_func(
+        crit_func_dict["criterion_function"](
             np.loadtxt(TEST_FOLDER + f"repl_params_{cost_func_name_short}.txt")
         ),
         outputs["cost_ll_" + cost_func_name_short],
@@ -93,12 +91,10 @@ def test_criterion_derivative(inputs, outputs, specification):
     init_dict["model_specifications"]["maint_cost_func"] = cost_func_name
     init_dict["model_specifications"]["cost_scale"] = scale
 
-    criterion_func, criterion_dev, transition_results = get_criterion_function(
-        init_dict, df
-    )
+    crit_func_dict, transition_results = get_criterion_function(init_dict, df)
 
     assert_array_almost_equal(
-        criterion_dev(
+        crit_func_dict["criterion_derivative"](
             np.loadtxt(TEST_FOLDER + f"repl_params_{cost_func_name_short}.txt")
         ),
         np.zeros(num_params),

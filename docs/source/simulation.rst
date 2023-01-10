@@ -82,7 +82,7 @@ data is a subset of the returned Dataframe.
 Demonstration
 -------------
 
-The `simulation <notebooks/simulation_convergence.ipynb>`_ notebook allows to easily
+The `simulation <tutorials/simulation/simulation_convergence.ipynb>`_ notebook allows to easily
 experiment with the estimation methods described here. The notebook can be downloaded
 from the `repository <https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion
 /simulation/simulation_convergence.ipynb>`_. If you have have everything

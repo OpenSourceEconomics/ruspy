@@ -37,10 +37,8 @@ def get_criterion_function(
 
     Returns
     -------
-    criterion_func :
-        see :ref:`criterion_func`
-    criterion_dev :
-        see :ref:`criterion_dev`
+    func_dict :
+        see :ref:`func_dict`
     transition_results : dictionary
         see :ref:`result_trans`
     """
@@ -78,68 +76,53 @@ def get_criterion_function(
     else:
         raise ValueError("The key 'method' must be in init_dict")
 
+    func_dict = {}
+    nfxp_kwargs = {
+        **basic_kwargs,
+        "trans_mat": trans_mat,
+        "state_mat": state_mat,
+        "decision_mat": decision_mat,
+        "alg_details": alg_details,
+    }
+
     if method == "NFXP":
-
-        nfxp_kwargs = {
-            **basic_kwargs,
-            "trans_mat": trans_mat,
-            "state_mat": state_mat,
-            "decision_mat": decision_mat,
-            "alg_details": alg_details,
-        }
-
-        criterion_function_nfxp = partial(loglike_cost_params, **nfxp_kwargs)
-        criterion_derivative_nfxp = partial(
+        func_dict["criterion_function"] = partial(loglike_cost_params, **nfxp_kwargs)
+        func_dict["criterion_derivative"] = partial(
             derivative_loglike_cost_params, **nfxp_kwargs
         )
 
-        return criterion_function_nfxp, criterion_derivative_nfxp, transition_results
-
     elif method == "NFXP_BHHH":
-
-        bhhh_kwargs = {
-            **basic_kwargs,
-            "trans_mat": trans_mat,
-            "state_mat": state_mat,
-            "decision_mat": decision_mat,
-            "alg_details": alg_details,
-        }
-
-        criterion_function_bhhh = partial(loglike_cost_params_individual, **bhhh_kwargs)
-        criterion_derivative_bhhh = partial(
-            derivative_loglike_cost_params_individual, **bhhh_kwargs
+        func_dict["criterion_function"] = partial(
+            loglike_cost_params_individual, **nfxp_kwargs
+        )
+        func_dict["criterion_derivative"] = partial(
+            derivative_loglike_cost_params_individual, **nfxp_kwargs
         )
 
-        return criterion_function_bhhh, criterion_derivative_bhhh, transition_results
     elif method == "MPEC":
-
         mpec_crit_kwargs = {
             **basic_kwargs,
             "state_mat": state_mat,
             "decision_mat": decision_mat,
         }
 
-        criterion_function_mpec = partial(mpec_loglike_cost_params, **mpec_crit_kwargs)
-        criterion_derivative_mpec = partial(
+        func_dict["criterion_function"] = partial(
+            mpec_loglike_cost_params, **mpec_crit_kwargs
+        )
+        func_dict["criterion_derivative"] = partial(
             mpec_loglike_cost_params_derivative, **mpec_crit_kwargs
         )
-
-        constraint_kwargs = {
+        mpec_constr_kwargs = {
             **basic_kwargs,
             "trans_mat": trans_mat,
         }
-
-        constraint = partial(mpec_constraint, **constraint_kwargs)
-        constraint_dev = partial(mpec_constraint_derivative, **constraint_kwargs)
-        return (
-            criterion_function_mpec,
-            criterion_derivative_mpec,
-            constraint,
-            constraint_dev,
-            transition_results,
+        func_dict["constraint"] = partial(mpec_constraint, **mpec_constr_kwargs)
+        func_dict["constraint_dev"] = partial(
+            mpec_constraint_derivative, **mpec_constr_kwargs
         )
-
     else:
         raise ValueError(
             f"{method} is not implemented. Only MPEC or NFXP are valid choices"
         )
+
+    return func_dict, transition_results
