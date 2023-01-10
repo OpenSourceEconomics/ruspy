@@ -184,6 +184,8 @@ nonzero probabilities in each row. This function is:
 The transition matrix is then used for the cost parameter estimation irrespective
 of using NFXP or MPEC.
 
+.. _func_dict:
+
 ***************************
 Cost parameter estimation
 ***************************
@@ -195,7 +197,8 @@ NFXP
 
 The cost parameters for the NFXP are estimated by minimizing the negative
 log-likelihood. The criterion function as well as its analytical derivative
-are returned by the function ``get_criterion_function`` and can be found
+are returned by the function ``get_criterion_function`` in a dictonary with keys
+"criterion_function" and "criterion_derivative". Their source code can be found
 in ``ruspy.estimation.nfxp``:
 
 .. currentmodule:: ruspy.estimation.nfxp
@@ -208,18 +211,17 @@ in ``ruspy.estimation.nfxp``:
 
 
 The minimization of the criterion function is not directly implemented in the
-ruspy package, so that any minimization rountine can be used. In the provided
+ruspy package, so an minimization routine is needed. In the provided
 tutorials, we use the minimize function from the
-`estimagic library <https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_.
+`estimagic library <https://estimagic.readthedocs.io>`_.
 Beside the criterion function and its derivative, an `algorithm
-<https://estimagic.readthedocs.io/en/v0.0.28/optimization/
-algorithms.html#list-of-algorithms>`_ used for optimization
+<https://estimagic.readthedocs.io/en/stable/algorithms.html>`_ used for optimization
 has to be entered and a first guess of the cost params can be provided as inputs
 of the ``minimize``function.
 Depending on the form of the cost functions, the params argument is a vector of
 length ``num_params``, i.e. if we specify a linear cost function in
 the initialization dictionary, there are two cost parameters, which are :math:`RC`
-and :math:`\theta_1`, respectively.
+and :math:`\theta_1`, respectively. For any other cost function see ref:`cost_func`.
 
 In the minimization procedure the optimizer calls the likelihood functions and its
 derivative with different cost parameters. Together with the constant held
@@ -240,7 +242,8 @@ NFXP_BHHH
 The cost parameter estimation for "NFXP_BHHH" is similar to the one for
 "NFXP" by using the individual log likelihood contributions of a bus at each
 time period. The criterion function as well as its analytical derivative
-are returned by the function ``get_criterion_function`` and can also be found
+are returned by the function ``get_criterion_function`` in a dictonary with keys
+"criterion_function" and "criterion_derivative". Their source code can also be found
 in ``ruspy.estimation.nfxp``:
 
 .. currentmodule:: ruspy.estimation.nfxp
@@ -253,24 +256,24 @@ in ``ruspy.estimation.nfxp``:
 
 
 
-As for NFXP, the minimizer of the criterion function can be found using the
-minimize function of
-`estimagic <https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_,
-as the estimagic library offers to use an implementation of the BHHH also
-used by Rust (1987). The only difference to "NFXP" is the choice of the algorithm
-argument in the ``minimize`` function: Here, "bhhh" needs to the entered.
+The BHHH is a quasi-Newton method, which uses the individual likelihood contributions
+instead of their sum. You can find a BHHH implementation in the overview of
+`estimagic algorithms <https://estimagic.readthedocs.io/en/stable/algorithms.html>`_.
+Everything else is the same as in the NFXP implementation using the sum
+of the likelihood contributions.
 
-
+.. _mpec_params:
 
 MPEC
 ==============================
 
-In the case of MPEC there is no need to calculate the fixed point via the function
-``get_ev`` but rather a constraint to the likelihood function with the contraction
-mapping has to be specified.
-The functions needed for MPEC are hence the four below being the log likelihood
-function that is now also dependent on :math:`EV`, the constraints as well as
-the analytical derivatives of the two.
+In the case of MPEC there the expected value fixed point is not calculated for a set of
+cost parameters and instead the fixed point mapping is implemented as a constraint.
+We provide besides the criterion function and its derivative, also the constraint and
+its derivative via the ``get_criterion_function``. They are returned in a dictionary of
+functions with keys "criterion_function", "criterion_derivative", "constraint" and
+"constraint_derivative". The source code of the four functions can be found in
+``ruspy.estimation.mpec``:
 
 .. currentmodule:: ruspy.estimation.mpec
 
@@ -283,20 +286,18 @@ the analytical derivatives of the two.
     mpec_constraint_derivative
 
 
-As for NFXP and NFXP_BHHH, the minimization of the criterion function is not
-directly implemented in the ruspy package, but again we can use the
-``minimize`` function of `estimagic
-<https://estimagic.readthedocs.io/en/v0.0.28/optimization/interface.html>`_.
 
-For MPEC, the function ``get_criterion_function`` additionally returns the constraint
-function and its derivative, that can be passed to the ``minimize`` function in a
-dictionairy under the argument ``constraint`` (see `constraint argument
+For estimating the model, one can use the optimizers for non-linear constraint
+optimizers implemented in `estimagic <https://estimagic.readthedocs.io>`_.
+The ``minimize`` function of estimagic takes the criterion function, its derivative,
+the constraint function and its derivative as inputs. The constraint can be given to the
+``minimize`` function via a dictionairy under the argument ``constraint``
+(see `constraint argument
 <https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/
-how_to_specify_constraints.html>`_)
-beside the criterion function, its derivative, the algorithm and starting
-values ``params``. Note that the starting values for MPEC consist of the cost
-parameters and the discretized expected values. The array has therefore a length
-of :math:`num\_states + num\_params`.
+how_to_specify_constraints.html>`_) Note that the starting values ``params`` for MPEC
+consist of the cost parameters and starting values for the :math:`EV` fixed point. The
+array has therefore a length of :math:`num\_states + num\_params`.
+
 Imagine the grid size is 90 and we have linear cost
 which means there are two cost parameters. Then the first 90 values are the
 starting values for the expected values in order of increasing state. The last two

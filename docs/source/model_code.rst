@@ -105,7 +105,7 @@ hyperbolic cost function
 ---------------
 Cost parameters
 ---------------
-The second in put are the cost parameters, which are stored as a one dimensional
+The second input are the cost parameters, which are stored as a one dimensional
 *numpy.array*. At the first position always the replacement cost :math:`RC` is stored.
 The next positions are subsequently filled with :math:`\theta_{11}, \theta_{12}, ...`.
 The exact number depends on the functional form.
