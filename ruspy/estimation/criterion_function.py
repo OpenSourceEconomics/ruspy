@@ -117,7 +117,7 @@ def get_criterion_function(
             "trans_mat": trans_mat,
         }
         func_dict["constraint"] = partial(mpec_constraint, **mpec_constr_kwargs)
-        func_dict["constraint_dev"] = partial(
+        func_dict["constraint_derivative"] = partial(
             mpec_constraint_derivative, **mpec_constr_kwargs
         )
     else:

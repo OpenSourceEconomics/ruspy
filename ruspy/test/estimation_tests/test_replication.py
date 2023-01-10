@@ -155,7 +155,7 @@ def test_mpec(inputs, outputs, specification):
     criterion_func = func_dict["criterion_function"]
     criterion_dev = func_dict["criterion_derivative"]
     constraint = func_dict["constraint"]
-    constraint_dev = func_dict["constraint_dev"]
+    constraint_dev = func_dict["constraint_derivative"]
     x0 = np.zeros(num_states + init_params.shape[0], dtype=float)
     x0[num_states:] = init_params
     result_mpec = minimize(
