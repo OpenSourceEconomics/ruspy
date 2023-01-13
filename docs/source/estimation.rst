@@ -226,7 +226,7 @@ tutorials, we use the minimize function from the
 Beside the criterion function and its derivative, an `algorithm
 <https://estimagic.readthedocs.io/en/stable/algorithms.html>`_ used for optimization
 has to be entered and a first guess of the cost params can be provided as inputs
-of the ``minimize``function. Note, again that only the cost parameters are needed in
+of the ``minimize`` function. Note, again that only the cost parameters are needed in
 the minimization, as all other inputs of the functions are fixed.
 Depending on the form of the cost functions, the params argument is a vector of
 length ``num_params``, i.e. if we specify a linear cost function in
