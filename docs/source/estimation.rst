@@ -46,13 +46,13 @@ The estimation process
 **********************
 
 The estimation process is not directly implemented in ruspy. The package only contains
-the likelihood functions and in case of MPEC also the constraints. For the (minimization)
-maximization of the (negative) loglikelihood function, an external optimization library
-has to be used. Hence ruspy is a so called model package. OpenSourceEconomics offers
-several of these model packages, all for different models. More information can be found
-on our `homepage <https://open-econ.org>`_. The central function to get the criterion
-function, it's derivative and if applicable the constraint is the
-``get_criterion_function`` function. It's source code can be found here:
+the likelihood functions and in case of MPEC also the constraints. For the
+(minimization) maximization of the (negative) loglikelihood function, an external
+optimization library has to be used. Hence ruspy is a so called model package.
+OpenSourceEconomics offers several of these model packages, all for different models.
+More information can be found on our `homepage <https://open-econ.org>`_. The central
+function to get the criterion function, it's derivative and if applicable the constraint
+is the ``get_criterion_function`` function. It's source code can be found here:
 
 .. currentmodule:: ruspy.estimation.criterion_function
 
@@ -86,9 +86,11 @@ following mandatory keys:
 
 - **num_states :** *(int)* The size of the state space as integer.
 
-- **maint_cost_func :** *(string)* The name of the maintenance cost function. See :ref:`maint_func` for details.
+- **maint_cost_func :** *(string)* Name of the cost function. See :ref:`maint_func`
+  for details.
 
-- **cost_scale :** *(float)* The scale for the maintenance costs. See :ref:`scale` for details.
+- **cost_scale :** *(float)* The scale for the maintenance costs. See :ref:`scale`
+  for details.
 
 
 Under the key **method** the method of estimation has to be specified as a *(string)*:
@@ -167,7 +169,7 @@ The dictionary containing the transition estimation results has the following ke
 
 - **x :** *(numpy.array)* Estimated transition probabilities.
 
-- ** trans_count :** *(numpy.array)* Counted state increases for each array index.
+- **trans_count :** *(numpy.array)* Counted state increases for each array index.
 
 
 So far only a pooled estimation of the transitions is possible. Hence, ``ruspy``
@@ -352,8 +354,8 @@ Demonstration
 In the tutorials are two demonstration jupyter notebooks of the cost estimation process.
 The `replication <tutorials/replication/replication.ipynb>`_ notebook allows to easily
 experiment with the methods described here as well as the implied demand function.
-The notebook can also be downloaded from the promotion folder of the
-`repository <https://github.com/OpenSourceEconomics/ruspy/tree/master/promotion/replication>`_.
+The notebook can also be downloaded from the tutorials folder of the
+`repository <https://github.com/OpenSourceEconomics/ruspy/tree/master/docs/source/replication>`_.
 If you have have everything setup, then it should be easy to run it.
 For a more advanced set up have a look at the `replication of Iskhakov et al. (2016)
 <tutorials/replication/replication_iskhakov_et_al_2016.ipynb>`_.
