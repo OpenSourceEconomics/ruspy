@@ -2,13 +2,11 @@
 Estimation
 ######################
 
-Here the estimation process of the ruspy package is documented. The structure
+On this page the estimation process of the ruspy package is documented. The structure
 is the following: The first part documents in detail which format is required
-on the input data and how you can easily access this for the original data.
-Then the estimation process is documented and an introduction to the
-demonstration notebooks closes this part. Throughout this part, there are
-references to the functions in the ruspy package and in the end a summary of
-all APIs.
+on the input data and how you can easily access this for the original data. Then we
+explain how the initialization dictionary specified, before explaining the different
+estimation steps and methods.
 
 
 .. _df:
@@ -40,14 +38,21 @@ If you want to replicate Rust (1987) you can download the raw data from John Rus
 the desired manner. Or you can use the functions in `zurcher-data
 <https://github.com/OpenSourceEconomics/zurcher-data>`_ which are provided by the
 `OpenSourceEconomics <https://github.com/OpenSourceEconomics>`_ community and
-tailored to the ruspy package. In the demonstration section these functions are used
-to replicate the results documented.
+tailored to the ruspy package.
+
 
 **********************
 The estimation process
 **********************
 
-The estimation process is coordinated by the function ``get_criterion_function``:
+The estimation process is not directly implemented in ruspy. The package only contains
+the likelihood functions and in case of MPEC also the constraints. For the (minimization)
+maximization of the (negative) loglikelihood function, an external optimization library
+has to be used. Hence ruspy is a so called model package. OpenSourceEconomics offers
+several of these model packages, all for different models. More information can be found
+on our `homepage <https://open-econ.org>`_. The central function to get the criterion
+function, it's derivative and if applicable the constraint is the
+``get_criterion_function`` function. It's source code can be found here:
 
 .. currentmodule:: ruspy.estimation.criterion_function
 
@@ -57,8 +62,8 @@ The estimation process is coordinated by the function ``get_criterion_function``
     get_criterion_function
 
 
-Besides the :ref:`df`, the function needs the following initialization dictionary
-**init_dict**:
+The returns of the function will be explained below. First, the second input besides the
+input data :ref:`df`, the initialization dictionary is documented:
 
 
 .. _init_dict:
@@ -68,40 +73,36 @@ Estimation initialization dictionary
 *************************************
 
 The initialization dictionary contains model, method and optional algorithmic
-specific information. The information on theses three categories is saved under
-the key **method** and in subdictionairies under the keys **model_specifications**
+specific information. The information on theses three categories is are saved under the
+dictionary keys **method**, **model_specifications**
 and **alg_details**.
-The model specific information as well as the method key are mandatory.
+The keys **method** and **model_specifications** are mandatory. In the following the
+entries saved under the three keys is explained
 
-The following inputs for the **model_specifications** are mandatory:
+Under the key **model_specifications** a subdictionary has to be provided, with the
+following mandatory keys:
 
-**discount_factor :** *(float)* The discount factor. See :ref:`disc_fac` for details.
+- **discount_factor :** *(float)* The discount factor. See :ref:`disc_fac` for details.
 
-**num_states :** *(int)* The size of the state space as integer.
+- **num_states :** *(int)* The size of the state space as integer.
 
-**maint_cost_func :** *(string)* The name of the maintenance cost function. See
-:ref:`maint_func` for details.
+- **maint_cost_func :** *(string)* The name of the maintenance cost function. See :ref:`maint_func` for details.
 
-**cost_scale :** *(float)* The scale for the maintenance costs. See :ref:`scale` for
-details.
+- **cost_scale :** *(float)* The scale for the maintenance costs. See :ref:`scale` for details.
 
-In the key **method** the following has to be specified:
 
-**method:** *(string)* The general approach chosen which is either "NFXP",
-"NFXP_BHHH" or "MPEC".
+Under the key **method** the method of estimation has to be specified as a *(string)*:
+Ruspy supports the following keys: "NFXP", "NFXP_BHHH" or "MPEC".
+
 
 If "NFXP" or "NFXP_BHHH" are chosen as **method**, then the additional subdictionairy
 **alg_details** can be used to specify options for the fixed point algorithm.
 See :ref:`alg_details` for the possible keys and the default values.
 
 
-
-
-
-
-For both NFXP and MPEC, following the separability of the estimation process
-the function ``get_criterion_function`` first calls the estimation function for
-the transition probabilities.
+Before explaining the cost parameter estimation with the likelihood function from
+``get_criterion_function``, the transition probability estimation is documented. This
+estimation can be completely separated from the cost parameter estimation.
 
 **********************************
 Transition probability estimation
@@ -140,22 +141,20 @@ corresponding function in the code is:
 .. autosummary::
     :toctree: _generated/
 
-    loglike_trans_individual
+    loglike_trans
 
 
-The ``estimate_transitions`` function minimizes now the ``loglike_trans_individual``
-function by calling the `BHHH of estimagic
-<https://estimagic.readthedocs.io/en/stable/algorithms.html>`_.
-The transition probabilities need to add up to 1 and have to be positive
-which is conveniently implemented in estimagic using the `constraints argument
-<https://estimagic.readthedocs.io/en/stable/how_to_guides/optimization/
-how_to_specify_constraints.html>`_.
+The ``estimate_transitions`` function does not minimize ``loglike_trans`` directly.
+Instead ruspy uses the formula for estimating a multinomial distribution and then
+calculates the likelihood value from the estimate. Therefore we don't provide standard
+errors of the transitions probabilities at the moment.
 
 
 The collected results of the transition estimation are collected in a dictionary
-descibed below and returned to the function ``get_criterion_function`` in which
+described below and returned to the function ``get_criterion_function`` in which
 then the respective criterion function for the cost parameter estimation is
-specified.
+specified. The transition result is also returned as the second output from
+``get_criterion_function``.
 
 .. _result_trans:
 
@@ -164,9 +163,11 @@ Transition results
 
 The dictionary containing the transition estimation results has the following keys:
 
-**fun :** *(numpy.float)* Log-likelihood of transition estimation.
+- **fun :** *(numpy.float)* Log-likelihood of transition estimation.
 
-**x :** *(numpy.array)* Estimated transition probabilities.
+- **x :** *(numpy.array)* Estimated transition probabilities.
+
+- ** trans_count :** *(numpy.array)* Counted state increases for each array index.
 
 
 So far only a pooled estimation of the transitions is possible. Hence, ``ruspy``
@@ -191,6 +192,12 @@ Cost parameter estimation
 ***************************
 
 The cost parameters are now estimated differently for NFXP, NFXP_BHHH and MPEC.
+``get_criterion_function`` returns independet of the specified method two objects.
+A dictionary of functions and the transition results. Only the keys and the functions
+in the function dictionary are different by each method and described below. Note,
+that all inputs are fixed for the functions in function dictionary dependent on the
+specifications given in the initialization dictionary and the functions only take the
+cost parameters as only input.
 
 NFXP
 =========================
@@ -217,7 +224,8 @@ tutorials, we use the minimize function from the
 Beside the criterion function and its derivative, an `algorithm
 <https://estimagic.readthedocs.io/en/stable/algorithms.html>`_ used for optimization
 has to be entered and a first guess of the cost params can be provided as inputs
-of the ``minimize``function.
+of the ``minimize``function. Note, again that only the cost parameters are needed in
+the minimization, as all other inputs of the functions are fixed.
 Depending on the form of the cost functions, the params argument is a vector of
 length ``num_params``, i.e. if we specify a linear cost function in
 the initialization dictionary, there are two cost parameters, which are :math:`RC`

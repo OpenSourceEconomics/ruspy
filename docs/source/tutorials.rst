@@ -16,8 +16,8 @@ To execute the notebooks please install ruspy first.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
+   :caption: Tutorials:
 
-   tutorials/simulation/simulation_convergence
    tutorials/replication/replication
    tutorials/replication/replication_iskhakov_et_al_2016
+   tutorials/simulation/simulation_convergence
