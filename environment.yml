@@ -1,13 +1,15 @@
 name: ruspy
 channels:
-  - opensourceeconomics
+  - defaults
   - conda-forge
 dependencies:
   - python=3.9
+  - matplotlib
   - numpy
   - pandas
   - pre-commit
   - pytest
+  - matplotlib
   - pytest-xdist
   - pytest-cov
   - scipy

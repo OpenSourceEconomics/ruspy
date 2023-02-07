@@ -8,16 +8,16 @@ def choice_prob_gumbel(ev, obs_costs, disc_fac):
 
     Parameters
     ----------
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
-    obs_costs : numpy.array
+    obs_costs : numpy.ndarray
         see :ref:`costs`
     disc_fac : numpy.float
         see :ref:`disc_fac`
 
     Returns
     -------
-    pchoice : numpy.array
+    pchoice : numpy.ndarray
         see :ref:`pchoice`
 
 

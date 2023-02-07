@@ -18,9 +18,9 @@ def calc_fixp(
 
     Parameters
     ----------
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    obs_costs : numpy.array
+    obs_costs : numpy.ndarray
         see :ref:`costs`
     disc_fac : numpy.float
         see :ref:`disc_fac`
@@ -35,7 +35,7 @@ def calc_fixp(
 
     Returns
     -------
-    ev_new : numpy.array
+    ev_new : numpy.ndarray
         see :ref:`ev`
     contr_step_count : int
         shows the amount of contraction iterations needed to find the fixed point.
@@ -69,18 +69,18 @@ def contraction_iteration(ev, trans_mat, obs_costs, disc_fac):
 
     Parameters
     ----------
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    obs_costs : numpy.array
+    obs_costs : numpy.ndarray
         see :ref:`costs`
     disc_fac : numpy.float
         see :ref:`disc_fac`
 
     Returns
     -------
-    ev_new : numpy.array
+    ev_new : numpy.ndarray
         see :ref:`ev`
 
 
@@ -107,18 +107,18 @@ def kantorovich_step(ev, trans_mat, obs_costs, disc_fac):
 
     Parameters
     ----------
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    obs_costs : numpy.array
+    obs_costs : numpy.ndarray
         see :ref:`costs`
     disc_fac : numpy.float
         see :ref:`disc_fac`
 
     Returns
     -------
-    ev_new : numpy.array
+    ev_new : numpy.ndarray
         see :ref:`ev`
 
 
@@ -139,20 +139,20 @@ def solve_equ_system_fixp(fixp_vector, ev, trans_mat, obs_costs, disc_fac):
 
     Parameters
     ----------
-    fixp_vector: numpy.array
+    fixp_vector: numpy.ndarray
         A state space sized containing the right hand side of the euqation.
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    obs_costs : numpy.array
+    obs_costs : numpy.ndarray
         see :ref:`costs`
     disc_fac : numpy.float
         see :ref:`disc_fac`
 
     Returns
     -------
-    sol : numpy.array
+    sol : numpy.ndarray
         The state space sized solution of the equation.
 
     """
@@ -168,18 +168,18 @@ def frechnet_dev(ev, trans_mat, obs_costs, disc_fac):
 
     Parameters
     ----------
-    ev : numpy.array
+    ev : numpy.ndarray
         see :ref:`ev`
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    obs_costs : numpy.array
+    obs_costs : numpy.ndarray
         see :ref:`costs`
     disc_fac : numpy.float
         see :ref:`disc_fac`
 
     Returns
     -------
-    t_prime : numpy.array
+    t_prime : numpy.ndarray
         A num_states x num_states matrix containing the frechnet derivative of the
         contraction mapping. For details see Rust (2000).
 
@@ -197,19 +197,19 @@ def contr_op_dev_wrt_params(trans_mat, maint_choice_prob, cost_dev):
 
     Parameters
     ----------
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    maint_choice_prob : numpy.array
+    maint_choice_prob : numpy.ndarray
         A num_states sized one dimensional numpy array containing the derivative of the
         maintenance cost function with respect to one particular parameter.
-    cost_dev : numpy.array
+    cost_dev : numpy.ndarray
         A num_states sized one dimensional numpy array containing the derivative of the
         maintenance cost function with respect to one particular parameter.
 
 
     Returns
     -------
-    dev : numpy.array
+    dev : numpy.ndarray
         A num_states sized one dimensional numpy array containing the derivative of the
         contraction mapping with respect to one particular maintenance cost parameter.
 
@@ -225,16 +225,16 @@ def contr_op_dev_wrt_rc(trans_mat, maint_choice_prob):
 
     Parameters
     ----------
-    trans_mat : numpy.array
+    trans_mat : numpy.ndarray
         see :ref:`trans_mat`
-    maint_choice_prob : numpy.array
+    maint_choice_prob : numpy.ndarray
         A num_states sized one dimensional numpy array containing the derivative of the
         maintenance cost function for one particular parameter.
 
 
     Returns
     -------
-    dev : numpy.array
+    dev : numpy.ndarray
         A num_states sized one dimensional numpy array containing the derivative of the
         contraction mapping with respect to the replacement cost parameter.
 

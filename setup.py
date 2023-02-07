@@ -14,7 +14,7 @@ AUTHOR = "Maximilian Blesch"
 
 setup(
     name=NAME,
-    version="1.1",
+    version="2.0",
     description=DESCRIPTION,
     author=AUTHOR,
     author_email=EMAIL,

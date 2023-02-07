@@ -29,14 +29,15 @@ Simulation initialization dictionary
 
 The initialization dictionary contains the following keys:
 
-**seed :** *(int)* A positive integer setting the random seed for drawing random
-numbers. If none given, some random seed is drawn.
+- **seed :** *(int)* A positive integer setting the random seed for drawing random
+  numbers. If none given, some random seed is drawn.
 
-**discount_factor :** *(float)* See :ref:`disc_fac` for more details.
+- **discount_factor :** *(float)* See :ref:`disc_fac` for more details.
 
-**buses :** *(int)* The number of buses to be simulated.
+- **buses :** *(int)* The number of buses to be simulated.
 
-**periods :** *(int)* The number of periods to be simulated.
+- **periods :** *(int)* The number of periods to be simulated.
+
 
 
 The simulation process
@@ -76,14 +77,13 @@ The simulation
 --------------
 After the simulation process the observed states, decisions and mileage uses are
 returned. Additionally the agent's utility. They are all stored in pandas.DataFrame with
-column names **states**, **decisions**, **utilities** and **usage**.Hence, the observed
+column names **states**, **decisions**, **utilities** and **usage**. Hence, the observed
 data is a subset of the returned Dataframe.
 
 Demonstration
 -------------
 
-In the promotion folder of the repository are two demonstration jupyter notebooks. The
-`simulation <https://github.com/OpenSourceEconomics/ruspy/blob/master/promotion
-/simulation/simulation_convergence.ipynb>`_ notebook allows to easily
-experiment with the estimation methods described here. If you have have everything
-setup, then it should be easy to run it.
+The `simulation notebook <tutorials/simulation/simulation_convergence.ipynb>`_ allows to
+easily experiment with the estimation methods described here. The notebook can be
+downloaded from the `simulation folder <tutorials/simulation>`_ in the tutorials of
+ruspy. If you have have everything setup, then it should be easy to run it.

@@ -2,31 +2,6 @@ import numpy as np
 import pandas as pd
 
 
-def process_result(approach, transition_result, cost_result, number_states):
-    if approach == "NFXP":
-        result = np.concatenate((cost_result["x"], transition_result["x"][:4]))
-
-        for name in [
-            "time",
-            "status",
-            "n_iterations",
-            "n_evaluations",
-            "n_contraction_steps",
-            "n_newt_kant_steps",
-        ]:
-            result = np.concatenate((result, np.array([cost_result[name]])))
-
-    else:
-        result = np.concatenate(
-            (cost_result["x"][number_states:], transition_result["x"][:4])
-        )
-
-        for name in ["time", "status", "n_iterations", "n_evaluations"]:
-            result = np.concatenate((result, np.array([cost_result[name]])))
-
-    return result
-
-
 def check_simulated_data(
     simulated_data,
     discount_factor,

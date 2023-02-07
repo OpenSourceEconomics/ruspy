@@ -1,9 +1,10 @@
 import numpy as np
 import pytest
+from estimagic import minimize
 from numpy.testing import assert_allclose
 
 from ruspy.config import TEST_RESOURCES_DIR
-from ruspy.estimation.estimation import estimate
+from ruspy.estimation.criterion_function import get_criterion_function
 from ruspy.estimation.estimation_transitions import create_transition_matrix
 from ruspy.model_code.cost_functions import calc_obs_costs
 from ruspy.model_code.cost_functions import lin_cost
@@ -22,15 +23,13 @@ def inputs():
     num_periods = 1000
     scale = 0.001
     init_dict = {
-        "groups": "group_4",
-        "binsize": 5000,
         "model_specifications": {
             "discount_factor": disc_fac,
-            "number_states": num_states,
+            "num_states": num_states,
             "maint_cost_func": "linear",
             "cost_scale": scale,
         },
-        "optimizer": {"approach": "NFXP", "algorithm": "scipy_lbfgsb"},
+        "method": "NFXP",
         "simulation": {
             "discount_factor": disc_fac,
             "seed": 123,
@@ -44,10 +43,17 @@ def inputs():
     costs = calc_obs_costs(num_states, lin_cost, out["params_base"], scale)
     ev_known = calc_fixp(trans_mat, costs, disc_fac)[0]
     df = simulate(init_dict["simulation"], ev_known, costs, trans_mat)
-    result_trans, result_fixp = estimate(init_dict, df)
+    func_dict, result_trans = get_criterion_function(init_dict, df)
+    criterion_func = func_dict["criterion_function"]
+    criterion_dev = func_dict["criterion_derivative"]
+    result_fixp = minimize(
+        criterion=criterion_func,
+        params=np.zeros(2, dtype=float),
+        algorithm="scipy_lbfgsb",
+        derivative=criterion_dev,
+    )
     out["trans_est"] = result_trans["x"]
-    out["params_est"] = result_fixp["x"]
-    out["status"] = result_fixp["status"]
+    out["params_est"] = result_fixp.params
     return out
 
 

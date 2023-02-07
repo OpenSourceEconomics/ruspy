@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
 import pytest
+from estimagic import minimize
 from numpy.testing import assert_array_almost_equal
 
 from ruspy.config import TEST_RESOURCES_DIR
-from ruspy.estimation.estimation import estimate
+from ruspy.estimation.criterion_function import get_criterion_function
 from ruspy.model_code.demand_function import get_demand
 
 
@@ -16,30 +17,15 @@ def inputs():
     out = {}
     disc_fac = 0.9999
     num_states = 90
-    num_params = 2
     scale = 1e-3
-    lb = np.concatenate((np.full(num_states, -np.inf), np.full(num_params, 0.0)))
-    ub = np.concatenate((np.full(num_states, 50.0), np.full(num_params, np.inf)))
     init_dict = {
         "model_specifications": {
             "discount_factor": disc_fac,
-            "number_states": num_states,
+            "num_states": num_states,
             "maint_cost_func": "linear",
             "cost_scale": scale,
         },
-        "optimizer": {
-            "approach": "MPEC",
-            "algorithm": "LD_SLSQP",
-            "derivative": "Yes",
-            "params": np.concatenate(
-                (np.full(num_states, 0.0), np.array([4.0]), np.ones(num_params - 1))
-            ),
-            "set_ftol_abs": 1e-15,
-            "set_xtol_rel": 1e-15,
-            "set_xtol_abs": 1e-3,
-            "set_lower_bounds": lb,
-            "set_upper_bounds": ub,
-        },
+        "method": "NFXP",
     }
     demand_dict = {
         "RC_lower_bound": 2,
@@ -50,8 +36,16 @@ def inputs():
         "num_buses": 1,
     }
     df = pd.read_pickle(TEST_FOLDER + "/replication_test/group_4.pkl")
-    result_trans, result_fixp = estimate(init_dict, df)
-    demand_params = np.concatenate((result_trans["x"], result_fixp["x"][-2:]))
+    func_dict, result_trans = get_criterion_function(init_dict, df)
+    criterion_func = func_dict["criterion_function"]
+    criterion_dev = func_dict["criterion_derivative"]
+    result_fixp = minimize(
+        criterion=criterion_func,
+        params=np.zeros(2, dtype=float),
+        algorithm="scipy_lbfgsb",
+        derivative=criterion_dev,
+    )
+    demand_params = np.concatenate((result_trans["x"], result_fixp.params))
     demand = get_demand(init_dict, demand_dict, demand_params)
     out["demand_estimate"] = demand["demand"].astype(float).to_numpy()
     return out

@@ -52,6 +52,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "numpydoc",
+    "nbsphinx",
 ]
 
 autosummary_mock_imports = [

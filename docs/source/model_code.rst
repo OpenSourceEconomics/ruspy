@@ -105,7 +105,7 @@ hyperbolic cost function
 ---------------
 Cost parameters
 ---------------
-The second in put are the cost parameters, which are stored as a one dimensional
+The second input are the cost parameters, which are stored as a one dimensional
 *numpy.array*. At the first position always the replacement cost :math:`RC` is stored.
 The next positions are subsequently filled with :math:`\theta_{11}, \theta_{12}, ...`.
 The exact number depends on the functional form.
@@ -181,17 +181,18 @@ allow to specify, when the algorithm switches from contraction to Newton-Kantoro
 iterations and general parameters, which let the algorithm stop. So far, there is no
 switching back implemented.
 
-**max_cont_steps :** *(int)* The maximum number of contraction iterations before
-switching to Newton-Kantorovich iterations. Default is 20.
+- **max_cont_steps :** *(int)* The maximum number of contraction iterations before
+  switching to Newton-Kantorovich iterations. Default is 20.
 
-**switch_tol :** *(float)* If this threshold is reached by contraction iterations, then
-the algorithm switches to Newton-Kantorovich iterations. Default is :math:`10^{-3}`.
+- **switch_tol :** *(float)* If this threshold is reached by contraction iterations,
+  then the algorithm switches to Newton-Kantorovich iterations. Default is
+  :math:`10^{-3}`.
 
-**max_newt_kant_steps :** *(int)* The maximum number of Newton-Kantorovich iterations
-before the algorithm stops. Default is 20.
+- **max_newt_kant_steps :** *(int)* The maximum number of Newton-Kantorovich iterations
+  before the algorithm stops. Default is 20.
 
-**threshold :** *(float)* If this threshold is reached by Newton-Kantorovich iterations,
-then the algorithm stops. Default is :math:`10^{-12}`.
+- **threshold :** *(float)* If this threshold is reached by Newton-Kantorovich
+  iterations, then the algorithm stops. Default is :math:`10^{-12}`.
 
 .. _ev:
 
@@ -276,8 +277,9 @@ the following inputs:
 Initialization Dictionairy
 ---------------------------
 
-This is the :ref:`init_dict` needed for the ``estimate`` function. The ``get_demand``
-function draws the model specifications needed to calculate demand from this.
+This is the :ref:`init_dict` needed for the function ``get_criterion_function``.
+The ``get_demand`` function draws the model specifications needed to calculate
+demand from this.
 
 
 .. _demand_dict:
@@ -291,23 +293,22 @@ This dictionairy provides all the necessary information about how the demand
 function is supposed to look like and how precisely it is supposed to be calculated.
 It has to hold the following keys:
 
-**RC_lower_bound :** *(float)* The lowest replacement cost for which the demand
-is supposed to be calculated.
+- **RC_lower_bound :** *(float)* The lowest replacement cost for which the demand is
+  supposed to be calculated.
 
-**RC_upper_bound :** *(float)* The highest replacement cost for which the demand
-is supposed to be calculated.
+- **RC_upper_bound :** *(float)* The highest replacement cost for which the demand is
+  supposed to be calculated.
 
-**demand_evaluations :** *(int)* The grid size of the replacement cost between
-RC_lower_bound and RC_upper_bound for which the demand level shall be calculated.
+- **demand_evaluations :** *(int)* The grid size of the replacement cost between
+  RC_lower_bound and RC_upper_bound for which the demand level shall be calculated.
 
-**tolerance :** *(float)* The stopping tolerance for the fixed point calculation
-needed to obtain each demand level.
+- **tolerance :** *(float)* The stopping tolerance for the fixed point calculation
+  needed to obtain each demand level.
 
-**num_periods :** *(int)* Number of months :math:`T` for which the expected demand
-is derived. Consequently, set it to 12 if you want to get the annual expected demand.
+- **num_periods :** *(int)* Number of months :math:`T` for which the expected demand
+  is derived. Consequently, set it to 12 if you want to get the annual expected demand.
 
-**num_buses :** *(int)* Number of buses :math:`M` for which the demand is
-calculated.
+- **num_buses :** *(int)* Number of buses :math:`M` for which the demand is calculated.
 
 
 .. _demand_params:
@@ -339,6 +340,6 @@ and for the amount of buses in the fleet. It also contains a column *success*
 which indicates whether the fixed point algorithm converged successfully.
 
 
+
 The use of the ``get_demand`` function is shown in the following `replication
-<https://github.com/OpenSourceEconomics/ruspy/blob/kantevorich/promotion
-/replication/replication.ipynb>`_ notebook.
+<tutorials/replication/replication.ipynb>`_ notebook.
