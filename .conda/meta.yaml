@@ -15,15 +15,15 @@ build:
 
 requirements:
   host:
-    - python >=3.9
+    - python >=3.9, <3.10
   run:
-    - python >=3.9
+    - python >=3.9, <3.10
     - statsmodels
     - numba
-    - numpy =>1.23
+    - numpy >=1.23
     - pandas
     - pytest
     - pytest-xdist
     - scipy
-    - estimagic =>0.4.3
+    - estimagic >=0.4.3
     - nlopt
